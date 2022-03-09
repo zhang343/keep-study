@@ -24,4 +24,7 @@ public interface InfoMyNewsService extends IService<InfoMyNews> {
 
     //让用户我的消息已读
     void setMyNewsRead(List<MyNewsVo> myNewsVos);
+
+    //删除用户我的消息
+    void delete(String id, String userId);
 }

@@ -9,6 +9,7 @@ import com.kuang.springcloud.utils.JwtUtils;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -46,5 +47,18 @@ public class InfoMyNewsController {
         myNewsService.setMyNewsRead(myNewsVos);
         return R.ok().data("total" , total).data("myNewsList" , myNewsVos);
     }
+
+    //删除用户我的消息
+    @PostMapping("delete")
+    public R delete(String id , HttpServletRequest request){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        log.info("删除用户我的消息,用户id:" + userId);
+        if(userId == null || StringUtils.isEmpty(id)){
+            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法查询");
+        }
+        myNewsService.delete(id , userId);
+        return R.ok();
+    }
+
 }
 

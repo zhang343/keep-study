@@ -19,5 +19,5 @@ public interface InfoSystemMapper extends BaseMapper<InfoSystem> {
                                 @Param("userId") String userId);
 
     //让系统消息已读
-    Integer setSystemNewsRead(List<String> idList);
+    Integer setSystemNewsRead(@Param("idList") List<String> idList);
 }

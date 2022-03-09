@@ -19,5 +19,5 @@ public interface InfoMyNewsMapper extends BaseMapper<InfoMyNews> {
                                 @Param("userId") String userId);
 
     //让用户我的消息已读
-    Integer setMyNewsRead(List<String> idList);
+    Integer setMyNewsRead(@Param("idList") List<String> idList);
 }

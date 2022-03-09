@@ -1,5 +1,6 @@
 package com.kuang.message;
 
+import com.kuang.springcloud.utils.JwtUtils;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
