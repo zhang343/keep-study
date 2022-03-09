@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kuang.course.mapper.CmsCourseMapper">
+
+    <select id="findCourseByTcId" resultType="com.kuang.course.entity.vo.IndexCourseVo" >
+        select id , title , description , cover , total_length , status , views from cms_course
+        where tc_id = #{tcId} order by sort asc
+    </select>
+
+    <select id="findCourseVo" resultType="com.kuang.course.entity.vo.CourseVo" >
+        select course.id , course.title , course.description , course.price , course.total_length , course.views ,
+               details.overview , details.teacher , details.suitable_people , details.course_arrange , details.course_feedback
+        from cms_course as course left outer join cms_details as details on course.id = details.course_id where course.id = #{courseId}
+    </select>
+
+    <select id="findCourseOrderByPrice" resultType="com.kuang.springcloud.entity.BbsCourseVo" >
+        select id , cover from cms_course order by price asc limit 0 , 3
+    </select>
+
+</mapper>

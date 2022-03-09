@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kuang.message.mapper.InfoMyNewsMapper">
+
+    <select id="findUserNews" resultType="com.kuang.message.entity.vo.MyNewsVo" >
+        select id , title , content , is_course , course_id , gmt_create from info_my_news
+        where user_id = #{userId}
+        order by gmt_create desc
+        limit #{current} , #{limit}
+    </select>
+
+    <update id="setMyNewsRead" >
+        update info_my_news set is_read = 1 where id in
+        <foreach collection="idList" item="id" open="(" close=")" separator="," >
+            #{id}
+        </foreach>
+        and is_read = 0
+    </update>
+</mapper>

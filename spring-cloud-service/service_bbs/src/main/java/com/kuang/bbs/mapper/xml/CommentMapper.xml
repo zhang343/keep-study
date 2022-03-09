@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kuang.bbs.mapper.CommentMapper">
+
+    <resultMap id="OneCommentVo" type="com.kuang.bbs.entity.vo.OneCommentVo" >
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="user_avatar" property="userAvatar" />
+        <result column="user_nickname" property="userNickname" />
+        <result column="content" property="content" />
+        <result column="gmt_create" property="gmtCreate" />
+
+        <collection property="childList" ofType="com.kuang.bbs.entity.vo.TwoCommentVo"
+                    select="com.kuang.bbs.mapper.CommentMapper.findTwoCommentVoByFatherId"
+                    column="id"/>
+    </resultMap>
+
+
+    <select id="findOneCommentVoByArticleId" resultMap="OneCommentVo" >
+        select id , user_id , user_avatar , user_nickname , content , gmt_create from bbs_comment
+        where article_id = #{articleId} and father_id = '' limit #{current} , #{limit}
+    </select>
+
+
+    <select id="findTwoCommentVoByFatherId" resultType="com.kuang.bbs.entity.vo.TwoCommentVo" >
+        select id , user_id , user_avatar , user_nickname , content , reply_user_id , reply_user_nickname , gmt_create from bbs_comment
+        where father_id = #{fatherId}
+    </select>
+
+</mapper>

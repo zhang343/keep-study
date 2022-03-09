@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kuang.vip.mapper.UserTodayRightMapper">
+
+    <update id="updateMemberTodayRight" >
+        update vip_user_today_right set is_sign = 0 , money = 0 , article_number = 0
+    </update>
+
+</mapper>

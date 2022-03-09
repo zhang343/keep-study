@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kuang.course.mapper.CmsChapterMapper">
+
+    <resultMap id="findChapterVoVideoList" type="com.kuang.course.entity.vo.ChapterVo" >
+        <id column="id" property="id" />
+        <result column="title" property="title" />
+        <collection property="videoList" ofType="com.kuang.course.entity.vo.VideoVo"
+                    select="com.kuang.course.mapper.CmsVideoMapper.findVideoByChapterId"
+                    column="id"/>
+    </resultMap>
+
+
+    <select id="findChapterByCourseId" resultMap="findChapterVoVideoList" >
+        select id , title from cms_chapter where course_id = #{courseId} order by sort asc
+    </select>
+</mapper>

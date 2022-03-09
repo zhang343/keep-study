@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kuang.download.mapper.DtmFileMapper">
+
+    <select id="findFileCondition" resultType="com.kuang.download.entity.DtmFile" >
+        select df.id , df.name , dc.category_name , df.size , df.price
+        from dtm_file as df join dtm_category as dc
+        on df.category_id = dc.id
+        <where>
+            <if test="categoryId!=null and categoryId!=''">
+                dc.id = #{categoryId}
+            </if>
+            <if test="fileName!=null and fileName!=''">
+                and name like '%' #{fileName} '%'
+            </if>
+        </where>
+    </select>
+</mapper>

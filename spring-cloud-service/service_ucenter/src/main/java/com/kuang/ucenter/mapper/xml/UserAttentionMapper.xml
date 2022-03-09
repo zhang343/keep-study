@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kuang.ucenter.mapper.UserAttentionMapper">
+
+    <select id="findFocusOnUser" resultType="com.kuang.ucenter.entity.vo.UserVo" >
+        select attention_user_id as id , nickname , avatar , sign , gmt_create
+        from user_attention
+        where user_id = #{userId} limit #{current} , #{limit}
+    </select>
+
+    <select id="findFansUser" resultType="com.kuang.ucenter.entity.vo.UserVo" >
+        select userinfo.id , userinfo.nickname , userinfo.avatar , userinfo.sign , attention.gmt_create
+        from user_attention as attention join user_info as userinfo
+        on attention.user_id = userinfo.id
+        where attention.attention_user_id = #{userId} limit #{current} , #{limit}
+    </select>
+</mapper>
