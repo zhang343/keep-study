@@ -60,4 +60,7 @@ public interface ArticleService extends IService<Article> {
 
     //向好友动态发送消息
     void sendFrientFeed(Article article , String token);
+
+    //查找文章浏览量
+    Map<String, Object> findArticleViews(List<String> articleIdList);
 }

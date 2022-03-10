@@ -341,15 +341,32 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             return;
         }
         List<String> userIdList = (List<String>) userFansId.getData().get("userIdList");
+        //获取分类名称
+        Category categoryByCategoryId = categoryService.findCategoryByCategoryId(article.getCategoryId());
+        String categoryName = null;
+        if(categoryByCategoryId != null){
+            categoryName = categoryByCategoryId.getCategoryName();
+        }
         //向好友动态发送消息
         try {
             log.warn("发送消息到好友动态,文章id:" + article.getId());
             //发送
             InfoFriendFeedVo infoFriendFeedVo = new InfoFriendFeedVo(article.getId() , article.getTitle() ,
-                    article.getDescription() , 0L , article.getUserId() , article.getNickname() , article.getAvatar() , userIdList);
+                    article.getDescription() , article.getUserId() , article.getNickname() , article.getAvatar() , categoryName  , userIdList);
             msgProducer.sendFriendFeed(JSON.toJSONString(infoFriendFeedVo));
         }catch(Exception e){
             log.warn("发送消息到好友动态失败,文章id:" + article.getId());
         }
+    }
+
+    //查找文章浏览量
+    @Override
+    public Map<String, Object> findArticleViews(List<String> articleIdList) {
+        List<Article> articles = baseMapper.selectBatchIds(articleIdList);
+        Map<String , Object> map = new HashMap<>();
+        for(Article article : articles){
+            map.put(article.getId() , article.getViews());
+        }
+        return map;
     }
 }

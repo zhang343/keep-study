@@ -2,4 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kuang.message.mapper.InfoFriendFeedMapper">
 
+    <select id="findUserNews" resultType="com.kuang.message.entity.vo.FriendFeedVo" >
+        select id , article_id , title , description , gmt_create ,
+               attation_user_id , attation_user_nickname , attation_user_avatar , category_name
+        from info_friend_feed
+        where user_id = #{userId}
+        order by gmt_create desc
+        limit #{current} , #{limit}
+    </select>
+
+    <update id="setFriendFeedRead" >
+        update info_friend_feed set is_read = 1 where id in
+        <foreach collection="idList" item="id" open="(" close=")" separator="," >
+            #{id}
+        </foreach>
+        and is_read = 0
+    </update>
 </mapper>

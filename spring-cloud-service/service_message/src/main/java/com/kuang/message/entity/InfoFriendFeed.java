@@ -39,9 +39,6 @@ public class InfoFriendFeed implements Serializable {
     @ApiModelProperty(value = "文章描述")
     private String description;
 
-    @ApiModelProperty(value = "浏览量")
-    private Long views;
-
     @ApiModelProperty(value = "用户2id(你关注的用户的id)")
     private String attationUserId;
 
@@ -50,6 +47,9 @@ public class InfoFriendFeed implements Serializable {
 
     @ApiModelProperty(value = "用户2用户头像")
     private String attationUserAvatar;
+
+    @ApiModelProperty(value = "文章分类名称")
+    private String categoryName;
 
     @ApiModelProperty(value = "是否阅读 0 未阅读 1阅读")
     private Boolean isRead;

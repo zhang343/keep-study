@@ -15,15 +15,13 @@ import com.kuang.springcloud.utils.RedisUtils;
 import com.kuang.springcloud.utils.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -228,6 +226,14 @@ public class ArticleController {
 
     }
 
-
+    //查找文章浏览量
+    @GetMapping("findArticleViews")
+    public R findArticleViews(@RequestParam("articleIdList") List<String> articleIdList){
+        if(articleIdList.size() == 0){
+            return R.ok();
+        }
+        Map<String , Object> map = articleService.findArticleViews(articleIdList);
+        return R.ok().data(map);
+    }
 }
 

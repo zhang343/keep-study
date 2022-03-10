@@ -1,4 +1,4 @@
-package com.kuang.bbs.client;
+package com.kuang.message.client;
 
 import com.kuang.springcloud.utils.R;
 import feign.hystrix.FallbackFactory;

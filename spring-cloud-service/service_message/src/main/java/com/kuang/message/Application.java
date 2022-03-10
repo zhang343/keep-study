@@ -30,5 +30,7 @@ public class Application implements CommandLineRunner {
     //做程序启动之后工作
     @Override
     public void run(String... args) throws Exception {
+        String token = JwtUtils.getJwtToken("1496388556204023809");
+        System.out.println(token);
     }
 }

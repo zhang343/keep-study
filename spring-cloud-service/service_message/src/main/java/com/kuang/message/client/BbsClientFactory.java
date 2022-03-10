@@ -1,9 +1,11 @@
-package com.kuang.ucenter.client;
+package com.kuang.message.client;
 
 import com.kuang.springcloud.utils.R;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * @author XiaoZhang
@@ -32,6 +34,12 @@ public class BbsClientFactory implements FallbackFactory<BbsClient> {
             @Override
             public R findURANAndCN(String token) {
                 log.error("远程调用service-bbs下面的/bbs/article/findURANAndCN接口失败");
+                return R.error();
+            }
+
+            @Override
+            public R findArticleViews(List<String> articleList) {
+                log.error("远程调用service-bbs下面的/bbs/article/findArticleViews接口失败");
                 return R.error();
             }
 

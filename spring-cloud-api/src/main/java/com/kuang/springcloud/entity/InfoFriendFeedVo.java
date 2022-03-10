@@ -19,9 +19,9 @@ public class InfoFriendFeedVo implements Serializable {
     private String articleId;
     private String title;
     private String description;
-    private Long views;
     private String attationUserId;
     private String attationUserNickname;
     private String attationUserAvatar;
+    private String categoryName;
     private List<String> userIdList;
 }
