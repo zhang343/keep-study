@@ -1,13 +1,16 @@
 package com.kuang.message.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.kuang.message.client.UcenterClient;
 import com.kuang.message.client.VipClient;
 import com.kuang.message.entity.InfoReplyMe;
 import com.kuang.message.entity.vo.ReplyMeVo;
 import com.kuang.message.mapper.InfoReplyMeMapper;
 import com.kuang.message.service.InfoReplyMeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.R;
+import com.kuang.springcloud.utils.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -29,6 +32,9 @@ public class InfoReplyMeServiceImpl extends ServiceImpl<InfoReplyMeMapper, InfoR
 
     @Resource
     private VipClient vipClient;
+
+    @Resource
+    private UcenterClient ucenterClient;
 
     //查找未读消息
     @Override
@@ -94,5 +100,43 @@ public class InfoReplyMeServiceImpl extends ServiceImpl<InfoReplyMeMapper, InfoR
             replyMeVo.setVipLevel((String) map.get(replyMeVo.getReplyUserId()));
         }
         return new AsyncResult<>(replyMeVos);
+    }
+
+    //删除用户回复消息
+    @Override
+    public void delete(String id, String userId) {
+        QueryWrapper<InfoReplyMe> wrapper = new QueryWrapper<>();
+        wrapper.eq("id" , id);
+        wrapper.eq("user_id" , userId);
+        int delete = baseMapper.delete(wrapper);
+        if(delete != 1){
+            throw new XiaoXiaException(ResultCode.ERROR , "删除失败");
+        }
+    }
+
+    //回复用户消息
+    @Async
+    @Override
+    public void addreply(String id, String content, String userId , String token) {
+        InfoReplyMe infoReplyMe = baseMapper.selectById(id);
+        if(infoReplyMe == null){
+            return;
+        }
+        InfoReplyMe infoReplyMe1 = new InfoReplyMe();
+        infoReplyMe1.setUserId(infoReplyMe.getReplyUserId());
+        infoReplyMe1.setArticleId(infoReplyMe.getArticleId());
+        infoReplyMe1.setTitle(infoReplyMe.getTitle());
+        infoReplyMe1.setReplyUserId(userId);
+        infoReplyMe1.setContent(content);
+
+        R avatarAndNicknameByUserId = ucenterClient.findAvatarAndNicknameByUserId(token);
+        if(!avatarAndNicknameByUserId.getSuccess()){
+            return;
+        }
+        String avatar = (String) avatarAndNicknameByUserId.getData().get("avatar");
+        String nickname = (String) avatarAndNicknameByUserId.getData().get("nickname");
+        infoReplyMe1.setReplyUserAvatar(avatar);
+        infoReplyMe1.setReplyUserNickname(nickname);
+        baseMapper.insert(infoReplyMe1);
     }
 }

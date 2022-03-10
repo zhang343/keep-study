@@ -9,6 +9,7 @@ import com.kuang.springcloud.utils.JwtUtils;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -61,6 +62,31 @@ public class InfoReplyMeController {
             }
         }
         return R.ok().data("total" , total).data("replyNewsList" , replyMeVos);
+    }
+
+    //删除用户回复消息
+    @PostMapping("delete")
+    public R delete(String id , HttpServletRequest request){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        log.info("用户删除回复消息,用户id:" + userId + ",消息id:" + id);
+        if(userId == null || StringUtils.isEmpty(id)){
+            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
+        }
+        replyMeService.delete(id , userId);
+        return R.ok();
+    }
+
+    //回复用户消息
+    @PostMapping("addreply")
+    public R addreply(String id , String content , HttpServletRequest request){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        String token = request.getHeader("token");
+        log.info("回复用户消息,用户id:" + userId + ",消息id:" + id);
+        if(userId == null || StringUtils.isEmpty(id) || StringUtils.isEmpty(content)){
+            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
+        }
+        replyMeService.addreply(id , content , userId , token);
+        return R.ok();
     }
 }
 
