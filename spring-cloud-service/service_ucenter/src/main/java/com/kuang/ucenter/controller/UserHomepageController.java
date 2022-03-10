@@ -5,6 +5,7 @@ import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.JwtUtils;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
+import com.kuang.ucenter.entity.UserHomepage;
 import com.kuang.ucenter.entity.vo.HomePageVo;
 import com.kuang.ucenter.service.UserHomepageService;
 import lombok.extern.slf4j.Slf4j;
@@ -45,8 +46,13 @@ public class UserHomepageController {
 
     //查看主页内容
     @GetMapping("findByUserId")
-    public R findByUserId(){
-        return R.ok();
+    public R findByUserId(String userId){
+        log.info("查看用户主页内容");
+        if(StringUtils.isEmpty(userId)){
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确查询");
+        }
+        UserHomepage userHomepage = userHomepageService.findByUserId(userId);
+        return R.ok().data("content" , userHomepage.getContent());
     }
 
 }

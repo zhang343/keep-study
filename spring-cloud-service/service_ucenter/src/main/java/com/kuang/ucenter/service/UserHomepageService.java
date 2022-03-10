@@ -14,4 +14,7 @@ public interface UserHomepageService extends IService<UserHomepage> {
 
     //修改用户主页内容
     void updateContent(String content , String userId);
+
+    //查看主页内容
+    UserHomepage findByUserId(String userId);
 }

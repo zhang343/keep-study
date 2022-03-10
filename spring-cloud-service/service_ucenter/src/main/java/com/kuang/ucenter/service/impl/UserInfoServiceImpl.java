@@ -196,11 +196,13 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if(releaseArticleNumberR.getSuccess()){
             releaseArticleNumber = (Integer) releaseArticleNumberR.getData().get("releaseArticleNumber");
         }
-        if(!memberRightVipLevelAndIsSign.getSuccess()){
-            throw new XiaoXiaException(ResultCode.ERROR , "远程调用失败");
+
+        String vipLevel = null;
+        Boolean isSignIn = false;
+        if(memberRightVipLevelAndIsSign.getSuccess()){
+            vipLevel = (String) memberRightVipLevelAndIsSign.getData().get("vipLevel");
+            isSignIn = (Boolean) memberRightVipLevelAndIsSign.getData().get("isSign");
         }
-        String vipLevel = (String) memberRightVipLevelAndIsSign.getData().get("vipLevel");
-        Boolean isSignIn = (Boolean) memberRightVipLevelAndIsSign.getData().get("isSign");
         MyUserInfoVo myUserInfoVo = new MyUserInfoVo();
         myUserInfoVo.setReleaseArticleNumber(releaseArticleNumber);
         myUserInfoVo.setVipLevel(vipLevel);
@@ -278,5 +280,18 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             throw new XiaoXiaException(ResultCode.PASSWORDERROR , "密码错误");
         }
         return userInfo.getId();
+    }
+
+    //修改用户背景图像
+    @Override
+    public void setBgImg(String bgImg, String userId) {
+        log.info("修改用户背景图像,用户id:" + userId + ",背景图片地址:" + bgImg);
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(userId);
+        userInfo.setBgImg(bgImg);
+        int i = baseMapper.updateById(userInfo);
+        if(i != 1){
+            throw new XiaoXiaException(ResultCode.ERROR , "修改用户背景失败");
+        }
     }
 }

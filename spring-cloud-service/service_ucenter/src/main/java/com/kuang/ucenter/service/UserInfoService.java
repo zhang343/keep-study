@@ -57,4 +57,7 @@ public interface UserInfoService extends IService<UserInfo> {
 
     //用户账号密码登录
     String login(String loginAct, String loginPwd);
+
+    //修改用户背景图像
+    void setBgImg(String bgImg, String userId);
 }

@@ -50,4 +50,14 @@ public class UserHomepageServiceImpl extends ServiceImpl<UserHomepageMapper, Use
         }
     }
 
+    //查看主页内容
+    @Override
+    public UserHomepage findByUserId(String userId) {
+        UserHomepage userHomepage = baseMapper.selectById(userId);
+        if(userHomepage == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确查询");
+        }
+        return userHomepage;
+    }
+
 }

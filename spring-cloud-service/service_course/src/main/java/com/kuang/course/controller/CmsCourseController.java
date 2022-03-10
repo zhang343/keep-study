@@ -112,7 +112,7 @@ public class CmsCourseController {
     //查找课程相关信息，为消息模块服务
     @GetMapping("findMessageCourseDetaile")
     public R findMessageCourseDetaile(@RequestParam("courseIdList") List<String> courseIdList){
-        if(courseIdList == null || courseIdList.size() == 0){
+        if(courseIdList == null || courseIdList.size() == 0 || courseIdList.size() >= 20){
             throw new XiaoXiaException(ResultCode.ERROR , "请正确查询");
         }
 
