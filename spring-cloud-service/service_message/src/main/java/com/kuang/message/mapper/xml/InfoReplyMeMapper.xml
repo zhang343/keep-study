@@ -2,4 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kuang.message.mapper.InfoReplyMeMapper">
 
+
+    <select id="findUserNews" resultType="com.kuang.message.entity.vo.ReplyMeVo" >
+        select id , article_id , title , reply_user_id , reply_user_nickname , reply_user_avatar ,
+               gmt_create , content
+        from info_reply_me
+        where user_id = #{userId}
+        order by gmt_create desc
+        limit #{current} , #{limit}
+    </select>
+
+    <update id="setReplyMeRead" >
+        update info_reply_me set is_read = 1 where id in
+        <foreach collection="idList" item="id" open="(" close=")" separator="," >
+            #{id}
+        </foreach>
+        and is_read = 0
+    </update>
 </mapper>

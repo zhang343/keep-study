@@ -1,18 +1,34 @@
 package com.kuang.message.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.kuang.message.client.VipClient;
 import com.kuang.message.entity.InfoReplyMe;
+import com.kuang.message.entity.vo.ReplyMeVo;
 import com.kuang.message.mapper.InfoReplyMeMapper;
 import com.kuang.message.service.InfoReplyMeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.kuang.springcloud.utils.R;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.concurrent.Future;
 
 /**
  * @author Xiaozhang
  * @since 2022-02-11
  */
 @Service
+@Slf4j
 public class InfoReplyMeServiceImpl extends ServiceImpl<InfoReplyMeMapper, InfoReplyMe> implements InfoReplyMeService {
+
+
+    @Resource
+    private VipClient vipClient;
 
     //查找未读消息
     @Override
@@ -21,5 +37,62 @@ public class InfoReplyMeServiceImpl extends ServiceImpl<InfoReplyMeMapper, InfoR
         wrapper.eq("user_id" , userId);
         wrapper.eq("is_read" , 0);
         return baseMapper.selectCount(wrapper);
+    }
+
+    //查询回复我的消息数量
+    @Override
+    public Integer findUserNewsNumber(String userId) {
+        QueryWrapper<InfoReplyMe> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id" , userId);
+        return baseMapper.selectCount(wrapper);
+    }
+
+    //查询回复我的消息
+    @Override
+    public List<ReplyMeVo> findUserNews(Long current, Long limit, String userId) {
+        current = (current - 1) * limit;
+        return baseMapper.findUserNews(current , limit , userId);
+    }
+
+    //设置回复我的消息已读
+    @Async
+    @Override
+    public void setReplyMeRead(List<ReplyMeVo> replyMeVos) {
+        log.info("让回复我的消息已读");
+        List<String> idList = new ArrayList<>();
+        for(ReplyMeVo replyMeVo : replyMeVos){
+            idList.add(replyMeVo.getId());
+        }
+        if(idList.size() != 0){
+            baseMapper.setReplyMeRead(idList);
+        }
+    }
+
+    //查找vip标志
+    @Async
+    @Override
+    public Future<List<ReplyMeVo>> findVipLevel(List<ReplyMeVo> replyMeVos) {
+        if(replyMeVos == null || replyMeVos.size() == 0){
+            return new AsyncResult<>(replyMeVos);
+        }
+
+        //准备数据
+        Set<String> userIdSet = new HashSet<>();
+        for(ReplyMeVo replyMeVo : replyMeVos){
+            userIdSet.add(replyMeVo.getReplyUserId());
+        }
+        List<String> userIdList = new ArrayList<>(userIdSet);
+
+
+        //远程调用获取vip标识
+        R memberRightLogo = vipClient.findMemberRightLogo(userIdList);
+        if(!memberRightLogo.getSuccess()){
+            return new AsyncResult<>(replyMeVos);
+        }
+        Map<String , Object> map = memberRightLogo.getData();
+        for(ReplyMeVo replyMeVo : replyMeVos){
+            replyMeVo.setVipLevel((String) map.get(replyMeVo.getReplyUserId()));
+        }
+        return new AsyncResult<>(replyMeVos);
     }
 }
