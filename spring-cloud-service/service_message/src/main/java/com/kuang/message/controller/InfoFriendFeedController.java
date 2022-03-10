@@ -48,10 +48,13 @@ public class InfoFriendFeedController {
         Future<List<FriendFeedVo>> articleViewsAndVipLevel = friendFeedService.findArticleViewsAndVipLevel(friendFeedVos);
         Integer total = friendFeedService.findUserNewsNumber(userId);
         friendFeedService.setFriendFeedRead(friendFeedVos);
-        if(!articleViewsAndVipLevel.isDone()){
-            //如果没有执行完毕，则最多等待1秒
+        for(int i = 1 ; i < 10 ; i++){
+            if(articleViewsAndVipLevel.isDone()){
+                break;
+            }
+            //如果没有执行完毕，则最多等待0.2秒
             try {
-                TimeUnit.MILLISECONDS.sleep(1000);
+                TimeUnit.MILLISECONDS.sleep(200);
             } catch(InterruptedException e) {
                 log.warn("休眠失败");
             }
