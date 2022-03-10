@@ -6,8 +6,10 @@ import com.kuang.course.client.VipClient;
 import com.kuang.course.entity.vo.CourseVo;
 import com.kuang.course.service.CmsBillService;
 import com.kuang.course.service.CmsCourseService;
+import com.kuang.course.service.CmsVideoService;
 import com.kuang.springcloud.entity.BbsCourseVo;
 import com.kuang.springcloud.entity.InfoMyNewsVo;
+import com.kuang.springcloud.entity.MessageCourseVo;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.rabbitmq.MsgProducer;
 import com.kuang.springcloud.utils.JwtUtils;
@@ -15,14 +17,14 @@ import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Xiaozhang
@@ -45,6 +47,9 @@ public class CmsCourseController {
 
     @Resource
     private VipClient vipClient;
+
+    @Resource
+    private CmsVideoService videoService;
 
     //查找课程详细信息
     @GetMapping("findCourseDetaile")
@@ -101,6 +106,47 @@ public class CmsCourseController {
         log.info("查询课程价格为前三的课程");
         List<BbsCourseVo> bbsCourseVoList = courseService.findCourseOrderByPrice();
         return R.ok().data("courseList" , bbsCourseVoList);
+    }
+
+
+    //查找课程相关信息，为消息模块服务
+    @GetMapping("findMessageCourseDetaile")
+    public R findMessageCourseDetaile(@RequestParam("courseIdList") List<String> courseIdList){
+        if(courseIdList == null || courseIdList.size() == 0){
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确查询");
+        }
+
+        //查询课程小节数量
+        Future<Map<String, Integer>> videoNumberByCourseId = videoService.findVideoNumberByCourseId(courseIdList);
+        //查询课程
+        List<MessageCourseVo> messageCourseVos = courseService.findMessageCourseDetaile(courseIdList);
+
+        Map<String, Integer> map = null;
+        //等待一段时间并获取课程小节数量结果
+        for(int i = 0 ; i < 5 ; i++){
+            if(videoNumberByCourseId.isDone()){
+                try {
+                    map = videoNumberByCourseId.get();
+                }catch(Exception e){
+                    log.warn("查询课程小节数量失败");
+                }
+                break;
+            }
+            //如果没有执行完毕，则最多等待0.2秒
+            try {
+                TimeUnit.MILLISECONDS.sleep(200);
+            } catch(InterruptedException e) {
+                log.warn("休眠失败");
+            }
+        }
+
+        if(map != null){
+            for(MessageCourseVo messageCourseVo : messageCourseVos){
+                messageCourseVo.setVideoNumber(map.get(messageCourseVo.getCourseId()));
+            }
+        }
+        return R.ok().data("courseNewsList" , messageCourseVos);
+
     }
 
 }

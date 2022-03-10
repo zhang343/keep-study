@@ -33,24 +33,6 @@ public class InfoCourse implements Serializable {
     @ApiModelProperty(value = "课程id")
     private String courseId;
 
-    @ApiModelProperty(value = "课程标题")
-    private String title;
-
-    @ApiModelProperty(value = "课程描述")
-    private String description;
-
-    @ApiModelProperty(value = "课程封面地址")
-    private String cover;
-
-    @ApiModelProperty(value = "讲师介绍")
-    private String teacher;
-
-    @ApiModelProperty(value = "播放数量")
-    private Long views;
-
-    @ApiModelProperty(value = "小节数量")
-    private Integer videoNumber;
-
     @ApiModelProperty(value = "是否阅读 0 未阅读 1阅读")
     private Boolean isRead;
 

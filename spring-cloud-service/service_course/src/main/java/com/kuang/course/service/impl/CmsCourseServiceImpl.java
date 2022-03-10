@@ -14,6 +14,7 @@ import com.kuang.course.service.CmsCourseService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kuang.course.service.CmsVideoService;
 import com.kuang.springcloud.entity.BbsCourseVo;
+import com.kuang.springcloud.entity.MessageCourseVo;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
@@ -142,6 +143,19 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
         return baseMapper.findCourseOrderByPrice();
     }
 
+    //查找课程相关信息，为消息模块服务
+    @Override
+    public List<MessageCourseVo> findMessageCourseDetaile(List<String> courseIdList) {
+        List<MessageCourseVo> messageCourseDetaile = baseMapper.findMessageCourseDetaile(courseIdList);
+        statisticalCourseViews(messageCourseDetaile);
+        return messageCourseDetaile;
+    }
+
+    //统计课程浏览量,下面为空实现
+    @Override
+    public void statisticalCourseViews(List<MessageCourseVo> messageCourseVos) {
+
+    }
 
 
 }

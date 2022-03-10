@@ -11,11 +11,15 @@ import com.kuang.springcloud.entity.UserStudyVo;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.ResultCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 /**
@@ -33,6 +37,7 @@ public class CmsVideoServiceImpl extends ServiceImpl<CmsVideoMapper, CmsVideo> i
     private CmsBillService billService;
 
     //通过课程id查找该课程下面小节数量
+    @Cacheable(value = "videoNumber")
     @Override
     public Integer findVideoNumberByCourseId(String courseId) {
         log.info("通过课程id查找对应小节数量，课程id：" + courseId);
@@ -71,6 +76,18 @@ public class CmsVideoServiceImpl extends ServiceImpl<CmsVideoMapper, CmsVideo> i
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
         }
         return userStudyVoByCourseId;
+    }
+
+    //通过课程id查找该课程下面小节数量
+    @Async
+    @Override
+    public Future<Map<String, Integer>> findVideoNumberByCourseId(List<String> courseIdList) {
+        Map<String , Integer> map = new HashMap<>();
+        for(String courseId : courseIdList){
+            Integer videoNumberByCourseId = findVideoNumberByCourseId(courseId);
+            map.put(courseId , videoNumberByCourseId);
+        }
+        return new AsyncResult<>(map);
     }
 
 }

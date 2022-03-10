@@ -1,11 +1,15 @@
 package com.kuang.message;
 
+import com.kuang.message.entity.InfoCourse;
+import com.kuang.message.mapper.InfoCourseMapper;
 import com.kuang.springcloud.utils.JwtUtils;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import javax.annotation.Resource;
 
 /**
  * @author XiaoZhang

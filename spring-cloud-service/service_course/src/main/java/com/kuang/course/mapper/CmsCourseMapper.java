@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.kuang.course.entity.vo.CourseVo;
 import com.kuang.course.entity.vo.IndexCourseVo;
 import com.kuang.springcloud.entity.BbsCourseVo;
+import com.kuang.springcloud.entity.MessageCourseVo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -22,4 +24,7 @@ public interface CmsCourseMapper extends BaseMapper<CmsCourse> {
 
     //查找价格为前三的课程
     List<BbsCourseVo> findCourseOrderByPrice();
+
+    //查找课程相关信息，为消息模块服务
+    List<MessageCourseVo> findMessageCourseDetaile(@Param("courseIdList") List<String> courseIdList);
 }

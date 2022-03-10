@@ -4,6 +4,8 @@ import com.kuang.course.entity.CmsVideo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.kuang.springcloud.entity.UserStudyVo;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 /**
@@ -20,4 +22,7 @@ public interface CmsVideoService extends IService<CmsVideo> {
 
     //查询视频云端id和相关课程信息
     UserStudyVo findUserStudyVoByCourseId(String id);
+
+    //通过课程id查找该课程下面小节数量
+    Future<Map<String, Integer>> findVideoNumberByCourseId(List<String> courseIdList);
 }

@@ -17,4 +17,14 @@
         select id , cover from cms_course order by price asc limit 0 , 3
     </select>
 
+    <select id="findMessageCourseDetaile" resultType="com.kuang.springcloud.entity.MessageCourseVo" >
+        select course.id as courseId , course.cover , course.title , course.description ,
+               course.views , course.gmt_modified , details.teacher
+        from cms_course as course left outer join cms_details as details on course.id = details.course_id
+        where course.id in
+        <foreach collection="courseIdList" item="courseId" open="(" close=")" separator="," >
+            #{courseId}
+        </foreach>
+    </select>
+
 </mapper>

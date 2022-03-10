@@ -229,8 +229,8 @@ public class ArticleController {
     //查找文章浏览量
     @GetMapping("findArticleViews")
     public R findArticleViews(@RequestParam("articleIdList") List<String> articleIdList){
-        if(articleIdList.size() == 0){
-            return R.ok();
+        if(articleIdList == null || articleIdList.size() == 0){
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确查询");
         }
         Map<String , Object> map = articleService.findArticleViews(articleIdList);
         return R.ok().data(map);

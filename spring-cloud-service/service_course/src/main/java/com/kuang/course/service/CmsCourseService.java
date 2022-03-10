@@ -5,6 +5,8 @@ import com.kuang.course.entity.CmsCourse;
 import com.kuang.course.entity.vo.CourseVo;
 import com.kuang.course.entity.vo.IndexCourseVo;
 import com.kuang.springcloud.entity.BbsCourseVo;
+import com.kuang.springcloud.entity.MessageCourseVo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -29,4 +31,9 @@ public interface CmsCourseService extends IService<CmsCourse> {
     //查找价格为前三的课程
     List<BbsCourseVo> findCourseOrderByPrice();
 
+    //查找课程相关信息，为消息模块服务
+    List<MessageCourseVo> findMessageCourseDetaile(List<String> courseIdList);
+
+    //统计课程浏览量
+    void statisticalCourseViews(List<MessageCourseVo> messageCourseVos);
 }
