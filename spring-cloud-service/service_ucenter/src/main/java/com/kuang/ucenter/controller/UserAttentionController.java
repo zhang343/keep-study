@@ -52,21 +52,19 @@ public class UserAttentionController {
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法查询");
         }
         Future<List<UserVo>> userVo = null;
-        Future<Integer> UserNumber = null;
+        Integer total = 0;
         if(isAttention == 0){
             //查询关注
             userVo = userAttentionService.findFocusOnUser(userId , current , limit);
-            UserNumber = userAttentionService.findFocusOnNumber(userId);
+            total = userAttentionService.findUserAttentionNumber(userId);
         }else {
             //查询粉丝
             userVo = userAttentionService.findFansUser(userId , current , limit);
-            UserNumber = userAttentionService.findFansNumber(userId);
+            total = userAttentionService.findUserFansNumber(userId);
         }
 
-        Integer total = 0;
         List<UserVo> userVoList = null;
         try {
-            total = UserNumber.get();
             userVoList = userVo.get();
         } catch(Exception e) {
             log.error("根据条件查询用户失败");

@@ -29,10 +29,10 @@ public interface UserInfoService extends IService<UserInfo> {
     UserInfo findAvatarAndNicknameByUserId(String userId);
 
     //查找用户数量，通过条件
-    Future<Long> findUserNumberByCondition(String accountOrNickname);
+    Long findUserNumberByCondition(String accountOrNickname);
 
     //查找用户，通过条件
-    List<UserVo> findUserByCondition(Long current, Long limit, String accountOrNickname);
+    List<UserSearchVo> findUserByCondition(Long current, Long limit, String accountOrNickname);
 
     //修改用户邮箱和密码
     void setEmailAndPassword(String userId, String email, String password);
@@ -60,4 +60,7 @@ public interface UserInfoService extends IService<UserInfo> {
 
     //修改用户背景图像
     void setBgImg(String bgImg, String userId);
+
+    //用户设置修改资料里面的查询
+    UserSetDataVo setdataquery(String userId);
 }

@@ -2,7 +2,9 @@ package com.kuang.ucenter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
+import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
+import com.kuang.ucenter.client.VipClient;
 import com.kuang.ucenter.entity.UserAttention;
 import com.kuang.ucenter.entity.UserInfo;
 import com.kuang.ucenter.entity.vo.UserVo;
@@ -17,8 +19,10 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 /**
@@ -30,7 +34,7 @@ import java.util.concurrent.Future;
 public class UserAttentionServiceImpl extends ServiceImpl<UserAttentionMapper, UserAttention> implements UserAttentionService {
 
     @Resource
-    private UserInfoMapper userInfoMapper;
+    private VipClient vipClient;
 
     //查询出指定用户的所有粉丝id
     @Override
@@ -47,17 +51,6 @@ public class UserAttentionServiceImpl extends ServiceImpl<UserAttentionMapper, U
         return userIdList;
     }
 
-    //查询用户关注数量
-    @Async
-    @Override
-    public Future<Integer> findFocusOnNumber(String userId) {
-        log.info("开始查询用户关注数量,用户id:" + userId);
-        QueryWrapper<UserAttention> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_id" , userId);
-        Integer integer = baseMapper.selectCount(wrapper);
-        return new AsyncResult<>(integer);
-    }
-
     //查询用户关注用户
     @Async
     @Override
@@ -65,28 +58,48 @@ public class UserAttentionServiceImpl extends ServiceImpl<UserAttentionMapper, U
         log.info("开始查询用户关注,用户id:" + userId);
         current = (current - 1) * limit;
         List<UserVo> userVoList = baseMapper.findFocusOnUser(userId , current , limit);
+        setUserVoVipLevel(userVoList);
         return new AsyncResult<>(userVoList);
-    }
-
-    //查询用户粉丝数量
-    @Async
-    @Override
-    public Future<Integer> findFansNumber(String userId) {
-        log.info("开始查询用户粉丝数量,用户id:" + userId);
-        QueryWrapper<UserAttention> wrapper = new QueryWrapper<>();
-        wrapper.eq("attention_user_id" , userId);
-        Integer integer = baseMapper.selectCount(wrapper);
-        return new AsyncResult<>(integer);
     }
 
     //查询用户粉丝
     @Async
     @Override
     public Future<List<UserVo>> findFansUser(String userId, Long current, Long limit) {
+        System.out.println(LocalTime.now());
         log.info("开始查询用户粉丝,用户id:" + userId);
         current = (current - 1) * limit;
         List<UserVo> userVoList = baseMapper.findFansUser(userId , current , limit);
+        setUserVoVipLevel(userVoList);
+        System.out.println(LocalTime.now());
         return new AsyncResult<>(userVoList);
+    }
+
+    //设置vip用户等级
+    private void setUserVoVipLevel(List<UserVo> userVoList){
+        if(userVoList == null || userVoList.size() == 0){
+            return;
+        }
+        //如果只有一个就快速查
+        if(userVoList.size() == 1){
+            UserVo userVo = userVoList.get(0);
+            R memberRightVipLevel = vipClient.findMemberRightVipLevel(userVo.getId());
+            String vipLevel = (String) memberRightVipLevel.getData().get("vipLevel");
+            userVo.setVipLevel(vipLevel);
+            return;
+        }
+        List<String> userIdList = new ArrayList<>();
+        for(UserVo userVo : userVoList){
+            userIdList.add(userVo.getId());
+        }
+        R memberRightLogo = vipClient.findMemberRightLogo(userIdList);
+        if(!memberRightLogo.getSuccess()){
+            return;
+        }
+        Map<String, Object> mapLogo = memberRightLogo.getData();
+        for(UserVo userVo : userVoList){
+            userVo.setVipLevel((String) mapLogo.get(userVo.getId()));
+        }
     }
 
     //增加用户关注
@@ -97,19 +110,9 @@ public class UserAttentionServiceImpl extends ServiceImpl<UserAttentionMapper, U
         if(flag){
             throw new XiaoXiaException(ResultCode.ERROR , "你已经关注了");
         }
-
-        UserInfo userInfo = userInfoMapper.selectById(userId);
-        if(userInfo == null){
-            throw new XiaoXiaException(ResultCode.ERROR , "用户不存在");
-        }
-
         UserAttention userAttention = new UserAttention();
         userAttention.setUserId(myUserId);
         userAttention.setAttentionUserId(userId);
-        userAttention.setAvatar(userInfo.getAvatar());
-        userAttention.setNickname(userInfo.getNickname());
-        userAttention.setSign(userInfo.getSign());
-
         int insert = baseMapper.insert(userAttention);
         if(insert != 1){
             throw new XiaoXiaException(ResultCode.ERROR , "关注失败");

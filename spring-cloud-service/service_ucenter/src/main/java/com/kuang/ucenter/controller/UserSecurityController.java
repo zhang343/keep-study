@@ -29,7 +29,7 @@ public class UserSecurityController {
     public R setEP(String email , String password , HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         log.info("设置用户邮箱和密码,用户id:" + userId + ",邮箱:" + email + "密码:" + password);
-        if(userId == null || StringUtils.isEmpty(email) || StringUtils.isEmpty(password)){
+        if(userId == null || (StringUtils.isEmpty(email) && StringUtils.isEmpty(password))){
             throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
         }
         userInfoService.setEmailAndPassword(userId , email , password);

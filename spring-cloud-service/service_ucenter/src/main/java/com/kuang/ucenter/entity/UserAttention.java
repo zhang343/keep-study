@@ -32,16 +32,7 @@ public class UserAttention implements Serializable {
 
     @ApiModelProperty(value = "用户id,这里用户1关注用户2")
     private String attentionUserId;
-
-    @ApiModelProperty(value = "用户头像")
-    private String avatar;
-
-    @ApiModelProperty(value = "用户昵称")
-    private String nickname;
-
-    @ApiModelProperty(value = "用户签名")
-    private String sign;
-
+    
     @ApiModelProperty(value = "乐观锁")
     @Version
     private Long version;

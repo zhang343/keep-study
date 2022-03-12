@@ -6,15 +6,15 @@
         select count(distinct id) from user_info
         where is_disabled = 0
         <if test="accountOrNickname!=null and accountOrNickname!=''">
-            and (account like '%' #{accountOrNickname} '%' or nickname like '%' #{accountOrNickname})
+            and (account like '%' #{accountOrNickname} '%' or nickname like '%' #{accountOrNickname} '%')
         </if>
     </select>
 
-    <select id="findUserByCondition" resultType="com.kuang.ucenter.entity.vo.UserVo" >
+    <select id="findUserByCondition" resultType="com.kuang.ucenter.entity.vo.UserSearchVo" >
         select distinct (id) , id , nickname , avatar from user_info
         where is_disabled = 0
         <if test="accountOrNickname!=null and accountOrNickname!=''">
-            and (account like '%' #{accountOrNickname} '%' or nickname like '%' #{accountOrNickname})
+            and (account like '%' #{accountOrNickname} '%' or nickname like '%' #{accountOrNickname} '%')
         </if>
         limit #{current} , #{limit}
     </select>

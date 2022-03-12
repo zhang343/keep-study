@@ -3,6 +3,7 @@ package com.kuang.ucenter.mapper;
 import com.kuang.ucenter.entity.UserInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.kuang.ucenter.entity.vo.UserDetailVo;
+import com.kuang.ucenter.entity.vo.UserSearchVo;
 import com.kuang.ucenter.entity.vo.UserSecurity;
 import com.kuang.ucenter.entity.vo.UserVo;
 import org.apache.ibatis.annotations.Param;
@@ -16,12 +17,12 @@ import java.util.List;
 public interface UserInfoMapper extends BaseMapper<UserInfo> {
 
     //查找用户数量，通过条件
-    Long findUserNumberByCondition(@Param("accountOrNickname")String accountOrNickname);
+    Long findUserNumberByCondition(@Param("accountOrNickname") String accountOrNickname);
 
     //查找用户，通过条件
-    List<UserVo> findUserByCondition(@Param("current") Long current,
-                                     @Param("limit") Long limit,
-                                     @Param("accountOrNickname") String accountOrNickname);
+    List<UserSearchVo> findUserByCondition(@Param("current") Long current,
+                                           @Param("limit") Long limit,
+                                           @Param("accountOrNickname") String accountOrNickname);
 
 
     //查找用户安全信息

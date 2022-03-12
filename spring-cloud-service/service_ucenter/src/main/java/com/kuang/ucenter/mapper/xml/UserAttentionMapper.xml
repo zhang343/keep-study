@@ -3,9 +3,10 @@
 <mapper namespace="com.kuang.ucenter.mapper.UserAttentionMapper">
 
     <select id="findFocusOnUser" resultType="com.kuang.ucenter.entity.vo.UserVo" >
-        select attention_user_id as id , nickname , avatar , sign , gmt_create
-        from user_attention
-        where user_id = #{userId} limit #{current} , #{limit}
+        select userinfo.id , userinfo.nickname , userinfo.avatar , userinfo.sign , attention.gmt_create
+        from user_attention as attention join user_info as userinfo
+        on attention.attention_user_id = userinfo.id
+        where attention.user_id = #{userId} limit #{current} , #{limit}
     </select>
 
     <select id="findFansUser" resultType="com.kuang.ucenter.entity.vo.UserVo" >

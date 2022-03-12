@@ -3,9 +3,11 @@ package com.kuang.ucenter.controller;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
+import com.kuang.ucenter.entity.vo.UserSearchVo;
 import com.kuang.ucenter.entity.vo.UserVo;
 import com.kuang.ucenter.service.UserInfoService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,15 +35,11 @@ public class UserSearchController {
                       @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
                       String accountOrNickname){
         log.info("开始查询用户,用户账号或者昵称为:" + accountOrNickname);
-        Future<Long> userNumber = userInfoService.findUserNumberByCondition(accountOrNickname);
-        List<UserVo> userVoList = userInfoService.findUserByCondition(current , limit , accountOrNickname);
-        Long total = 0L;
-        try {
-            total = userNumber.get();
-        } catch(Exception e) {
-            log.error("根据条件查询用户数量失败");
-            throw new XiaoXiaException(ResultCode.ERROR , "查询用户失败");
+        if(StringUtils.isEmpty(accountOrNickname)){
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
         }
+        List<UserSearchVo> userVoList = userInfoService.findUserByCondition(current , limit , accountOrNickname);
+        Long total = userInfoService.findUserNumberByCondition(accountOrNickname);
         return R.ok().data("total" , total).data("userList" , userVoList);
     }
 }

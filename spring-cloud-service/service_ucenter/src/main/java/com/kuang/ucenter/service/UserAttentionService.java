@@ -16,14 +16,8 @@ public interface UserAttentionService extends IService<UserAttention> {
     //查询出指定用户的所有粉丝id
     List<String> findUserFansId(String userId);
 
-    //查询用户关注数量
-    Future<Integer> findFocusOnNumber(String userId);
-
     //查询用户关注用户
     Future<List<UserVo>> findFocusOnUser(String userId, Long current, Long limit);
-
-    //查询用户粉丝数量
-    Future<Integer> findFansNumber(String userId);
 
     //查询用户粉丝
     Future<List<UserVo>> findFansUser(String userId, Long current, Long limit);

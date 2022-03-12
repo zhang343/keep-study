@@ -1,9 +1,8 @@
 package com.kuang.ucenter;
 
 import com.kuang.springcloud.utils.JwtUtils;
-import com.kuang.ucenter.entity.UserHeadPortrait;
-import com.kuang.ucenter.mapper.UserHeadPortraitMapper;
-import com.kuang.ucenter.service.UserInfoService;
+import com.kuang.ucenter.entity.UserBackground;
+import com.kuang.ucenter.mapper.UserBackgroundMapper;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -20,12 +19,8 @@ import javax.annotation.Resource;
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
-
     @Resource
-    private UserInfoService userInfoService;
-
-    @Resource
-    private UserHeadPortraitMapper userHeadPortraitMapper;
+    private UserBackgroundMapper backgroundMapper;
 
     public static void main(String[] args) {
         SpringApplication springApplication = new SpringApplication(Application.class);

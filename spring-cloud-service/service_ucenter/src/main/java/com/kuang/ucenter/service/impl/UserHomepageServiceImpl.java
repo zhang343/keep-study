@@ -28,25 +28,22 @@ public class UserHomepageServiceImpl extends ServiceImpl<UserHomepageMapper, Use
     public void updateContent(String content , String userId) {
         log.info("修改用户主页内容");
         QueryWrapper<UserHomepage> wrapper = new QueryWrapper<>();
-        wrapper.select("id" , "version");
         wrapper.eq("id" , userId);
-        UserHomepage userHomepage = baseMapper.selectOne(wrapper);
-        if(userHomepage == null){
+        Integer integer = baseMapper.selectCount(wrapper);
+        UserHomepage userHomepage = new UserHomepage();
+        userHomepage.setId(userId);
+        userHomepage.setContent(content);
+        if(integer != 1){
             //说明没有
-            userHomepage = new UserHomepage();
-            userHomepage.setId(userId);
-            userHomepage.setContent(content);
             int insert = baseMapper.insert(userHomepage);
             if(insert != 1){
                 throw new XiaoXiaException(ResultCode.ERROR , "修改用户主页内容失败");
             }
-            return;
-        }
-        // 到了这里说明有
-        userHomepage.setContent(content);
-        int i = baseMapper.updateById(userHomepage);
-        if(i != 1){
-            throw new XiaoXiaException(ResultCode.ERROR , "修改用户主页内容失败");
+        }else {
+            int i = baseMapper.updateById(userHomepage);
+            if(i != 1){
+                throw new XiaoXiaException(ResultCode.ERROR , "修改用户主页内容失败");
+            }
         }
     }
 
@@ -55,7 +52,7 @@ public class UserHomepageServiceImpl extends ServiceImpl<UserHomepageMapper, Use
     public UserHomepage findByUserId(String userId) {
         UserHomepage userHomepage = baseMapper.selectById(userId);
         if(userHomepage == null){
-            throw new XiaoXiaException(ResultCode.ERROR , "请正确查询");
+            userHomepage = new UserHomepage();
         }
         return userHomepage;
     }

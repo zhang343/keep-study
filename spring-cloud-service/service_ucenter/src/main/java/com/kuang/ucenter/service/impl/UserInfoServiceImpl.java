@@ -19,6 +19,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -112,17 +113,15 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     }
 
     //查找用户数量，通过条件
-    @Async
     @Override
-    public Future<Long> findUserNumberByCondition(String accountOrNickname) {
+    public Long findUserNumberByCondition(String accountOrNickname) {
         log.info("开始查询用户数量,用户账号或者昵称为:" + accountOrNickname);
-        Long total = baseMapper.findUserNumberByCondition(accountOrNickname);
-        return new AsyncResult<>(total);
+        return baseMapper.findUserNumberByCondition(accountOrNickname);
     }
 
     //查找用户，通过条件
     @Override
-    public List<UserVo> findUserByCondition(Long current, Long limit, String accountOrNickname) {
+    public List<UserSearchVo> findUserByCondition(Long current, Long limit, String accountOrNickname) {
         log.info("开始查询用户,用户账号或者昵称为:" + accountOrNickname);
         current = (current - 1) * limit;
         return baseMapper.findUserByCondition(current , limit , accountOrNickname);
@@ -132,7 +131,14 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Override
     public void setEmailAndPassword(String userId, String email, String password) {
         log.info("设置用户邮箱和密码,用户id:" + userId + ",邮箱:" + email + "密码:" + password);
-        password = MD5Util.getMD5(password);
+        if(StringUtils.isEmpty(email)){
+            email = null;
+        }
+        if(StringUtils.isEmpty(password)){
+            password = null;
+        }else {
+            password = MD5Util.getMD5(password);
+        }
         UserInfo userInfo = new UserInfo();
         userInfo.setId(userId);
         userInfo.setEmail(email);
@@ -293,5 +299,18 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if(i != 1){
             throw new XiaoXiaException(ResultCode.ERROR , "修改用户背景失败");
         }
+    }
+
+    //用户设置修改资料里面的查询
+    @Override
+    public UserSetDataVo setdataquery(String userId) {
+        log.info("用户设置修改资料里面的查询,用户id:" + userId);
+        UserInfo userInfo = baseMapper.selectById(userId);
+        if(userInfo == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法查询");
+        }
+        UserSetDataVo userSetDataVo = new UserSetDataVo();
+        BeanUtils.copyProperties(userInfo , userSetDataVo);
+        return userSetDataVo;
     }
 }

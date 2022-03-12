@@ -10,6 +10,7 @@ import com.kuang.ucenter.entity.UserInfo;
 import com.kuang.ucenter.entity.vo.HomePageVo;
 import com.kuang.ucenter.entity.vo.MyUserInfoVo;
 import com.kuang.ucenter.entity.vo.UserDetailVo;
+import com.kuang.ucenter.entity.vo.UserSetDataVo;
 import com.kuang.ucenter.service.UserAttentionService;
 import com.kuang.ucenter.service.UserInfoService;
 import com.kuang.ucenter.service.UserStudyService;
@@ -175,6 +176,19 @@ public class UserInfoController {
             log.warn("查询出用户专栏、学习、说说、关注、粉丝数量失败");
         }
         return R.ok().data("userDetail" , userDetailVo);
+    }
+
+
+    //用户设置修改资料里面的查询
+    @GetMapping("setdataquery")
+    public R setdataquery(HttpServletRequest request){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        log.info("用户设置修改资料里面的查询,用户id:" + userId);
+        if(userId == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法查询");
+        }
+        UserSetDataVo userSetDataVo = userInfoService.setdataquery(userId);
+        return R.ok().data("userInfo" , userSetDataVo);
     }
 
 
