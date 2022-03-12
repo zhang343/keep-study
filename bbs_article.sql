@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50536
 File Encoding         : 65001
 
-Date: 2022-03-10 18:30:49
+Date: 2022-03-12 16:34:32
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -30,8 +30,8 @@ CREATE TABLE `bbs_article` (
   `content` longtext NOT NULL COMMENT '文章内容',
   `sort` bigint(10) DEFAULT '0' COMMENT '排序字段',
   `is_column_article` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0不是专栏文章  1是专栏文章',
-  `is_release` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0未发布  1发布',
-  `is_bbs` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0未同步到江湖  1同步',
+  `is_release` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未发布  1发布',
+  `is_bbs` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未同步到江湖  1同步',
   `views` bigint(10) NOT NULL DEFAULT '0' COMMENT '浏览量',
   `is_violation_article` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未违规 1违规',
   `is_excellent_article` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否为精品文章 0不是 1是',
@@ -45,9 +45,9 @@ CREATE TABLE `bbs_article` (
 -- ----------------------------
 -- Records of bbs_article
 -- ----------------------------
-INSERT INTO `bbs_article` VALUES ('1496359576990121985', '1492434355002302466', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '我的大学历程', '描述我的大学生活', '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈', '0', '0', '1', '1', '0', '0', '0', '0', '1', '2022-02-23 13:41:38', '2022-02-23 13:41:38');
-INSERT INTO `bbs_article` VALUES ('1497831076091961345', '1492434355253960706', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '网站遵守规范', '本网站遵守规范', '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈', '0', '0', '1', '1', '0', '0', '0', '1', '1', '2022-02-27 15:08:51', '2022-02-27 15:08:51');
-INSERT INTO `bbs_article` VALUES ('1499243244901490690', '1492434355291709441', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', 'Feign远程调用时创建请求头注入token', 'Feign远程调用时创建请求头注入token', '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈', '0', '0', '1', '1', '0', '0', '0', '0', '1', '2022-03-03 12:40:18', '2022-03-03 12:40:18');
+INSERT INTO `bbs_article` VALUES ('1496359576990121985', '1492434355002302466', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '我的大学历程', '描述我的大学生活', '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈', '0', '0', '1', '0', '0', '0', '0', '0', '1', '2022-02-23 13:41:38', '2022-02-23 13:41:38');
+INSERT INTO `bbs_article` VALUES ('1497831076091961345', '1492434355253960706', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '网站遵守规范', '本网站遵守规范', '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈', '0', '0', '1', '0', '0', '0', '0', '1', '1', '2022-02-27 15:08:51', '2022-02-27 15:08:51');
+INSERT INTO `bbs_article` VALUES ('1499243244901490690', '1492434355291709441', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', 'Feign远程调用时创建请求头注入token', 'Feign远程调用时创建请求头注入token', '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈', '0', '0', '1', '0', '0', '0', '0', '0', '1', '2022-03-03 12:40:18', '2022-03-03 12:40:18');
 
 -- ----------------------------
 -- Table structure for `bbs_category`
@@ -533,9 +533,6 @@ CREATE TABLE `user_attention` (
   `id` char(19) NOT NULL COMMENT '用户关注id',
   `user_id` char(19) NOT NULL COMMENT '用户id',
   `attention_user_id` char(19) NOT NULL COMMENT '用户id,这里用户1关注用户2',
-  `avatar` varchar(255) NOT NULL COMMENT '用户头像',
-  `nickname` varchar(50) NOT NULL COMMENT '用户昵称',
-  `sign` varchar(100) NOT NULL COMMENT '用户签名',
   `version` bigint(20) NOT NULL DEFAULT '1' COMMENT '乐观锁',
   `gmt_create` datetime NOT NULL COMMENT '创建时间',
   `gmt_modified` datetime NOT NULL COMMENT '更新时间',
@@ -545,7 +542,7 @@ CREATE TABLE `user_attention` (
 -- ----------------------------
 -- Records of user_attention
 -- ----------------------------
-INSERT INTO `user_attention` VALUES ('1500387482615726082', '1496388556204023809', '1489885385067622401', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '天天搬砖', 'TA很懒,什么都没写...', '1', '2022-03-06 16:27:06', '2022-03-06 16:27:06');
+INSERT INTO `user_attention` VALUES ('1500387482615726082', '1496388556204023809', '1489885385067622401', '1', '2022-03-06 16:27:06', '2022-03-06 16:27:06');
 
 -- ----------------------------
 -- Table structure for `user_background`
@@ -563,6 +560,11 @@ CREATE TABLE `user_background` (
 -- ----------------------------
 -- Records of user_background
 -- ----------------------------
+INSERT INTO `user_background` VALUES ('1502147797284098050', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/e1c0c724897d42eeb0c826f2e3757507.jpg', '1', '2022-03-11 13:01:58', '2022-03-11 13:01:58');
+INSERT INTO `user_background` VALUES ('1502147797435092994', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/eff849a37cca4e698d219269882dbb41.jpg', '1', '2022-03-11 13:01:58', '2022-03-11 13:01:58');
+INSERT INTO `user_background` VALUES ('1502147797451870210', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/32bc7c02d98b43cb90e9cf48e78a52fa.jpg', '1', '2022-03-11 13:01:58', '2022-03-11 13:01:58');
+INSERT INTO `user_background` VALUES ('1502147797464453122', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/243f2c59e0464b4ea2b5dfbc1d902e35.jpg', '1', '2022-03-11 13:01:58', '2022-03-11 13:01:58');
+INSERT INTO `user_background` VALUES ('1502147797477036034', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/d27cfbc9edb0472e95a36bf58f19e462.jpg', '1', '2022-03-11 13:01:58', '2022-03-11 13:01:58');
 
 -- ----------------------------
 -- Table structure for `user_collect`
@@ -712,8 +714,8 @@ CREATE TABLE `user_info` (
 -- ----------------------------
 -- Records of user_info
 -- ----------------------------
-INSERT INTO `user_info` VALUES ('1489885385067622401', 'o3_SC5zIKO9GhTCthrP55dkZJfjw', '00000001', 'e10adc3949ba59abbe56e057f20f883e', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '0', '120', 'TA很懒,什么都没写...', '1111', '29500', '中国', '2980244187@qq.com', '0', '0', '19', '2022-02-05 16:55:31', '2022-03-08 15:58:00');
-INSERT INTO `user_info` VALUES ('1496388556204023809', 'o3_SC5-_lDImPRD6qzi9Y56o-RDE', '00000002', '', '流逝', 'https://thirdwx.qlogo.cn/mmopen/vi_32/iaPp7ClZOGcpaPLXQeNSMPW3EWuiaJCxibjgic6gsWibBo8eibIRd89Jg0g5xjTe3ulc8crzoGLia3lQeKTGUxeAxsGMQ/132', '0', '0', 'TA很懒,什么都没写...', '1111', '0', '中国', '', '0', '0', '1', '2022-02-23 15:36:48', '2022-03-06 18:22:10');
+INSERT INTO `user_info` VALUES ('1489885385067622401', 'o3_SC5zIKO9GhTCthrP55dkZJfjw', '00000001', 'e10adc3949ba59abbe56e057f20f883e', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '0', '120', 'TA很懒,什么都没写...', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/e1c0c724897d42eeb0c826f2e3757507.jpg', '29500', '中国', '2980244187@qq.com', '0', '0', '19', '2022-02-05 16:55:31', '2022-03-11 13:05:27');
+INSERT INTO `user_info` VALUES ('1496388556204023809', 'o3_SC5-_lDImPRD6qzi9Y56o-RDE', '00000002', 'e10adc3949ba59abbe56e057f20f883e', '流逝', 'https://thirdwx.qlogo.cn/mmopen/vi_32/iaPp7ClZOGcpaPLXQeNSMPW3EWuiaJCxibjgic6gsWibBo8eibIRd89Jg0g5xjTe3ulc8crzoGLia3lQeKTGUxeAxsGMQ/132', '0', '0', 'TA很懒,什么都没写...', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/e1c0c724897d42eeb0c826f2e3757507.jpg', '0', '中国', '', '0', '0', '1', '2022-02-23 15:36:48', '2022-03-06 18:22:10');
 
 -- ----------------------------
 -- Table structure for `user_study`
