@@ -98,7 +98,6 @@ public class CommentController {
         log.info("开始进行查找文章评论,分页查找,文章id：" + articleId);
         Future<List<OneCommentVo>> articleComment = commentService.findArticleComment(articleId, current, limit);
         Future<Integer> articleCommentNumber = commentService.findArticleCommentNumber(articleId);
-
         List<OneCommentVo> oneCommentVoList = null;
         Integer total = 0;
         try {

@@ -4,6 +4,7 @@ import com.kuang.bbs.entity.Article;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.kuang.bbs.entity.vo.ArticleVo;
 import com.kuang.bbs.entity.vo.IndexArticleVo;
+import com.kuang.bbs.entity.vo.UserArticleVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -28,4 +29,10 @@ public interface ArticleMapper extends BaseMapper<Article> {
                                               @Param("categoryId") String categoryId,
                                               @Param("isExcellentArticle") Boolean isExcellentArticle,
                                               @Param("articleNameOrLabelName") String articleNameOrLabelName);
+
+    //查找用户我的文章
+    List<UserArticleVo> findMyArticle(@Param("current") Long current,
+                                      @Param("limit") Long limit,
+                                      @Param("userId") String userId);
+
 }

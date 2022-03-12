@@ -63,4 +63,10 @@ public interface UserInfoService extends IService<UserInfo> {
 
     //用户设置修改资料里面的查询
     UserSetDataVo setdataquery(String userId);
+
+    //设置用户头像
+    void setUserHeadPortrait(String url, String userId);
+
+    //用户设置修改资料里面的修改
+    void setdataupdate(String nickname, Boolean sex, String address, String sign , String userId);
 }

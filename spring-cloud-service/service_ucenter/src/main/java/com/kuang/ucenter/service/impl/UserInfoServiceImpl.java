@@ -313,4 +313,39 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         BeanUtils.copyProperties(userInfo , userSetDataVo);
         return userSetDataVo;
     }
+
+    //设置用户头像
+    @Override
+    public void setUserHeadPortrait(String url, String userId) {
+        log.info("用户设置头像,用户id:" + userId);
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(userId);
+        userInfo.setAvatar(url);
+        int i = baseMapper.updateById(userInfo);
+        if(i != 1){
+            throw new XiaoXiaException(ResultCode.ERROR , "修改头像失败");
+        }
+    }
+
+    //用户设置修改资料里面的修改
+    @Override
+    public void setdataupdate(String nickname, Boolean sex, String address, String sign , String userId) {
+        log.info("用户设置修改资料里面的修改,用户id:" + userId);
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(userId);
+        if(!StringUtils.isEmpty(nickname)){
+            userInfo.setNickname(nickname);
+        }
+        if(!StringUtils.isEmpty(address)){
+            userInfo.setAddress(address);
+        }
+        if(!StringUtils.isEmpty(sign)){
+            userInfo.setSign(sign);
+        }
+        userInfo.setSex(sex);
+        int i = baseMapper.updateById(userInfo);
+        if(i != 1){
+            throw new XiaoXiaException(ResultCode.ERROR , "修改失败");
+        }
+    }
 }

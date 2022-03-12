@@ -191,6 +191,20 @@ public class UserInfoController {
         return R.ok().data("userInfo" , userSetDataVo);
     }
 
+    //用户设置修改资料里面的修改
+    @PostMapping("setdataupdate")
+    public R setdataupdate(String nickname , Boolean sex ,
+                           String address , String sign ,
+                           HttpServletRequest request){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        log.info("用户设置修改资料里面的修改,用户id:" + userId);
+        if(userId == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法查询");
+        }
+        userInfoService.setdataupdate(nickname , sex , address , sign , userId);
+        return R.ok();
+    }
+
 
 }
 

@@ -41,4 +41,13 @@ public class UserCollectServiceImpl extends ServiceImpl<UserCollectMapper, UserC
             baseMapper.insert(userCollect);
         }
     }
+
+    //查询我的收藏文章数量
+    @Override
+    public Integer findUserCollectionNumber(String userId) {
+        log.info("用户收藏文章数量,用户id:" + userId);
+        QueryWrapper<UserCollect> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id" , userId);
+        return baseMapper.selectCount(wrapper);
+    }
 }

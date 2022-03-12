@@ -1,21 +1,14 @@
 package com.kuang.bbs;
 
-import com.kuang.bbs.entity.Comment;
-import com.kuang.bbs.entity.vo.IndexArticleVo;
-import com.kuang.bbs.mapper.CommentMapper;
 import com.kuang.bbs.service.ArticleService;
-import com.kuang.bbs.service.CommentService;
-import com.kuang.springcloud.utils.RedisUtils;
+import com.kuang.springcloud.utils.JwtUtils;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.concurrent.Future;
 
 /**
  * @author XiaoZhang
@@ -42,5 +35,6 @@ public class Application implements CommandLineRunner {
     //做程序启动之后工作
     @Override
     public void run(String... args) throws Exception {
+        System.out.println(articleService.findArticleNumberByUserId("1489885385067622401"));
     }
 }

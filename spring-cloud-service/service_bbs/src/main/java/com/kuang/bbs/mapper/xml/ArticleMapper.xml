@@ -5,7 +5,7 @@
     <select id="findArticleNumber" resultType="java.lang.Long">
         select count(distinct article.id) from bbs_article as article left outer join bbs_label as label
         on article.id = label.article_id
-        where article.is_violation_article = 0 and article.is_release = 1 and article.is_bbs = 1
+        where article.is_violation_article = 0 and (article.is_release = 1 or article.is_bbs = 1)
         <if test="categoryId!=null and categoryId!=''">
             and article.category_id = #{categoryId}
         </if>
@@ -13,7 +13,7 @@
             and article.is_excellent_article = 1
         </if>
         <if test="articleNameOrLabelName!=null and articleNameOrLabelName!=''">
-            and (article.title like '%' #{articleNameOrLabelName} '%' or label.label_name like '%' #{articleNameOrLabelName})
+            and (article.title like '%' #{articleNameOrLabelName} '%' or label.label_name like '%' #{articleNameOrLabelName} '%')
         </if>
     </select>
 
@@ -22,7 +22,7 @@
                article.avatar , article.nickname , article.views , article.is_excellent_article , article.gmt_create
                category.category_name
         from bbs_article as article join bbs_category as category on article.category_id = category.id
-        where article.is_top = 1 and article.is_violation_article = 0 and article.is_release = 1 and article.is_bbs = 1
+        where article.is_top = 1;
     </select>
 
 
@@ -32,7 +32,7 @@
                category.category_name
         from bbs_article as article join bbs_category as category on article.category_id = category.id
              left outer join bbs_label as label on article.id = label.article_id
-        where article.is_violation_article = 0 and article.is_release = 1 and article.is_bbs = 1
+        where article.is_violation_article = 0 and (article.is_release = 1 or article.is_bbs = 1)
         <if test="categoryId!=null and categoryId!=''">
             and article.category_id = #{categoryId}
         </if>
@@ -40,8 +40,20 @@
             and article.is_excellent_article = 1
         </if>
         <if test="articleNameOrLabelName!=null and articleNameOrLabelName!=''">
-            and (article.title like '%' #{articleNameOrLabelName} '%' or label.label_name like '%' #{articleNameOrLabelName})
+            and (article.title like '%' #{articleNameOrLabelName} '%' or label.label_name like '%' #{articleNameOrLabelName} '%')
         </if>
+        order by article.gmt_create desc
+        limit #{current} , #{limit}
+    </select>
+
+
+    <select id="findMyArticle" resultType="com.kuang.bbs.entity.vo.UserArticleVo" >
+        select article.id , article.title , article.description ,
+               category.category_name ,
+               article.views , article.gmt_create ,
+               article.is_release , article.is_violation_article , article.is_excellent_article
+        from bbs_article as article join bbs_category as category on article.category_id = category.id
+        where article.user_id = #{userId} and (is_column_article = 0 or is_bbs = 1)
         order by article.gmt_create desc
         limit #{current} , #{limit}
     </select>

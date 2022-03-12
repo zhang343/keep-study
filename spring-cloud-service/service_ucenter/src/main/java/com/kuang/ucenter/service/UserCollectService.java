@@ -14,4 +14,7 @@ public interface UserCollectService extends IService<UserCollect> {
 
     //用户收藏文章
     void addCollectionArticle(String articleId, String userId);
+
+    //查询我的收藏文章数量
+    Integer findUserCollectionNumber(String userId);
 }

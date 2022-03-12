@@ -2,9 +2,7 @@ package com.kuang.bbs.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.kuang.bbs.entity.Article;
-import com.kuang.bbs.entity.vo.ArticleCacheVo;
-import com.kuang.bbs.entity.vo.ArticleVo;
-import com.kuang.bbs.entity.vo.IndexArticleVo;
+import com.kuang.bbs.entity.vo.*;
 
 import java.util.List;
 import java.util.Map;
@@ -29,19 +27,19 @@ public interface ArticleService extends IService<Article> {
     ArticleCacheVo findArticleCache(String userId);
 
     //根据条件查询系统文章总数
-    Future<Long> findArticleNumber(String categoryId, Boolean isExcellentArticle, String articleNameOrLabelName);
+    Long findArticleNumber(String categoryId, Boolean isExcellentArticle, String articleNameOrLabelName);
 
     //条件分页查询文章
     Future<List<IndexArticleVo>> pageArticleCondition(Long current, Long limit, String categoryId, Boolean isExcellentArticle, String articleNameOrLabelName);
 
     //用户发布文章
-    void addArticle(Article article, String userId);
+    Article addArticle(ArticleUpdateAndCreateVo articleUpdateAndCreateVo, String userId);
 
     //查询文章通过文章id和用户id
-    Article findArticleByArticleIdAndUserId(String articleId, String userId);
+    ArticleUpdateAndCreateVo findArticleByArticleIdAndUserId(String articleId, String userId);
 
     //用户修改文章
-    void updateArticle(Article article, String userId);
+    Article updateArticle(ArticleUpdateAndCreateVo articleUpdateAndCreateVo, String userId);
 
     //用户删除文章
     void deleteArticle(String articleId, String userId);
@@ -59,8 +57,17 @@ public interface ArticleService extends IService<Article> {
     Integer findReleaseArticleNumber(String userId);
 
     //向好友动态发送消息
-    void sendFrientFeed(Article article , String token);
+    void sendFrientFeed(String articleId , String token);
 
     //查找文章浏览量
     Map<String, Object> findArticleViews(List<String> articleIdList);
+
+    //查询用户收藏文章数量
+    Future<Integer> findUserCollectionNumber(String token);
+
+    //查找用户我的文章
+    List<UserArticleVo> findMyArticle(Long current, Long limit, String userId);
+
+    //查询是不是专栏文章
+    boolean findIsColumnArticle(String articleId);
 }

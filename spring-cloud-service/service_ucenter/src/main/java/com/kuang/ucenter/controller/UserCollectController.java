@@ -54,5 +54,17 @@ public class UserCollectController {
         return R.ok();
     }
 
+    //查询我的收藏文章数量
+    @GetMapping("findMyCollectionArticleNumber")
+    public R findMyCollectionArticleNumber(HttpServletRequest request){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        log.info("用户收藏文章数量,用户id:" + userId);
+        if(userId == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
+        }
+        Integer collectionNumber = userCollectService.findUserCollectionNumber(userId);
+        return R.ok().data("collectionNumber" , collectionNumber);
+    }
+
 }
 

@@ -42,6 +42,12 @@ public class UcenterClientFactory implements FallbackFactory<UcenterClient> {
                 log.error("远程调用service-ucenter下面的/user/attention/findUserFansId方法失败");
                 return R.error();
             }
+
+            @Override
+            public R findMyCollectionArticleNumber(String toke) {
+                log.error("远程调用service-ucenter下面的/user/collection/findMyCollectionArticleNumber方法失败");
+                return R.error();
+            }
         };
     }
 }

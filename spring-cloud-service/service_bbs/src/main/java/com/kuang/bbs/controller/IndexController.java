@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -66,11 +67,9 @@ public class IndexController {
                                   String articleNameOrLabelName){
         log.info("开始条件分页查询文章");
         Future<List<IndexArticleVo>> listFuture = articleService.pageArticleCondition(current, limit, categoryId, isExcellentArticle, articleNameOrLabelName);
-        Future<Long> articleNumber = articleService.findArticleNumber(categoryId, isExcellentArticle, articleNameOrLabelName);
+        Long total = articleService.findArticleNumber(categoryId, isExcellentArticle, articleNameOrLabelName);
         List<IndexArticleVo> articleVoList = null;
-        Long total = 0L;
         try {
-            total = articleNumber.get();
             articleVoList = listFuture.get();
         } catch(Exception e) {
             log.error("根据条件查询系统文章失败");

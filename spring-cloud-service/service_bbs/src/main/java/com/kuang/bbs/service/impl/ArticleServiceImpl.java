@@ -7,9 +7,7 @@ import com.kuang.bbs.client.UcenterClient;
 import com.kuang.bbs.client.VipClient;
 import com.kuang.bbs.entity.Article;
 import com.kuang.bbs.entity.Category;
-import com.kuang.bbs.entity.vo.ArticleCacheVo;
-import com.kuang.bbs.entity.vo.ArticleVo;
-import com.kuang.bbs.entity.vo.IndexArticleVo;
+import com.kuang.bbs.entity.vo.*;
 import com.kuang.bbs.mapper.ArticleMapper;
 import com.kuang.bbs.service.ArticleService;
 import com.kuang.bbs.service.CategoryService;
@@ -80,17 +78,28 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         //如果查询文章的和文章所有者一致
         if(articleUserId.equals(userId)){
             //对于文章所有者和文章查询者相同，我们对于江湖文章不用判断，但是如果是专栏文章，要判断
-            if(!article.getIsBbs()){
+            //专栏文章，但是没有同步到江湖
+            if(article.getIsColumnArticle() && !article.getIsBbs()){
                 throw new XiaoXiaException(ResultCode.ERROR , "非法查询不存在文章");
             }
         }else {
             //查询文章的和文章所有者不一致
-            if(!article.getIsRelease() || !article.getIsBbs() || article.getIsViolationArticle()){
+            //违规不可查
+            if(article.getIsViolationArticle()){
+                throw new XiaoXiaException(ResultCode.ERROR , "非法查询不存在文章");
+            }
+            //非专栏文章,但是没发布
+            if(!article.getIsColumnArticle() && !article.getIsRelease()){
+                throw new XiaoXiaException(ResultCode.ERROR , "非法查询不存在文章");
+            }
+            //专栏文章，但是没有同步到江湖
+            if(article.getIsColumnArticle() && !article.getIsBbs()){
                 throw new XiaoXiaException(ResultCode.ERROR , "非法查询不存在文章");
             }
         }
 
         ArticleVo articleVo = new ArticleVo();
+        //设置分类
         Category categoryByCategoryId = categoryService.findCategoryByCategoryId(article.getCategoryId());
         if(categoryByCategoryId != null){
             articleVo.setCategoryName(categoryByCategoryId.getCategoryName());
@@ -98,11 +107,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         BeanUtils.copyProperties(article , articleVo);
         log.info("远程调用service-vip下面的/vm/user/findMemberRightVipLevel接口,查询用户vip标识,用户id:" + articleUserId);
         R vipR = vipClient.findMemberRightVipLevel(articleUserId);
-        if(!vipR.getSuccess()){
-            log.info("远程调用service-vip下面的/vm/user/findMemberRightVipLevel接口失败,查询用户vip标识,用户id:" + articleUserId);
-            throw new XiaoXiaException(ResultCode.ERROR , "查不到这篇文章");
+        String vipLevel = null;
+        if(vipR.getSuccess()){
+            vipLevel = (String) vipR.getData().get("vipLevel");
         }
-        String vipLevel = (String) vipR.getData().get("vipLevel");
         articleVo.setVipLevel(vipLevel);
         return new AsyncResult<>(articleVo);
     }
@@ -113,8 +121,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public void setArticleCache(ArticleCacheVo articleCacheVo, List<String> labelList, String userId) {
         log.info("设置文章的缓存,用户id:" + userId);
         Set<String> labelSet = new HashSet<>(labelList);
-        articleCacheVo.setLabelSet(labelSet);
-        articleCacheVo.setUserId(userId);
+        labelList = new ArrayList<>(labelSet);
+        articleCacheVo.setLabelList(labelList);
         RedisUtils.setValueTimeout(userId , articleCacheVo , 30 * 60);
     }
 
@@ -126,17 +134,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if(value == null){
             return null;
         }
-
         return (ArticleCacheVo) value;
     }
 
     //根据条件查询系统文章总数
-    @Async
     @Override
-    public Future<Long> findArticleNumber(String categoryId, Boolean isExcellentArticle, String articleNameOrLabelName) {
+    public Long findArticleNumber(String categoryId, Boolean isExcellentArticle, String articleNameOrLabelName) {
         log.info("根据条件查询系统文章总数");
-        Long total = baseMapper.findArticleNumber(categoryId , isExcellentArticle , articleNameOrLabelName);
-        return new AsyncResult<>(total);
+        return baseMapper.findArticleNumber(categoryId , isExcellentArticle , articleNameOrLabelName);
     }
 
     //条件分页查询文章
@@ -144,7 +149,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public Future<List<IndexArticleVo>> pageArticleCondition(Long current, Long limit, String categoryId, Boolean isExcellentArticle, String articleNameOrLabelName) {
         log.info("条件分页查询文章");
-        List<IndexArticleVo> indexArticleVoList = null;
+        List<IndexArticleVo> indexArticleVoList = baseMapper.pageArticleCondition((current - 1) * limit , limit , categoryId , isExcellentArticle , articleNameOrLabelName);
         if(current == 1 && limit == 10 && StringUtils.isEmpty(categoryId) && StringUtils.isEmpty(articleNameOrLabelName) && (isExcellentArticle == null || !isExcellentArticle)){
             //看redis是否有缓存
             Object o = RedisUtils.getValue("TopArticleList");
@@ -153,7 +158,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 return new AsyncResult<>(indexArticleVoList);
             }
 
-            indexArticleVoList = baseMapper.pageArticleCondition((current - 1) * limit , limit , categoryId , isExcellentArticle , articleNameOrLabelName);
             //说明为首页查询,此时我们查看indexArticleVoList是否有首页文章,如果有,去除
             IndexArticleVo topArticle = null;
             for(IndexArticleVo indexArticleVo : indexArticleVoList){
@@ -182,26 +186,18 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         for(IndexArticleVo indexArticleVo : indexArticleVoList){
             userIdSet.add(indexArticleVo.getUserId());
         }
-
         List<String> userIdList = new ArrayList<>(userIdSet);
-        if(userIdList.size() == 0){
-            //如果为0,则表示没有任何文章
-            return new AsyncResult<>(null);
-        }
 
         //远程调用获取用户viplogo
-        log.info("远程调用service-ucenter下面的/vm/user/findMemberRightLogo,获取用户viplogo,用户:" + userIdList);
+        log.info("远程调用service-vip下面的/vm/user/findMemberRightLogo,获取用户viplogo,用户:" + userIdList);
         R vipR = vipClient.findMemberRightLogo(userIdList);
-        if(!vipR.getSuccess()){
-            log.warn("远程调用service-ucenter下面的/vm/user/findMemberRightLogo,获取用户viplogo,用户:" + userIdList);
-            throw new XiaoXiaException(ResultCode.ERROR , "查询文章失败");
+        if(vipR.getSuccess()){
+            Map<String , Object> logo = vipR.getData();
+            for(IndexArticleVo indexArticleVo : indexArticleVoList){
+                String vipLevel = (String) logo.get(indexArticleVo.getUserId());
+                indexArticleVo.setVipLevel(vipLevel);
+            }
         }
-        Map<String , Object> logo = vipR.getData();
-        for(IndexArticleVo indexArticleVo : indexArticleVoList){
-            String vipLevel = (String) logo.get(indexArticleVo.getUserId());
-            indexArticleVo.setVipLevel(vipLevel);
-        }
-
         if(current == 1 && limit == 10 && StringUtils.isEmpty(categoryId) && StringUtils.isEmpty(articleNameOrLabelName) && (isExcellentArticle == null || !isExcellentArticle)){
             RedisUtils.setValueTimeout("TopArticleList" , indexArticleVoList , 30);
         }
@@ -211,8 +207,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     //用户发布文章
     @Transactional
     @Override
-    public void addArticle(Article article, String userId) {
+    public Article addArticle(ArticleUpdateAndCreateVo articleUpdateAndCreateVo , String userId) {
         log.info("用户发布文章,用户id:" + userId);
+        Article article = new Article();
+        BeanUtils.copyProperties(articleUpdateAndCreateVo , article);
         article.setUserId(userId);
         //进行远程调用查找发布文章的用户头像和昵称
         R ucenterR = ucenterClient.findAvatarAndNicknameByUserId();
@@ -224,8 +222,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         String nickname = (String) ucenterR.getData().get("nickname");
         article.setAvatar(avatar);
         article.setNickname(nickname);
-        article.setIsColumnArticle(false);
-        article.setIsBbs(true);
         int insert = baseMapper.insert(article);
         if(insert != 1){
             log.warn("增加文章失败,用户id:" + userId);
@@ -239,40 +235,59 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             throw new XiaoXiaException(ResultCode.ERROR , "发布文章失败");
         }
 
+        return article;
     }
 
     //查询文章通过文章id和用户id
     @Override
-    public Article findArticleByArticleIdAndUserId(String articleId, String userId) {
+    public ArticleUpdateAndCreateVo findArticleByArticleIdAndUserId(String articleId, String userId) {
         log.info("文章数据的查询,配合文章数据的修改,用户id:" + userId + ",文章id:" + articleId);
-        QueryWrapper<Article> wrapper = new QueryWrapper<>();
-        wrapper.select("id" , "title" , "description" , "category_id" , "content" , "is_release");
-        wrapper.eq("id" , articleId);
-        wrapper.eq("user_id" , userId);
-        Article article = baseMapper.selectOne(wrapper);
+        Article article = baseMapper.selectById(articleId);
         if(article == null){
-            throw new XiaoXiaException(ResultCode.ERROR , "查询文章失败");
+            throw new XiaoXiaException(ResultCode.ERROR , "没有该文章");
         }
-        return article;
+        //对于文章所有者和文章查询者相同，我们对于江湖文章不用判断，但是如果是专栏文章，要判断
+        //专栏文章，但是没有同步到江湖
+        if(article.getIsColumnArticle() && !article.getIsBbs()){
+            throw new XiaoXiaException(ResultCode.ERROR , "非法查询不存在文章");
+        }
+        ArticleUpdateAndCreateVo articleUpdateAndCreateVo = new ArticleUpdateAndCreateVo();
+        BeanUtils.copyProperties(article , articleUpdateAndCreateVo);
+        return articleUpdateAndCreateVo;
     }
 
     //用户修改文章
     @Override
-    public void updateArticle(Article article, String userId) {
-        log.info("用户修改文章,用户id:" + userId + ",文章id:" + article.getId());
-        if(article.getIsRelease() == null || !article.getIsRelease()){
-            //如果用户不发布文章,则无需修改是否发布
-            article.setIsRelease(null);
+    public Article updateArticle(ArticleUpdateAndCreateVo articleUpdateAndCreateVo , String userId) {
+        String articleId = articleUpdateAndCreateVo.getId();
+        log.info("用户修改文章,用户id:" + userId + ",文章id:" + articleId);
+        Article article = baseMapper.selectById(articleId);
+        if(article == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "非法修改不存在文章");
         }
-        QueryWrapper<Article> wrapper = new QueryWrapper<>();
-        wrapper.eq("id" , article.getId());
-        wrapper.eq("user_id" , userId);
+        if(!userId.equals(article.getUserId())){
+            throw new XiaoXiaException(ResultCode.ERROR , "非法修改不不属于的文章");
+        }
+        //专栏文章，但是没有同步到江湖
+        if(article.getIsColumnArticle() && !article.getIsBbs()){
+            throw new XiaoXiaException(ResultCode.ERROR , "非法查询不存在文章");
+        }
+
+        //看发布情况，不能将已发布的修改为未发布的
+        if(articleUpdateAndCreateVo.getIsRelease() == null || !articleUpdateAndCreateVo.getIsRelease()){
+            //如果用户不发布文章,则无需修改是否发布
+            articleUpdateAndCreateVo.setIsRelease(null);
+        }
+        Article article1 = new Article();
+        BeanUtils.copyProperties(articleUpdateAndCreateVo , article1);
         //这里不用乐观锁,因为这里修改的字段只有用户本人可用修改
-        int i = baseMapper.update(article , wrapper);
+        int i = baseMapper.updateById(article1);
         if(i != 1){
             log.warn("修改文章失败,用户id:" + userId + ",文章id:" + article.getId());
             throw new XiaoXiaException(ResultCode.ERROR , "修改文章失败");
         }
+
+        return article;
     }
 
     //用户删除文章
@@ -316,6 +331,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         log.info("查找用户所有文章数量");
         QueryWrapper<Article> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id" , userId);
+        wrapper.last("and (is_column_article = 0 or is_bbs = 1)");
         return baseMapper.selectCount(wrapper);
     }
 
@@ -325,17 +341,20 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         log.info("查询用户已经发布和没有违规的文章数量");
         QueryWrapper<Article> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id" , userId);
-        wrapper.eq("is_release" , 1);
-        wrapper.eq("is_bbs" , 1);
         wrapper.eq("is_violation_article" , 0);
+        wrapper.last("and (is_release = 1 or is_bbs = 1)");
         return baseMapper.selectCount(wrapper);
     }
 
     //向好友动态发送消息
     @Async
     @Override
-    public void sendFrientFeed(Article article, String token) {
+    public void sendFrientFeed(String articleId, String token) {
         //查询用户所有粉丝
+        Article article = baseMapper.selectById(articleId);
+        if(article == null){
+            return;
+        }
         R userFansId = ucenterClient.findUserFansId(token);
         if(!userFansId.getSuccess()){
             return;
@@ -343,7 +362,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         List<String> userIdList = (List<String>) userFansId.getData().get("userIdList");
         //获取分类名称
         Category categoryByCategoryId = categoryService.findCategoryByCategoryId(article.getCategoryId());
-        String categoryName = null;
+        String categoryName = "";
         if(categoryByCategoryId != null){
             categoryName = categoryByCategoryId.getCategoryName();
         }
@@ -368,5 +387,34 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             map.put(article.getId() , article.getViews());
         }
         return map;
+    }
+
+    //查询用户收藏文章数量
+    @Async
+    @Override
+    public Future<Integer> findUserCollectionNumber(String token) {
+        log.info("远程调用查询用户收藏数量");
+        R myCollectionArticleNumber = ucenterClient.findMyCollectionArticleNumber(token);
+        Integer collectionNumber = 0;
+        if(myCollectionArticleNumber.getSuccess()){
+            collectionNumber = (Integer) myCollectionArticleNumber.getData().get("collectionNumber");
+        }
+        return new AsyncResult<>(collectionNumber);
+    }
+
+    //查找用户我的文章
+    @Override
+    public List<UserArticleVo> findMyArticle(Long current, Long limit, String userId) {
+        current = (current -1) * limit;
+        return baseMapper.findMyArticle(current , limit , userId);
+    }
+
+    //查询是不是专栏文章
+    @Override
+    public boolean findIsColumnArticle(String articleId) {
+        QueryWrapper<Article> wrapper = new QueryWrapper<>();
+        wrapper.eq("id" , articleId);
+        wrapper.eq("is_column_article" , 1);
+        return baseMapper.selectCount(wrapper) != 1;
     }
 }

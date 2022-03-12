@@ -3,7 +3,9 @@ package com.kuang.bbs.controller;
 
 import com.kuang.bbs.client.UcenterClient;
 import com.kuang.bbs.entity.Article;
+import com.kuang.bbs.entity.vo.ArticleUpdateAndCreateVo;
 import com.kuang.bbs.entity.vo.ArticleVo;
+import com.kuang.bbs.entity.vo.UserArticleVo;
 import com.kuang.bbs.service.ArticleService;
 import com.kuang.bbs.service.CommentService;
 import com.kuang.bbs.service.LabelService;
@@ -102,9 +104,9 @@ public class ArticleController {
     }
 
 
-    //用户发布文章
+    //用户发布文章,指江湖文章的发布
     @PostMapping("create")
-    public R create(Article article , List<String> labelList , HttpServletRequest request){
+    public R create(ArticleUpdateAndCreateVo articleUpdateAndCreateVo , List<String> labelList , HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         String token = request.getHeader("token");
         log.info("用户发布文章,用户id:" + userId);
@@ -112,7 +114,7 @@ public class ArticleController {
             log.warn("用户非法发布文章,用户id:" + null);
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
         }
-        articleService.addArticle(article, userId);
+        Article article = articleService.addArticle(articleUpdateAndCreateVo, userId);
         //删除用户缓存
         RedisUtils.delKey(userId);
         String articleId = article.getId();
@@ -120,7 +122,7 @@ public class ArticleController {
         labelService.addArticleLabel(articleId , labelList);
         //如果文章发布，向好友动态发送消息
         if(article.getIsRelease()){
-            articleService.sendFrientFeed(article , token);
+            articleService.sendFrientFeed(article.getId() , token);
         }
         return R.ok();
     }
@@ -136,7 +138,7 @@ public class ArticleController {
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法查询");
         }
         Future<List<String>> articleLabel = labelService.findArticleLabel(articleId);
-        Article article = articleService.findArticleByArticleIdAndUserId(articleId , userId);
+        ArticleUpdateAndCreateVo article = articleService.findArticleByArticleIdAndUserId(articleId , userId);
         //等待0.2秒取出结果
         List<String> labelList = null;
         try {
@@ -150,24 +152,22 @@ public class ArticleController {
 
     //用户修改文章
     @PostMapping("update")
-    public R update(Article article , List<String> labelList , HttpServletRequest request){
+    public R update(ArticleUpdateAndCreateVo articleUpdateAndCreateVo , List<String> labelList , HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         String token = request.getHeader("token");
-        String articleId = article.getId();
+        String articleId = articleUpdateAndCreateVo.getId();
         log.info("用户修改文章,用户id:" + userId + ",文章id:" + articleId);
         if(userId == null || StringUtils.isEmpty(articleId)){
-            log.warn("用户非法修改文章,用户id:" + userId + ",文章id:" + article.getId());
+            log.warn("用户非法修改文章,用户id:" + userId + ",文章id:" + articleId);
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
         }
-        //这里我们查出这个文章，这里不用验证这个文章是否为用户所有，下面的更新文章在更新的时候会验证文章是否为用户所有
-        Article byId = articleService.getById(article.getId());
-        articleService.updateArticle(article, userId);
+        Article article = articleService.updateArticle(articleUpdateAndCreateVo, userId);
         //插入文章标签
         labelService.addArticleLabel(articleId , labelList);
-        //检测文章是否违规或者文章以前没有发布，现在却发布了
-        if(byId.getIsViolationArticle() || (!byId.getIsRelease() && article.getIsRelease())){
+        //检测文章以前没有发布，现在却发布了
+        if(articleUpdateAndCreateVo.getIsRelease() && !article.getIsRelease()){
             //发送好友动态
-            articleService.sendFrientFeed(article , token);
+            articleService.sendFrientFeed(article.getId() , token);
         }
         return R.ok();
     }
@@ -234,6 +234,31 @@ public class ArticleController {
         }
         Map<String , Object> map = articleService.findArticleViews(articleIdList);
         return R.ok().data(map);
+    }
+
+    //查询用户我的文章（这里查询我的文章数量和我的文章收藏数量）
+    @GetMapping("findMyArticleAndCollection")
+    public R findMyArticleAndCollection(@RequestParam(value = "current", required = false, defaultValue = "1") Long current ,
+                                        @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
+                                        HttpServletRequest request){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        String token = request.getHeader("token");
+        log.info("查询用户我的文章（这里查询我的文章数量和我的文章收藏数量）,用户id" + userId);
+        if(userId == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
+        }
+        Future<Integer> userCollectionNumber = articleService.findUserCollectionNumber(token);
+        Integer total = articleService.findArticleNumberByUserId(userId);
+        List<UserArticleVo> userArticleVos = articleService.findMyArticle(current , limit , userId);
+        Integer collectionNumber = 0;
+        if(userCollectionNumber.isDone()){
+            try {
+                collectionNumber = userCollectionNumber.get(100 , TimeUnit.MILLISECONDS);
+            }catch(Exception e){
+                log.warn("查询用户文章收藏数量失败");
+            }
+        }
+        return R.ok().data("collectionNumber" , collectionNumber).data("total" , total).data("articleList" , userArticleVos);
     }
 }
 

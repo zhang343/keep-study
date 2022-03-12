@@ -104,17 +104,15 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             return new AsyncResult<>(oneCommentVoList);
         }
         //远程调用获取用户viplogo
-        log.info("远程调用service-ucenter下面的/vm/user/findMemberRightLogo,获取用户viplogo,用户:" + userIdList);
+        log.info("远程调用service-vip下面的/vm/user/findMemberRightLogo,获取用户viplogo,用户:" + userIdList);
         R vipR = vipClient.findMemberRightLogo(userIdList);
-        if(!vipR.getSuccess()){
-            log.warn("远程调用service-ucenter下面的/vm/user/findMemberRightLogo,获取用户viplogo,用户:" + userIdList);
-            throw new XiaoXiaException(ResultCode.ERROR , "查询文章评论失败");
-        }
-        Map<String , Object> logo = vipR.getData();
-        for(OneCommentVo oneCommentVo : oneCommentVoList){
-            oneCommentVo.setUserVipLevel((String) logo.get(oneCommentVo.getUserId()));
-            for(TwoCommentVo twoCommentVo : oneCommentVo.getChildList()){
-                twoCommentVo.setUserVipLevel((String) logo.get(twoCommentVo.getUserId()));
+        if(vipR.getSuccess()){
+            Map<String , Object> logo = vipR.getData();
+            for(OneCommentVo oneCommentVo : oneCommentVoList){
+                oneCommentVo.setUserVipLevel((String) logo.get(oneCommentVo.getUserId()));
+                for(TwoCommentVo twoCommentVo : oneCommentVo.getChildList()){
+                    twoCommentVo.setUserVipLevel((String) logo.get(twoCommentVo.getUserId()));
+                }
             }
         }
         return new AsyncResult<>(oneCommentVoList);

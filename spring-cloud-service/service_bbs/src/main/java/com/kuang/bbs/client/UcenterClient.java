@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author XiaoZhang
  * @date 2022/2/6 15:32
@@ -30,5 +32,8 @@ public interface UcenterClient {
     @GetMapping("/user/attention/findUserFansId")
     R findUserFansId(@RequestHeader("token") String token);
 
+    //查询我的收藏文章数量
+    @GetMapping("/user/collection/findMyCollectionArticleNumber")
+    R findMyCollectionArticleNumber(@RequestHeader("token") String token);
 
 }
