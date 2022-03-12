@@ -246,6 +246,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if(article == null){
             throw new XiaoXiaException(ResultCode.ERROR , "没有该文章");
         }
+        if(!userId.equals(article.getUserId())){
+            throw new XiaoXiaException(ResultCode.ERROR , "非法修改不不属于的文章");
+        }
         //对于文章所有者和文章查询者相同，我们对于江湖文章不用判断，但是如果是专栏文章，要判断
         //专栏文章，但是没有同步到江湖
         if(article.getIsColumnArticle() && !article.getIsBbs()){

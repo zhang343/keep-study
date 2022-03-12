@@ -165,6 +165,9 @@ public class ArticleController {
         //插入文章标签
         labelService.addArticleLabel(articleId , labelList);
         //检测文章以前没有发布，现在却发布了
+        if(articleUpdateAndCreateVo.getIsRelease() == null){
+            return R.ok();
+        }
         if(articleUpdateAndCreateVo.getIsRelease() && !article.getIsRelease()){
             //发送好友动态
             articleService.sendFrientFeed(article.getId() , token);
@@ -260,5 +263,6 @@ public class ArticleController {
         }
         return R.ok().data("collectionNumber" , collectionNumber).data("total" , total).data("articleList" , userArticleVos);
     }
+
 }
 
