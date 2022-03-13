@@ -2,12 +2,17 @@ package com.kuang.ucenter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.kuang.ucenter.entity.UserCollect;
+import com.kuang.ucenter.entity.vo.CollectArticleVo;
 import com.kuang.ucenter.mapper.UserCollectMapper;
 import com.kuang.ucenter.service.UserCollectService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.concurrent.Future;
 
 /**
  * @author Xiaozhang
@@ -49,5 +54,13 @@ public class UserCollectServiceImpl extends ServiceImpl<UserCollectMapper, UserC
         QueryWrapper<UserCollect> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id" , userId);
         return baseMapper.selectCount(wrapper);
+    }
+
+    //查询用户收藏
+    @Async
+    @Override
+    public Future<List<CollectArticleVo>> findUserCollection(Long current, Long limit, String userId) {
+        current = (current - 1) * limit;
+        return new AsyncResult<>(null);
     }
 }
