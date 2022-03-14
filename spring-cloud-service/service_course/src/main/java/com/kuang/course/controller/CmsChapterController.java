@@ -2,9 +2,7 @@ package com.kuang.course.controller;
 
 
 import com.kuang.course.entity.vo.ChapterVo;
-import com.kuang.course.entity.vo.VideoVo;
 import com.kuang.course.service.CmsChapterService;
-import com.kuang.course.service.CmsVideoService;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
@@ -12,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;

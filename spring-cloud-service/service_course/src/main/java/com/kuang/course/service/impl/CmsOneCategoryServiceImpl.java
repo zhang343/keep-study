@@ -2,6 +2,7 @@ package com.kuang.course.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.kuang.course.entity.CmsOneCategory;
+import com.kuang.course.entity.vo.OneCategoryVo;
 import com.kuang.course.mapper.CmsOneCategoryMapper;
 import com.kuang.course.service.CmsOneCategoryService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -23,10 +24,8 @@ public class CmsOneCategoryServiceImpl extends ServiceImpl<CmsOneCategoryMapper,
     //查询所有一级分类
     @Cacheable(value = "oneCategoryList")
     @Override
-    public List<CmsOneCategory> findAll() {
+    public List<OneCategoryVo> findAllFirstLevel() {
         log.info("查询所有一级分类");
-        QueryWrapper<CmsOneCategory> wrapper = new QueryWrapper<>();
-        wrapper.select("id" , "title");
-        return baseMapper.selectList(wrapper);
+        return baseMapper.findAllFirstLevel();
     }
 }

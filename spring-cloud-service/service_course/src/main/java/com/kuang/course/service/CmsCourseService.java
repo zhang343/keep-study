@@ -33,7 +33,4 @@ public interface CmsCourseService extends IService<CmsCourse> {
 
     //查找课程相关信息，为消息模块服务
     List<MessageCourseVo> findMessageCourseDetaile(List<String> courseIdList);
-
-    //统计课程浏览量
-    void statisticalCourseViews(List<MessageCourseVo> messageCourseVos);
 }

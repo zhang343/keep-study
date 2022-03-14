@@ -47,13 +47,8 @@ public class CmsVideoController {
             isAbility = userAbility.get();
         } catch(Exception e) {
             log.error("根据条件查询是否可用播放失败");
-            throw new XiaoXiaException(ResultCode.ERROR , "查询失败");
         }
-
-        if(isAbility){
-            return R.ok().data("isAbility" , true).data("userStudyVo" , JSON.toJSONString(userStudyVo));
-        }
-        return R.ok().data("isAbility" , false);
+        return R.ok().data("isAbility" , isAbility).data("userStudyVo" , JSON.toJSONString(userStudyVo));
     }
 }
 

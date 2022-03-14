@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -112,37 +111,24 @@ public class CmsCourseController {
     //查找课程相关信息，为消息模块服务
     @GetMapping("findMessageCourseDetaile")
     public R findMessageCourseDetaile(@RequestParam("courseIdList") List<String> courseIdList){
-        if(courseIdList == null || courseIdList.size() == 0 || courseIdList.size() >= 20){
+        if(courseIdList == null || courseIdList.size() == 0 || courseIdList.size() > 10){
             throw new XiaoXiaException(ResultCode.ERROR , "请正确查询");
         }
-
-        //查询课程小节数量
-        Future<Map<String, Integer>> videoNumberByCourseId = videoService.findVideoNumberByCourseId(courseIdList);
         //查询课程
         List<MessageCourseVo> messageCourseVos = courseService.findMessageCourseDetaile(courseIdList);
+        //查询课程小节数量
+        Future<List<MessageCourseVo>> videoNumberByCourseId = videoService.findVideoNumberByCourseId(messageCourseVos);
 
-        Map<String, Integer> map = null;
-        //等待一段时间并获取课程小节数量结果
+        //等待一段时间并获取课程小节数量结果，这里最多等待0.5秒
         for(int i = 0 ; i < 5 ; i++){
             if(videoNumberByCourseId.isDone()){
-                try {
-                    map = videoNumberByCourseId.get();
-                }catch(Exception e){
-                    log.warn("查询课程小节数量失败");
-                }
                 break;
             }
-            //如果没有执行完毕，则最多等待0.2秒
+            //如果没有执行完毕，则最多等待0.1秒
             try {
                 TimeUnit.MILLISECONDS.sleep(200);
             } catch(InterruptedException e) {
                 log.warn("休眠失败");
-            }
-        }
-
-        if(map != null){
-            for(MessageCourseVo messageCourseVo : messageCourseVos){
-                messageCourseVo.setVideoNumber(map.get(messageCourseVo.getCourseId()));
             }
         }
         return R.ok().data("courseNewsList" , messageCourseVos);

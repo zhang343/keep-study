@@ -23,8 +23,7 @@ public class CmsBillServiceImpl extends ServiceImpl<CmsBillMapper, CmsBill> impl
         QueryWrapper<CmsBill> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id" , userId);
         wrapper.eq("course_id" , courseId);
-        Integer integer = baseMapper.selectCount(wrapper);
-        return integer != 0;
+        return baseMapper.selectCount(wrapper) != 0;
     }
 
     //查询用户购买课程数量

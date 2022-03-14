@@ -50,7 +50,7 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
     private UcenterClient ucenterClient;
 
     //通过二级分类id查找课程
-    @Cacheable(value = "IndexCourseVoList")
+    @Cacheable(value = "indexCourseVoList")
     @Override
     public List<IndexCourseVo> findCourseByTcId(String tcId) {
         log.info("通过二级分类id查找下属课程,二级分类id:" + tcId);
@@ -136,7 +136,7 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
     }
 
     //查找价格为前三的课程
-    @Cacheable(value = "BbsCourseVoList")
+    @Cacheable(value = "bbsCourseVoList")
     @Override
     public List<BbsCourseVo> findCourseOrderByPrice() {
         log.info("开始查询课程价格为前三的课程");
@@ -146,15 +146,7 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
     //查找课程相关信息，为消息模块服务
     @Override
     public List<MessageCourseVo> findMessageCourseDetaile(List<String> courseIdList) {
-        List<MessageCourseVo> messageCourseDetaile = baseMapper.findMessageCourseDetaile(courseIdList);
-        statisticalCourseViews(messageCourseDetaile);
-        return messageCourseDetaile;
-    }
-
-    //统计课程浏览量,下面为空实现
-    @Override
-    public void statisticalCourseViews(List<MessageCourseVo> messageCourseVos) {
-
+        return baseMapper.findMessageCourseDetaile(courseIdList);
     }
 
 

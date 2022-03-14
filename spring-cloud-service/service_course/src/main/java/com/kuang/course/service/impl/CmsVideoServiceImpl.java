@@ -7,6 +7,7 @@ import com.kuang.course.service.CmsBillService;
 import com.kuang.course.service.CmsCourseService;
 import com.kuang.course.service.CmsVideoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.kuang.springcloud.entity.MessageCourseVo;
 import com.kuang.springcloud.entity.UserStudyVo;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.ResultCode;
@@ -78,16 +79,15 @@ public class CmsVideoServiceImpl extends ServiceImpl<CmsVideoMapper, CmsVideo> i
         return userStudyVoByCourseId;
     }
 
-    //通过课程id查找该课程下面小节数量
+    //设置课程小节数量
     @Async
     @Override
-    public Future<Map<String, Integer>> findVideoNumberByCourseId(List<String> courseIdList) {
-        Map<String , Integer> map = new HashMap<>();
-        for(String courseId : courseIdList){
-            Integer videoNumberByCourseId = findVideoNumberByCourseId(courseId);
-            map.put(courseId , videoNumberByCourseId);
+    public Future<List<MessageCourseVo>> findVideoNumberByCourseId(List<MessageCourseVo> messageCourseVos) {
+        for(MessageCourseVo messageCourseVo : messageCourseVos){
+            Integer videoNumberByCourseId = findVideoNumberByCourseId(messageCourseVo.getCourseId());
+            messageCourseVo.setVideoNumber(videoNumberByCourseId);
         }
-        return new AsyncResult<>(map);
+        return new AsyncResult<>(messageCourseVos);
     }
 
 }

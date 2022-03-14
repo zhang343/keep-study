@@ -34,14 +34,14 @@ public class CmsIndexController {
 
     //查询一级下面所有二级分类,和二级分类下面对应课程
     @GetMapping("findSecondLevelAndCourse")
-    public R findSecondLevelAndCourse(String id){
-        log.info("查询一级下面所有二级分类,和二级分类下面对应课程,一级分类id:" + id);
-        if(StringUtils.isEmpty(id)){
+    public R findSecondLevelAndCourse(String oneCategoryId){
+        log.info("查询一级下面所有二级分类,和二级分类下面对应课程,一级分类id:" + oneCategoryId);
+        if(StringUtils.isEmpty(oneCategoryId)){
             log.warn("有人试图非法操作查询");
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
         }
-        List<SlideTitleVo> slideTitleVoList = twoCategoryService.findSlideTitleByOcId(id);
-        List<IndexCategoryVo> indexCategoryVoList = twoCategoryService.findIndexCategoryVoByOcId(id);
+        List<SlideTitleVo> slideTitleVoList = twoCategoryService.findSlideTitleByOcId(oneCategoryId);
+        List<IndexCategoryVo> indexCategoryVoList = twoCategoryService.findIndexCategoryVoByOcId(oneCategoryId);
         for(IndexCategoryVo indexCategoryVo : indexCategoryVoList){
             indexCategoryVo.setCourseList(courseService.findCourseByTcId(indexCategoryVo.getId()));
         }
