@@ -2,4 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kuang.vip.mapper.RightsMapper">
 
+    <select id="findVipRight" resultType="com.kuang.vip.entity.vo.RightsVo" >
+        select id , vip_level , price , course_discount , column_number ,
+               sign_experience , money , article_number , time_length
+        from vip_rights;
+    </select>
 </mapper>

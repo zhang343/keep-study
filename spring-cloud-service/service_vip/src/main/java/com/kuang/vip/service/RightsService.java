@@ -2,6 +2,7 @@ package com.kuang.vip.service;
 
 import com.kuang.vip.entity.Rights;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.kuang.vip.entity.vo.RightsVo;
 
 import java.util.List;
 import java.util.TreeMap;
@@ -13,7 +14,7 @@ import java.util.TreeMap;
 public interface RightsService extends IService<Rights> {
 
     //查询出vip权益,非普通会员权益
-    List<Rights> findVipRight();
+    List<RightsVo> findVipRight();
 
     //查询出非vip权益
     Rights findNotVipRight();

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kuang.vip.entity.Members;
 import com.kuang.vip.entity.Rights;
+import com.kuang.vip.entity.vo.RightsVo;
 import com.kuang.vip.mapper.RightsMapper;
 import com.kuang.vip.service.MembersService;
 import com.kuang.vip.service.RightsService;
@@ -12,7 +13,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -28,21 +28,11 @@ public class RightsServiceImpl extends ServiceImpl<RightsMapper, Rights> impleme
     private MembersService membersService;
 
     //查询出vip权益,非普通会员权益
+    @Cacheable(value = "vipRightList")
     @Override
-    public List<Rights> findVipRight() {
+    public List<RightsVo> findVipRight() {
         log.info("查询出vip权益,非普通会员权益,即价格不为0");
-        Rights notVipRights = null;
-        List<Rights> allRightList = findAllRight();
-        for(Rights rights : allRightList){
-            if(rights.getPrice() != 0){
-                notVipRights = rights;
-                break;
-            }
-        }
-        if(notVipRights != null){
-            allRightList.remove(notVipRights);
-        }
-        return allRightList;
+        return baseMapper.findVipRight();
     }
 
     //查询出非vip权益

@@ -63,7 +63,8 @@ public class MembersServiceImpl extends ServiceImpl<MembersMapper, Members> impl
         members.setUserId(userId);
         members.setRightsId(vipId);
         //设置vip的到期时间
-        members.setExpirationTime(new Date(System.currentTimeMillis() + DateUtils.ONEDAY * rights.getTimeLength()));
+        Date expirationTime = new Date(System.currentTimeMillis() + DateUtils.ONEDAY * rights.getTimeLength());
+        members.setExpirationTime(expirationTime);
         int insert = baseMapper.insert(members);
         if(insert != 1){
             log.error("数据插入vip_members库失败,请检查数据库");

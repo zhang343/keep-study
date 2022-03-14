@@ -5,7 +5,7 @@ import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.JwtUtils;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
-import com.kuang.vip.entity.Rights;
+import com.kuang.vip.entity.vo.RightsVo;
 import com.kuang.vip.service.RightsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +34,7 @@ public class RightsController {
     @GetMapping("findVipRight")
     public R findVipRight(){
         log.info("查询出vip权益,非普通会员权益");
-        List<Rights> rightsList = rightsService.findVipRight();
+        List<RightsVo> rightsList = rightsService.findVipRight();
         return R.ok().data("vipList" , rightsList);
     }
 
