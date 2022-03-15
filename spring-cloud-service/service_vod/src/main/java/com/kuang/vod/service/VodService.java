@@ -3,7 +3,6 @@ package com.kuang.vod.service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.concurrent.Future;
 
 public interface VodService {
 
@@ -17,5 +16,5 @@ public interface VodService {
     void removeAlyVideo(List<String> videoIdList);
 
     //根据视频id获取视频凭证
-    Future<String> getPlayAuth(String id);
+    String getPlayAuth(String id);
 }

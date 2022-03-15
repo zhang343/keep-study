@@ -19,11 +19,14 @@ public interface CmsVideoService extends IService<CmsVideo> {
     Integer findVideoNumberByCourseId(String courseId);
 
     //查找用户是否可以播放指定视频
-    Future<Boolean> findUserAbility(String id, String userId);
+    Future<Boolean> findUserAbility(String id, String videoSourceId , String userId);
 
-    //查询视频云端id和相关课程信息
+    //查询相关课程信息
     UserStudyVo findUserStudyVoByCourseId(String id);
 
     //设置课程小节数量
     Future<List<MessageCourseVo>> findVideoNumberByCourseId(List<MessageCourseVo> messageCourseVos);
+
+    //缓存课程播放量
+    void setCourseViews(String id, String ip);
 }

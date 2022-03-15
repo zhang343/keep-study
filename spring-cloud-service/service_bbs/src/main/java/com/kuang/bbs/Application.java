@@ -1,14 +1,10 @@
 package com.kuang.bbs;
 
-import com.kuang.bbs.service.ArticleService;
-import com.kuang.springcloud.utils.JwtUtils;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import javax.annotation.Resource;
 
 /**
  * @author XiaoZhang
@@ -18,8 +14,7 @@ import javax.annotation.Resource;
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
-    @Resource
-    private ArticleService articleService;
+
 
     public static void main(String[] args) {
         SpringApplication springApplication = new SpringApplication(Application.class);
@@ -35,6 +30,5 @@ public class Application implements CommandLineRunner {
     //做程序启动之后工作
     @Override
     public void run(String... args) throws Exception {
-        System.out.println(articleService.findArticleNumberByUserId("1489885385067622401"));
     }
 }

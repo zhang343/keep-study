@@ -35,4 +35,6 @@ public interface ArticleMapper extends BaseMapper<Article> {
                                       @Param("limit") Long limit,
                                       @Param("userId") String userId);
 
+    //更新文章浏览量
+    void updateArticleViews(@Param("articleList") List<Article> articleList);
 }

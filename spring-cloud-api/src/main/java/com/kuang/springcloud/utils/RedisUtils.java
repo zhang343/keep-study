@@ -24,8 +24,68 @@ public class RedisUtils implements InitializingBean {
     @Resource
     private RedisTemplate<String, Object> privateRedisTemplate;
 
-
     private static RedisTemplate<String, Object> redisTemplate;
+
+    public static final String ARTICLEVIEWLOCK = "articleViewLock";
+
+    public static final String ARTICLEVIEW = "articleView";
+
+    public static final int ARTICLEVIEWTIME = 7;
+
+    public static final String COURSEVIEWLOCK = "courseViewLock";
+
+    public static final String COURSEVIEW = "courseView";
+
+    public static final int COURSEVIEWTIME = 7;
+
+    /**
+     *分布式锁，用来保证定时任务不重复执行
+     * @param timeout 键值对缓存的时间，单位是秒
+     * @return 设置成功返回true，否则返回false
+     */
+    public static boolean tryArticleLock(long timeout) {
+        //底层原理就是Redis的setnx方法
+        boolean isSuccess = redisTemplate.opsForValue().setIfAbsent(ARTICLEVIEWLOCK, ARTICLEVIEW);
+        if (isSuccess) {
+            //设置分布式锁的过期时间
+            redisTemplate.expire(ARTICLEVIEWLOCK, timeout, TimeUnit.SECONDS);
+        }
+        return isSuccess;
+    }
+
+    /**
+     * 分布式锁，用来保证定时任务不重复执行
+     * @return 释放成功返回true，否则返回false
+     */
+    public static boolean unArticleLock() {
+        return redisTemplate.delete(ARTICLEVIEWLOCK);
+    }
+
+    /**
+     *分布式锁，用来保证定时任务不重复执行
+     * @param timeout 键值对缓存的时间，单位是秒
+     * @return 设置成功返回true，否则返回false
+     */
+    public static boolean tryCourseLock(long timeout) {
+        //底层原理就是Redis的setnx方法
+        boolean isSuccess = redisTemplate.opsForValue().setIfAbsent(COURSEVIEWLOCK, COURSEVIEW);
+        if (isSuccess) {
+            //设置分布式锁的过期时间
+            redisTemplate.expire(COURSEVIEWLOCK, timeout, TimeUnit.SECONDS);
+        }
+        return isSuccess;
+    }
+
+    /**
+     * 分布式锁，用来保证定时任务不重复执行
+     * @return 释放成功返回true，否则返回false
+     */
+    public static boolean unCourseLock() {
+        return redisTemplate.delete(COURSEVIEWLOCK);
+    }
+
+
+
 
     /**
      * 设置有效时间
@@ -192,6 +252,18 @@ public class RedisUtils implements InitializingBean {
      */
     public static long setSet(final String key, final Object... values) {
         Long count = redisTemplate.opsForSet().add(key, values);
+        return count == null ? 0 : count;
+    }
+
+
+    /**
+     * 统计set的数据条数
+     *
+     * @param key Redis键
+     * @return set的数据条数
+     */
+    public static long getSetSize(final String key) {
+        Long count = redisTemplate.opsForSet().size(key);
         return count == null ? 0 : count;
     }
 

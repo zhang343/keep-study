@@ -1,7 +1,9 @@
 package com.kuang.course.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.kuang.course.entity.CmsCourse;
 import com.kuang.course.entity.CmsVideo;
+import com.kuang.course.mapper.CmsCourseMapper;
 import com.kuang.course.mapper.CmsVideoMapper;
 import com.kuang.course.service.CmsBillService;
 import com.kuang.course.service.CmsCourseService;
@@ -10,6 +12,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kuang.springcloud.entity.MessageCourseVo;
 import com.kuang.springcloud.entity.UserStudyVo;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
+import com.kuang.springcloud.utils.RedisUtils;
 import com.kuang.springcloud.utils.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Xiaozhang
@@ -31,8 +35,9 @@ import java.util.concurrent.Future;
 @Slf4j
 public class CmsVideoServiceImpl extends ServiceImpl<CmsVideoMapper, CmsVideo> implements CmsVideoService {
 
+
     @Resource
-    private CmsCourseService courseService;
+    private CmsCourseMapper courseMapper;
 
     @Resource
     private CmsBillService billService;
@@ -50,15 +55,23 @@ public class CmsVideoServiceImpl extends ServiceImpl<CmsVideoMapper, CmsVideo> i
     //查找用户是否可以播放指定视频
     @Async
     @Override
-    public Future<Boolean> findUserAbility(String id , String userId) {
+    public Future<Boolean> findUserAbility(String id , String videoSourceId , String userId) {
         log.info("查询用户是否可以播放课程下面的视频不,视频id:" + id + ",用户id:" + userId);
         CmsVideo cmsVideo = baseMapper.selectById(id);
-        if(cmsVideo == null){
+        if(cmsVideo == null || !videoSourceId.equals(cmsVideo.getVideoSourceId())){
             log.warn("该视频不存在,请不要非法操作,视频id:" + id);
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
         }
         String courseId = cmsVideo.getCourseId();
-        Integer price = courseService.findCoursePrice(courseId);
+
+        QueryWrapper<CmsCourse> wrapper = new QueryWrapper<>();
+        wrapper.eq("id" , courseId);
+        wrapper.select("price");
+        CmsCourse course = courseMapper.selectOne(wrapper);
+        if(course == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "该课程不存在");
+        }
+        Integer price = course.getPrice();
         //价格为0直接返回true,不为0再查账单
         if(price == 0){
             return new AsyncResult<>(true);
@@ -68,7 +81,7 @@ public class CmsVideoServiceImpl extends ServiceImpl<CmsVideoMapper, CmsVideo> i
         return new AsyncResult<>(flag);
     }
 
-    //查询视频云端id和相关课程信息
+    //查询相关课程信息
     @Override
     public UserStudyVo findUserStudyVoByCourseId(String id) {
         log.info("查询视频云端id和相关课程信息,视频id:" + id);
@@ -88,6 +101,19 @@ public class CmsVideoServiceImpl extends ServiceImpl<CmsVideoMapper, CmsVideo> i
             messageCourseVo.setVideoNumber(videoNumberByCourseId);
         }
         return new AsyncResult<>(messageCourseVos);
+    }
+
+    //缓存课程播放量
+    @Async
+    @Override
+    public void setCourseViews(String id, String ip) {
+        CmsVideo cmsVideo = baseMapper.selectById(id);
+        if(cmsVideo == null){
+            return;
+        }
+        String courseId = cmsVideo.getCourseId();
+        RedisUtils.setSet(courseId , ip);
+        RedisUtils.expire(courseId , RedisUtils.COURSEVIEWTIME , TimeUnit.MINUTES);
     }
 
 }

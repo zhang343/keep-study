@@ -99,9 +99,8 @@ public class VodServiceImpl implements VodService {
     }
 
     //根据视频id获取视频凭证
-    @Async
     @Override
-    public Future<String> getPlayAuth(String id) {
+    public String getPlayAuth(String id) {
         log.info("开始获取视频播放凭证，视频id为：" + id);
         //创建初始化对象
         DefaultAcsClient client =
@@ -119,6 +118,6 @@ public class VodServiceImpl implements VodService {
             log.error("获取视频播放凭证失败，视频id为：" + id);
             throw new XiaoXiaException(ResultCode.ERROR , "获取视频播放凭证失败");
         }
-        return AsyncResult.forValue(response.getPlayAuth());
+        return response.getPlayAuth();
     }
 }

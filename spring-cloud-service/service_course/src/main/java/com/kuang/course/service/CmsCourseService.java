@@ -22,9 +22,6 @@ public interface CmsCourseService extends IService<CmsCourse> {
     //查找课程详细信息
     CourseVo findCourseVo(String courseId);
 
-    //查找课程价格
-    Integer findCoursePrice(String courseId);
-
     //用户购买课程,并且返回课程标题
     String buyCourse(String courseId, String userId);
 
@@ -33,4 +30,10 @@ public interface CmsCourseService extends IService<CmsCourse> {
 
     //查找课程相关信息，为消息模块服务
     List<MessageCourseVo> findMessageCourseDetaile(List<String> courseIdList);
+
+    //向用户历史记录发送消息
+    void sendHistoryMsg(String userId, String id);
+
+    //查询出所有课程
+    List<CmsCourse> findAllCourse();
 }

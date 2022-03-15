@@ -70,4 +70,11 @@ public interface ArticleService extends IService<Article> {
 
     //查询是不是专栏文章
     boolean findIsColumnArticle(String articleId);
+
+    //设置文章访问量，缓存处理
+    void setArticleViews(String articleId , String ip);
+
+    //获取所有文章
+    List<Article> findAllArticle();
+
 }

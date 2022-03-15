@@ -102,7 +102,13 @@ public class ArticleController {
             log.error("查询文章数据异常,文章id:" + articleId);
             throw new XiaoXiaException(ResultCode.ERROR , "查询文章失败");
         }
+
+
+        String ip = request.getRemoteAddr();
+        //设置文章浏览量缓存
+        articleService.setArticleViews(articleId , ip);
         return R.ok().data("commentNumber" , commentNumber).data("isCollection" , isCollection).data("labelList" , labelList).data("article" , articleVo);
+
     }
 
 

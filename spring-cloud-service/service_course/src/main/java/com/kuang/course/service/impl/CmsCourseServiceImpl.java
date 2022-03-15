@@ -1,5 +1,6 @@
 package com.kuang.course.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.kuang.course.client.UcenterClient;
 import com.kuang.course.client.VipClient;
@@ -15,11 +16,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kuang.course.service.CmsVideoService;
 import com.kuang.springcloud.entity.BbsCourseVo;
 import com.kuang.springcloud.entity.MessageCourseVo;
+import com.kuang.springcloud.entity.UserStudyVo;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
+import com.kuang.springcloud.rabbitmq.MsgProducer;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +53,9 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
     @Resource
     private UcenterClient ucenterClient;
 
+    @Resource
+    private MsgProducer msgProducer;
+
     //通过二级分类id查找课程
     @Cacheable(value = "indexCourseVoList")
     @Override
@@ -70,20 +77,6 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
         Integer videoNumber = videoService.findVideoNumberByCourseId(courseId);
         courseVo.setVideoNumber(videoNumber);
         return courseVo;
-    }
-
-    //查找课程价格
-    @Override
-    public Integer findCoursePrice(String courseId) {
-        log.info("查找课程价格，课程id：" + courseId);
-        QueryWrapper<CmsCourse> wrapper = new QueryWrapper<>();
-        wrapper.eq("id" , courseId);
-        wrapper.select("price");
-        CmsCourse course = baseMapper.selectOne(wrapper);
-        if(course == null){
-            throw new XiaoXiaException(ResultCode.ERROR , "该课程不存在");
-        }
-        return course.getPrice();
     }
 
     //用户购买课程,并且返回课程标题
@@ -147,6 +140,23 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
     @Override
     public List<MessageCourseVo> findMessageCourseDetaile(List<String> courseIdList) {
         return baseMapper.findMessageCourseDetaile(courseIdList);
+    }
+
+    //向用户历史记录发送消息
+    @Async
+    @Override
+    public void sendHistoryMsg(String userId, String id) {
+        UserStudyVo userStudyVoByCourseId = videoService.findUserStudyVoByCourseId(id);
+        userStudyVoByCourseId.setUserId(userId);
+        msgProducer.sendHistoryMsg(JSON.toJSONString(userStudyVoByCourseId));
+    }
+
+    //查询出所有课程
+    @Override
+    public List<CmsCourse> findAllCourse() {
+        QueryWrapper<CmsCourse> wrapper = new QueryWrapper<>();
+        wrapper.select("id" , "views");
+        return baseMapper.selectList(wrapper);
     }
 
 

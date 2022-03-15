@@ -29,6 +29,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Xiaozhang
@@ -415,4 +416,21 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         wrapper.eq("is_column_article" , 1);
         return baseMapper.selectCount(wrapper) != 1;
     }
+
+    //设置文章访问量，缓存处理
+    @Async
+    @Override
+    public void setArticleViews(String articleId, String ip) {
+        RedisUtils.setSet(articleId , ip);
+        RedisUtils.expire(articleId , RedisUtils.ARTICLEVIEWTIME , TimeUnit.MINUTES);
+    }
+
+    //获取所有文章
+    @Override
+    public List<Article> findAllArticle() {
+        QueryWrapper<Article> wrapper = new QueryWrapper<>();
+        wrapper.select("id" , "views");
+        return baseMapper.selectList(wrapper);
+    }
+
 }
