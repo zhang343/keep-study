@@ -65,6 +65,7 @@ public class VodController {
         }
 
 
+
         try {
             log.info("开始向rabbitmq发送数据,存储用户学习记录,用户id:" + userId);
             msgProducer.sendHistoryMsg(history);

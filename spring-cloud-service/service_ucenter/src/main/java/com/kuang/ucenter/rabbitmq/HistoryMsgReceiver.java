@@ -38,6 +38,7 @@ public class HistoryMsgReceiver {
                 wrapper.eq("course_id" , userStudyVo.getCourseId());
                 wrapper.eq("user_id" , userStudyVo.getUserId());
                 studyService.update(userStudy , wrapper);
+
             }
         }catch(Exception e){
             log.warn("用户学习足迹数据插入失败,学习足迹:" + content);

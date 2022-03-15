@@ -48,6 +48,7 @@ public class CmsVideoController {
         } catch(Exception e) {
             log.error("根据条件查询是否可用播放失败");
         }
+
         return R.ok().data("isAbility" , isAbility).data("userStudyVo" , JSON.toJSONString(userStudyVo));
     }
 }
