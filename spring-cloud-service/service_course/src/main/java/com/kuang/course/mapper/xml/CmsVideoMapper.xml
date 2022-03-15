@@ -3,10 +3,10 @@
 <mapper namespace="com.kuang.course.mapper.CmsVideoMapper">
 
     <select id="findVideoByChapterId" resultType="com.kuang.course.entity.vo.VideoVo" >
-        select id , title from cms_video where chapter_id = #{chapterId} order by sort asc
+        select id , title , video_source_id from cms_video where chapter_id = #{chapterId} order by sort asc
     </select>
 
     <select id="findUserStudyVoByCourseId" resultType="com.kuang.springcloud.entity.UserStudyVo" >
-        select video.course_id  , course.title , course.cover , video.video_source_id from cms_video as video join cms_course as course on video.course_id = course.id where video.id = #{id}
+        select video.course_id  , course.title , course.cover from cms_video as video join cms_course as course on video.course_id = course.id where video.id = #{id}
     </select>
 </mapper>

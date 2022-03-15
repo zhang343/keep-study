@@ -15,12 +15,15 @@ import com.kuang.vod.utils.ConstantVodUtils;
 import com.kuang.vod.utils.InitVodCilent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.concurrent.Future;
 
 @Service
 @Slf4j
@@ -96,8 +99,9 @@ public class VodServiceImpl implements VodService {
     }
 
     //根据视频id获取视频凭证
+    @Async
     @Override
-    public String getPlayAuth(String id) {
+    public Future<String> getPlayAuth(String id) {
         log.info("开始获取视频播放凭证，视频id为：" + id);
         //创建初始化对象
         DefaultAcsClient client =
@@ -115,6 +119,6 @@ public class VodServiceImpl implements VodService {
             log.error("获取视频播放凭证失败，视频id为：" + id);
             throw new XiaoXiaException(ResultCode.ERROR , "获取视频播放凭证失败");
         }
-        return response.getPlayAuth();
+        return AsyncResult.forValue(response.getPlayAuth());
     }
 }

@@ -9,4 +9,6 @@ public class VideoVo {
     private String id;
     //小节标题
     private String title;
+    //云端视频id
+    private String videoSourceId;
 }

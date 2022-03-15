@@ -16,5 +16,4 @@ public class UserStudyVo implements Serializable {
     private String courseId;
     private String title;
     private String cover;
-    private String videoSourceId;
 }
