@@ -2,6 +2,7 @@ package com.kuang.download.controller;
 
 
 import com.kuang.download.entity.DtmFile;
+import com.kuang.download.entity.vo.DtmFileVo;
 import com.kuang.download.service.DtmFileService;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.R;
@@ -34,7 +35,7 @@ public class DtmFileController {
         if(StringUtils.isEmpty(categoryId) && StringUtils.isEmpty(fileName)){
             throw new XiaoXiaException(ResultCode.ERROR , "请传入参数");
         }
-        List<DtmFile> dtmFileList = dtmFileService.findFileCondition(categoryId , fileName);
+        List<DtmFileVo> dtmFileList = dtmFileService.findFileCondition(categoryId , fileName);
         return R.ok().data("fileList" , dtmFileList);
     }
 

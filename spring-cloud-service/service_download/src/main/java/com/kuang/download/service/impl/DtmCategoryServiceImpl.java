@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kuang.download.entity.DtmCategory;
 import com.kuang.download.entity.DtmFile;
+import com.kuang.download.entity.vo.DtmCategoryVo;
 import com.kuang.download.mapper.DtmCategoryMapper;
 import com.kuang.download.mapper.DtmFileMapper;
 import com.kuang.download.service.DtmCategoryService;
@@ -31,11 +32,9 @@ public class DtmCategoryServiceImpl extends ServiceImpl<DtmCategoryMapper, DtmCa
     //查询出所有分类
     @Cacheable(value = "dtmCategoryList")
     @Override
-    public List<DtmCategory> findAll() {
+    public List<DtmCategoryVo> findAll() {
         log.info("查询所有文件分类,这里查找id和category_name");
-        QueryWrapper<DtmCategory> wrapper = new QueryWrapper<>();
-        wrapper.select("id" , "category_name");
-        return baseMapper.selectList(wrapper);
+        return baseMapper.findAll();
     }
 
     //增加分类,这里没有考虑分类重名

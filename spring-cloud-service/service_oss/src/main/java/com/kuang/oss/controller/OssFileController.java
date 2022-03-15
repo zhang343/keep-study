@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
@@ -38,7 +39,7 @@ public class OssFileController {
     private UcenterClient ucenterClient;
 
     //下载文件接口
-    @GetMapping("downloadFile")
+    @PostMapping("downloadFile")
     public void downloadFile(String id , HttpServletRequest request , HttpServletResponse response){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         log.info("有用户下载文件,文件的id:" + id + ",用户id:" + userId);

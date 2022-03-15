@@ -1,8 +1,6 @@
 package com.kuang.vod.controller;
 
 
-import com.alibaba.fastjson.JSON;
-import com.kuang.springcloud.entity.UserStudyVo;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.rabbitmq.MsgProducer;
 import com.kuang.springcloud.utils.JwtUtils;

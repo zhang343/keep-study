@@ -2,6 +2,7 @@ package com.kuang.download.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.kuang.download.entity.DtmFile;
+import com.kuang.download.entity.vo.DtmFileVo;
 import com.kuang.download.mapper.DtmFileMapper;
 import com.kuang.download.service.DtmFileService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -23,7 +24,7 @@ public class DtmFileServiceImpl extends ServiceImpl<DtmFileMapper, DtmFile> impl
 
     //通过分类id和文件名查找文件
     @Override
-    public List<DtmFile> findFileCondition(String categoryId, String fileName) {
+    public List<DtmFileVo> findFileCondition(String categoryId, String fileName) {
         log.info("查询文件,categoryId:" + categoryId + ",fileName:" + fileName);
         return baseMapper.findFileCondition(categoryId , fileName);
     }
@@ -32,10 +33,7 @@ public class DtmFileServiceImpl extends ServiceImpl<DtmFileMapper, DtmFile> impl
     @Override
     public DtmFile findFileNameAndPriceById(String id) {
         log.info("通过文件id查找文件名和(这里指阿里云存储)源文件名和价格,文件id:" + id);
-        QueryWrapper<DtmFile> wrapper = new QueryWrapper<>();
-        wrapper.select("name" ,"file_source_id" , "price");
-        wrapper.eq("id" , id);
-        DtmFile dtmFile = baseMapper.selectOne(wrapper);
+        DtmFile dtmFile = baseMapper.selectById(id);
         if(dtmFile == null){
             log.warn("文件id:" + id + ",文件未找到");
             throw new XiaoXiaException(ResultCode.ERROR , "没有这个文件");

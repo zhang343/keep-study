@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/message/index")
@@ -46,8 +47,8 @@ public class InfoIndexController {
         Integer systemNumber = systemService.findUserUnreadNumber(userId);
         Integer courseNumber = courseService.findUserUnreadNumber(userId);
         try {
-            //等待执行完成
-            mfr.get();
+            //等待0.1秒
+            mfr.get(100 , TimeUnit.MILLISECONDS);
         }catch(Exception e){
             log.warn("查询我的消息、好友动态、回复我的失败");
         }

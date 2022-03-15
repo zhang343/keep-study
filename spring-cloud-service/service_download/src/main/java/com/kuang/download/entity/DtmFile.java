@@ -30,9 +30,6 @@ public class DtmFile implements Serializable {
     @ApiModelProperty(value = "分类id")
     private String categoryId;
 
-    @ApiModelProperty(value = "分类名称")
-    private String categoryName;
-
     @ApiModelProperty(value = "文件名称")
     private String name;
 
