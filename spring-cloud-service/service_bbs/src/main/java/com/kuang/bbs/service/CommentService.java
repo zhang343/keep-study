@@ -27,7 +27,7 @@ public interface CommentService extends IService<Comment> {
     Future<List<OneCommentVo>> findArticleComment(String articleId , Long current , Long limit);
 
     //查找指定文章一级评论数量
-    Future<Integer> findArticleCommentNumber(String articleId);
+    Integer findArticleCommentNumber(String articleId);
 
     //查找回复用户的id和文章标题,
     Map<String, String> findReplyUserIdAndArticleTitle(String replyCommentId , String articleId);
@@ -37,4 +37,10 @@ public interface CommentService extends IService<Comment> {
 
     //查找用户评论数量
     Integer findUserCommentNumber(String userId);
+
+    //删除文章评论
+    void deleteCommentByArticleId(String articleId);
+
+    //查询文章所有评论数量
+    Integer findArticleAllCommentNumber(String articleId);
 }

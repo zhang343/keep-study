@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * @author Xiaozhang
@@ -33,13 +32,13 @@ public class CacheController {
 
     //文章缓存,时间是30分钟
     @PostMapping("setArticleCache")
-    public R setArticleCache(ArticleCacheVo articleCacheVo , List<String> labelList , HttpServletRequest request){
+    public R setArticleCache(ArticleCacheVo articleCacheVo , HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         log.info("设置文章的缓存,用户id:" + userId);
         if(userId == null || StringUtils.isEmpty(articleCacheVo.getContent())){
             return R.ok();
         }
-        articleService.setArticleCache(articleCacheVo , labelList , userId);
+        articleService.setArticleCache(articleCacheVo , userId);
         return R.ok();
     }
 

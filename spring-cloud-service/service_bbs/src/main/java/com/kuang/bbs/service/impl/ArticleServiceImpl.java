@@ -75,14 +75,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
         //下面进行数据验证
         String articleUserId = article.getUserId();
-        //如果查询文章的和文章所有者一致
-        if(articleUserId.equals(userId)){
-            //对于文章所有者和文章查询者相同，我们对于江湖文章不用判断，但是如果是专栏文章，要判断
-            //专栏文章，但是没有同步到江湖
-            if(article.getIsColumnArticle() && !article.getIsBbs()){
-                throw new XiaoXiaException(ResultCode.ERROR , "非法查询不存在文章");
-            }
-        }else {
+        //如果是专栏文章，但是没有同步到江湖
+        if(article.getIsColumnArticle() && !article.getIsBbs()){
+            throw new XiaoXiaException(ResultCode.ERROR , "非法查询不存在文章");
+        }
+        //如果查询文章的和文章所有者不一致
+        if(!articleUserId.equals(userId)){
             //查询文章的和文章所有者不一致
             //违规不可查
             if(article.getIsViolationArticle()){
@@ -90,10 +88,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             }
             //非专栏文章,但是没发布
             if(!article.getIsColumnArticle() && !article.getIsRelease()){
-                throw new XiaoXiaException(ResultCode.ERROR , "非法查询不存在文章");
-            }
-            //专栏文章，但是没有同步到江湖
-            if(article.getIsColumnArticle() && !article.getIsBbs()){
                 throw new XiaoXiaException(ResultCode.ERROR , "非法查询不存在文章");
             }
         }
@@ -118,10 +112,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     //文章缓存,时间是30分钟
     @Async
     @Override
-    public void setArticleCache(ArticleCacheVo articleCacheVo, List<String> labelList, String userId) {
+    public void setArticleCache(ArticleCacheVo articleCacheVo, String userId) {
         log.info("设置文章的缓存,用户id:" + userId);
-        Set<String> labelSet = new HashSet<>(labelList);
-        labelList = new ArrayList<>(labelSet);
+        Set<String> labelSet = new HashSet<>(articleCacheVo.getLabelList());
+        List<String> labelList = new ArrayList<>(labelSet);
         articleCacheVo.setLabelList(labelList);
         RedisUtils.setValueTimeout(userId , articleCacheVo , 30 * 60);
     }
@@ -176,8 +170,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 topArticle = findTopArticle();
                 //如果首页文章存在，去除第一个,
                 if(topArticle != null){
-                    indexArticleVoList.remove(0);
-                    indexArticleVoList.add(0 , topArticle);
+                    indexArticleVoList.set(0 , topArticle);
                 }
             }
         }
@@ -198,6 +191,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 indexArticleVo.setVipLevel(vipLevel);
             }
         }
+
         if(current == 1 && limit == 10 && StringUtils.isEmpty(categoryId) && StringUtils.isEmpty(articleNameOrLabelName) && (isExcellentArticle == null || !isExcellentArticle)){
             RedisUtils.setValueTimeout("TopArticleList" , indexArticleVoList , 30);
         }
@@ -211,6 +205,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         log.info("用户发布文章,用户id:" + userId);
         Article article = new Article();
         BeanUtils.copyProperties(articleUpdateAndCreateVo , article);
+        article.setId(null);
         article.setUserId(userId);
         //进行远程调用查找发布文章的用户头像和昵称
         R ucenterR = ucenterClient.findAvatarAndNicknameByUserId();

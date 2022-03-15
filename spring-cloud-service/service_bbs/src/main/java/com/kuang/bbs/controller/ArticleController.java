@@ -76,6 +76,7 @@ public class ArticleController {
 
         Future<ArticleVo> articleDetail = articleService.findArticleDetail(articleId , userId);
         Future<List<String>> articleLabel = labelService.findArticleLabel(articleId);
+        Integer commentNumber = commentService.findArticleAllCommentNumber(articleId);
         ArticleVo articleVo = null;
         boolean isCollection = false;
         if(userId != null){
@@ -95,12 +96,13 @@ public class ArticleController {
         }
 
         try {
-            articleVo = articleDetail.get();
+            //等待0.3秒取出结果
+            articleVo = articleDetail.get(300 , TimeUnit.MILLISECONDS);
         }catch(Exception e){
             log.error("查询文章数据异常,文章id:" + articleId);
             throw new XiaoXiaException(ResultCode.ERROR , "查询文章失败");
         }
-        return R.ok().data("isCollection" , isCollection).data("labelList" , labelList).data("article" , articleVo);
+        return R.ok().data("commentNumber" , commentNumber).data("isCollection" , isCollection).data("labelList" , labelList).data("article" , articleVo);
     }
 
 
@@ -185,6 +187,8 @@ public class ArticleController {
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
         }
         articleService.deleteArticle(articleId , userId);
+        //删除文章评论
+        commentService.deleteCommentByArticleId(articleId);
         //删除文章标签
         labelService.deleteArticleLabel(articleId);
         return R.ok();
@@ -202,7 +206,7 @@ public class ArticleController {
         return R.ok().data("articleNumber" , articleNumber);
     }
 
-    //查询用户已经发布和没有违规的文章数量
+    //查询用户已经发布江湖和没有违规的文章数量
     @GetMapping("findUserReleaseArticleNumber")
     public R findUserReleaseArticleNumber(HttpServletRequest request){
         log.info("查询用户已经发布和没有违规的文章数量");
@@ -214,7 +218,7 @@ public class ArticleController {
         return R.ok().data("releaseArticleNumber" , releaseArticleNumber);
     }
 
-    //查询用户已经发布和没有违规的文章数量和评论数量
+    //查询用户已经发布江湖和没有违规的文章数量和评论数量
     @GetMapping("findURANAndCN")
     public R findURANAndCN(HttpServletRequest request){
         log.info("查询用户已经发布和没有违规的文章数量和评论数量");

@@ -3,6 +3,7 @@ package com.kuang.bbs.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.kuang.bbs.client.UcenterClient;
 import com.kuang.bbs.client.VipClient;
 import com.kuang.bbs.entity.Article;
 import com.kuang.bbs.entity.Comment;
@@ -44,6 +45,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Resource
     private MsgProducer msgProducer;
 
+    @Resource
+    private UcenterClient ucenterClient;
+
     //查询系统评论数量
     @Cacheable(value = "commentNumber")
     @Override
@@ -67,19 +71,31 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         //删除子评论，不考虑事务
         QueryWrapper<Comment> child = new QueryWrapper<>();
         wrapper.eq("father_id" , commentId);
-        baseMapper.delete(wrapper);
+        baseMapper.delete(child);
     }
 
     //增加评论
     @Override
     public void addComment(Comment comment) {
-        log.info("增加评论,文章id:" + comment.getArticleId());
-        int insert = baseMapper.insert(comment);
-        if(insert != 1){
-            log.info("增加一级评论失败，文章id：" + comment.getArticleId());
+        String articleId = comment.getArticleId();
+        log.info("增加评论,文章id:" + articleId);
+        //进行远程调用查找插入评论的用户头像和昵称
+        R ucenterR = ucenterClient.findAvatarAndNicknameByUserId();
+        if(!ucenterR.getSuccess()){
+            log.warn("远程调用失败，无法查询出用户头像和昵称");
             throw new XiaoXiaException(ResultCode.ERROR , "增加评论失败");
         }
-
+        String avatar = (String) ucenterR.getData().get("avatar");
+        String nickname = (String) ucenterR.getData().get("nickname");
+        comment.setUserAvatar(avatar);
+        comment.setUserNickname(nickname);
+        int insert = baseMapper.insert(comment);
+        if(insert != 1){
+            log.info("增加一级评论失败，文章id：" + articleId);
+            throw new XiaoXiaException(ResultCode.ERROR , "增加评论失败");
+        }
+        //向rabbitmq发送消息
+        sendReplyNews(comment);
     }
 
     //查找文章评论,分页查找
@@ -90,6 +106,10 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         //计算分页
         current = (current - 1) * limit;
         List<OneCommentVo> oneCommentVoList = baseMapper.findOneCommentVoByArticleId(articleId , current , limit);
+        if(oneCommentVoList == null || oneCommentVoList.size() == 0){
+            return new AsyncResult<>(oneCommentVoList);
+        }
+
         Set<String> userIdSet = new HashSet<>();
         //取出所有评论用户的id
         for(OneCommentVo oneCommentVo : oneCommentVoList){
@@ -100,9 +120,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         }
 
         List<String> userIdList = new ArrayList<>(userIdSet);
-        if(userIdList.size() == 0){
-            return new AsyncResult<>(oneCommentVoList);
-        }
         //远程调用获取用户viplogo
         log.info("远程调用service-vip下面的/vm/user/findMemberRightLogo,获取用户viplogo,用户:" + userIdList);
         R vipR = vipClient.findMemberRightLogo(userIdList);
@@ -119,14 +136,13 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
     //查找指定文章一级评论数量
-    @Async
     @Override
-    public Future<Integer> findArticleCommentNumber(String articleId) {
+    public Integer findArticleCommentNumber(String articleId) {
         log.info("查找指定文章一级评论数量,文章id:" + articleId);
         QueryWrapper<Comment> wrapper = new QueryWrapper<>();
         wrapper.eq("article_id" , articleId);
         wrapper.eq("father_id" , "");
-        return new AsyncResult<>(baseMapper.selectCount(wrapper));
+        return baseMapper.selectCount(wrapper);
     }
 
     //查找回复用户的id和文章标题
@@ -188,6 +204,23 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         log.info("查找用户评论数量");
         QueryWrapper<Comment> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id" , userId);
+        return baseMapper.selectCount(wrapper);
+    }
+
+    //删除文章评论
+    @Async
+    @Override
+    public void deleteCommentByArticleId(String articleId) {
+        QueryWrapper<Comment> wrapper = new QueryWrapper<>();
+        wrapper.eq("article_id" , articleId);
+        baseMapper.delete(wrapper);
+    }
+
+    //查询文章所有评论数量
+    @Override
+    public Integer findArticleAllCommentNumber(String articleId) {
+        QueryWrapper<Comment> wrapper = new QueryWrapper<>();
+        wrapper.eq("article_id" , articleId);
         return baseMapper.selectCount(wrapper);
     }
 }

@@ -2,6 +2,7 @@ package com.kuang.bbs.controller;
 
 
 import com.kuang.bbs.entity.Category;
+import com.kuang.bbs.entity.vo.CategoryVo;
 import com.kuang.bbs.service.CategoryService;
 import com.kuang.springcloud.utils.R;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,7 @@ public class CategoryController {
     @GetMapping("findAllCategory")
     public R findAllCategory(){
         log.info("查询所有分类");
-        List<Category> categoryList = categoryService.findAllCategory();
+        List<CategoryVo> categoryList = categoryService.findAllCategoryVo();
         return R.ok().data("categoryList" , categoryList);
     }
 

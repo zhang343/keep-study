@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSON;
 import com.kuang.bbs.client.UcenterClient;
 import com.kuang.bbs.entity.Comment;
 import com.kuang.bbs.entity.vo.OneCommentVo;
+import com.kuang.bbs.entity.vo.UserOneCommentVo;
+import com.kuang.bbs.entity.vo.UserTwoCommentVo;
 import com.kuang.bbs.service.ArticleService;
 import com.kuang.bbs.service.CommentService;
 import com.kuang.springcloud.entity.InfoReplyMeVo;
@@ -14,6 +16,7 @@ import com.kuang.springcloud.utils.JwtUtils;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,39 +57,35 @@ public class CommentController {
     }
 
 
-
-    //增加评论
-    @PostMapping("addComment")
-    public R addComment(Comment comment , HttpServletRequest request){
+    //增加一级评论
+    @PostMapping("createFirst")
+    public R createFirst(UserOneCommentVo userOneCommentVo , HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         //下面属于数据验证
-        if(userId == null || StringUtils.isEmpty(comment.getArticleId()) || StringUtils.isEmpty(comment.getContent())){
+        if(userId == null || StringUtils.isEmpty(userOneCommentVo.getArticleId()) || StringUtils.isEmpty(userOneCommentVo.getContent())){
             log.warn("有人非法增加评论");
             throw new XiaoXiaException(ResultCode.ERROR , "增加评论失败");
         }
+        Comment comment = new Comment();
+        BeanUtils.copyProperties(userOneCommentVo , comment);
+        comment.setUserId(userId);
+        commentService.addComment(comment);
+        return R.ok();
+    }
 
-        if(!StringUtils.isEmpty(comment.getFatherId())){
-            if(StringUtils.isEmpty(comment.getReplyUserId()) || StringUtils.isEmpty(comment.getReplyUserNickname())){
-                log.warn("有人非法增加评论");
-                throw new XiaoXiaException(ResultCode.ERROR , "增加评论失败");
-            }
-        }else {
-            comment.setFatherId(null);
-        }
-        //进行远程调用查找插入评论的用户头像和昵称
-        R ucenterR = ucenterClient.findAvatarAndNicknameByUserId();
-        if(!ucenterR.getSuccess()){
-            log.warn("远程调用失败，无法查询出用户头像和昵称");
+    //增加二级评论
+    @PostMapping("createSecond")
+    public R addComment(UserTwoCommentVo userTwoCommentVo , HttpServletRequest request){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        //下面属于数据验证
+        if(userId == null || StringUtils.isEmpty(userTwoCommentVo.getArticleId()) || StringUtils.isEmpty(userTwoCommentVo.getContent()) || StringUtils.isEmpty(userTwoCommentVo.getFatherId()) || StringUtils.isEmpty(userTwoCommentVo.getReplyUserId()) || StringUtils.isEmpty(userTwoCommentVo.getReplyUserNickname())){
+            log.warn("有人非法增加评论");
             throw new XiaoXiaException(ResultCode.ERROR , "增加评论失败");
         }
-        String avatar = (String) ucenterR.getData().get("avatar");
-        String nickname = (String) ucenterR.getData().get("nickname");
+        Comment comment = new Comment();
+        BeanUtils.copyProperties(userTwoCommentVo , comment);
         comment.setUserId(userId);
-        comment.setUserAvatar(avatar);
-        comment.setUserNickname(nickname);
         commentService.addComment(comment);
-        //向rabbitmq发送消息
-        commentService.sendReplyNews(comment);
         return R.ok();
     }
 
@@ -97,11 +96,9 @@ public class CommentController {
                                 String articleId){
         log.info("开始进行查找文章评论,分页查找,文章id：" + articleId);
         Future<List<OneCommentVo>> articleComment = commentService.findArticleComment(articleId, current, limit);
-        Future<Integer> articleCommentNumber = commentService.findArticleCommentNumber(articleId);
+        Integer total = commentService.findArticleCommentNumber(articleId);
         List<OneCommentVo> oneCommentVoList = null;
-        Integer total = 0;
         try {
-            total = articleCommentNumber.get();
             oneCommentVoList = articleComment.get();
         }catch(Exception e){
             log.error("查找评论失败");

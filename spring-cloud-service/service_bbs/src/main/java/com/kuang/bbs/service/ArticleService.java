@@ -21,7 +21,7 @@ public interface ArticleService extends IService<Article> {
     Future<ArticleVo> findArticleDetail(String articleId , String userId);
 
     //文章缓存,时间是30分钟
-    void setArticleCache(ArticleCacheVo articleCacheVo, List<String> labelList, String userId);
+    void setArticleCache(ArticleCacheVo articleCacheVo, String userId);
 
     //查询文章缓存
     ArticleCacheVo findArticleCache(String userId);
