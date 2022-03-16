@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @Slf4j
@@ -33,27 +34,32 @@ public class MultithreadScheduleTask {
         String treadName = Thread.currentThread().getName();
         log.info("开始执行定时任务,将缓存到redis中的课程播放量同步到数据库中,当前线程名" + treadName +"当前时间:" + LocalTime.now());
         log.info(treadName + "开始尝试去获取课程全局锁");
-        boolean flag = RedisUtils.tryCourseLock(360);
+        boolean flag = RedisUtils.tryCourseLock(240);
         if(flag){
             log.info(treadName + "获取课程全局锁成功");
-            List<CmsCourse> allCourse = courseService.findAllCourse();
+            //获取这段时间被访问的课程
+            Set<Object> setAll = RedisUtils.getSetAll(RedisUtils.COURSE);
+            RedisUtils.delKey(RedisUtils.COURSE);
             List<CmsCourse> courseList = new ArrayList<>();
-            for(CmsCourse course : allCourse){
-                long setSize = RedisUtils.getSetSize(course.getId());
+            for(Object o : setAll){
+                String courseId = (String) o;
+                long setSize = RedisUtils.getSetSize(courseId);
+                //可能会造成一些播放量的损失
+                RedisUtils.delKey(courseId);
                 if(setSize != 0){
-                    course.setViews(course.getViews() + setSize);
+                    CmsCourse course = new CmsCourse();
+                    course.setId(courseId);
+                    course.setViews(setSize);
                     courseList.add(course);
-                    //从上面到这里删除，可能会损失一点播放量
-                    RedisUtils.delKey(course.getId());
                 }
             }
             log.info(treadName + "开始去更新课程播放量");
             if(courseList.size() != 0){
-                courseService.updateBatchById(courseList);
+                courseService.updateCourseViews(courseList);
             }
             RedisUtils.unCourseLock();
         }else {
-            log.warn(treadName + "获取文章全局锁失败");
+            log.warn(treadName + "获取课程全局锁失败");
         }
     }
 }

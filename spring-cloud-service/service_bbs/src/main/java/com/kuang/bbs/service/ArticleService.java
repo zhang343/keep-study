@@ -74,7 +74,6 @@ public interface ArticleService extends IService<Article> {
     //设置文章访问量，缓存处理
     void setArticleViews(String articleId , String ip);
 
-    //获取所有文章
-    List<Article> findAllArticle();
-
+    //更新文章浏览量
+    void updateArticleViews(List<Article> articleList);
 }

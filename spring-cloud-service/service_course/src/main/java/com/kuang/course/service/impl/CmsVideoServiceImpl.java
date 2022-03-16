@@ -63,15 +63,11 @@ public class CmsVideoServiceImpl extends ServiceImpl<CmsVideoMapper, CmsVideo> i
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
         }
         String courseId = cmsVideo.getCourseId();
-
-        QueryWrapper<CmsCourse> wrapper = new QueryWrapper<>();
-        wrapper.eq("id" , courseId);
-        wrapper.select("price");
-        CmsCourse course = courseMapper.selectOne(wrapper);
+        CmsCourse course = courseMapper.selectById(courseId);
         if(course == null){
             throw new XiaoXiaException(ResultCode.ERROR , "该课程不存在");
         }
-        Integer price = course.getPrice();
+        int price = course.getPrice();
         //价格为0直接返回true,不为0再查账单
         if(price == 0){
             return new AsyncResult<>(true);
@@ -114,6 +110,8 @@ public class CmsVideoServiceImpl extends ServiceImpl<CmsVideoMapper, CmsVideo> i
         String courseId = cmsVideo.getCourseId();
         RedisUtils.setSet(courseId , ip);
         RedisUtils.expire(courseId , RedisUtils.COURSEVIEWTIME , TimeUnit.MINUTES);
+        RedisUtils.setSet(RedisUtils.COURSE , courseId);
+        RedisUtils.expire(RedisUtils.COURSE , RedisUtils.COURSEVIEWTIME , TimeUnit.MINUTES);
     }
 
 }

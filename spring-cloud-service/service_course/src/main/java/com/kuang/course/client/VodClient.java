@@ -16,6 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 )
 public interface VodClient {
 
-    @GetMapping("/frontuservideo/getPlayAuth")
+    @GetMapping("/inside/video/getPlayAuth")
     R getPlayAuth(@RequestParam("videoSourceId") String videoSourceId);
 }

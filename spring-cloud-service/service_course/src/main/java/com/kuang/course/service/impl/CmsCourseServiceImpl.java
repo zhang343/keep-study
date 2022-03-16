@@ -145,19 +145,18 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
     //向用户历史记录发送消息
     @Async
     @Override
-    public void sendHistoryMsg(String userId, String id) {
-        UserStudyVo userStudyVoByCourseId = videoService.findUserStudyVoByCourseId(id);
+    public void sendHistoryMsg(String userId, String videoId) {
+        UserStudyVo userStudyVoByCourseId = videoService.findUserStudyVoByCourseId(videoId);
         userStudyVoByCourseId.setUserId(userId);
         msgProducer.sendHistoryMsg(JSON.toJSONString(userStudyVoByCourseId));
     }
 
-    //查询出所有课程
+    //更新课程浏览量
     @Override
-    public List<CmsCourse> findAllCourse() {
-        QueryWrapper<CmsCourse> wrapper = new QueryWrapper<>();
-        wrapper.select("id" , "views");
-        return baseMapper.selectList(wrapper);
+    public void updateCourseViews(List<CmsCourse> courseList) {
+        baseMapper.updateCourseViews(courseList);
     }
+
 
 
 }

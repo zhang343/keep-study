@@ -27,4 +27,14 @@
         </foreach>
     </select>
 
+
+    <update id="updateCourseViews" parameterType="java.util.List" >
+        <foreach collection="courseList" item="course" index="index" open="" close="" separator=";">
+            update cms_course
+            <set >
+                views = #{course.views} + views
+            </set>
+            where id = #{course.id}
+        </foreach>
+    </update>
 </mapper>

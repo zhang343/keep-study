@@ -30,13 +30,25 @@ public class RedisUtils implements InitializingBean {
 
     public static final String ARTICLEVIEW = "articleView";
 
+    public static final String ARTICLLE = "article";
+
     public static final int ARTICLEVIEWTIME = 7;
 
     public static final String COURSEVIEWLOCK = "courseViewLock";
 
     public static final String COURSEVIEW = "courseView";
 
+    public static final String COURSE = "course";
+
     public static final int COURSEVIEWTIME = 7;
+
+    public static final String NOTVIPRIGHT = "notVipRight";
+
+    public static final String ALLRIGHTLIST = "allRightList";
+
+    public static final String ALLRIGHTTREEMAP = "allRightTreeMap";
+
+    public static final String ALLVIPMEMBERTREEMAP = "allVipMemberTreeMap";
 
     /**
      *分布式锁，用来保证定时任务不重复执行

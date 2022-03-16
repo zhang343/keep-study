@@ -32,8 +32,8 @@ public interface CmsCourseService extends IService<CmsCourse> {
     List<MessageCourseVo> findMessageCourseDetaile(List<String> courseIdList);
 
     //向用户历史记录发送消息
-    void sendHistoryMsg(String userId, String id);
+    void sendHistoryMsg(String userId, String videoId);
 
-    //查询出所有课程
-    List<CmsCourse> findAllCourse();
+    //更新课程浏览量
+    void updateCourseViews(List<CmsCourse> courseList);
 }

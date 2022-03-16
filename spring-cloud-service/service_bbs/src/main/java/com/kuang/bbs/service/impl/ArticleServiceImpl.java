@@ -421,16 +421,21 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Async
     @Override
     public void setArticleViews(String articleId, String ip) {
+        //设置以文章为key的set
         RedisUtils.setSet(articleId , ip);
+         //设置以文章为key的键的存活时间
         RedisUtils.expire(articleId , RedisUtils.ARTICLEVIEWTIME , TimeUnit.MINUTES);
+        //将缓存当前访问过哪些文章
+        RedisUtils.setSet(RedisUtils.ARTICLLE , articleId);
+        //设置存活时间
+        RedisUtils.expire(RedisUtils.ARTICLLE , RedisUtils.ARTICLEVIEWTIME , TimeUnit.MINUTES);
     }
 
-    //获取所有文章
+
+    //更新文章浏览量
     @Override
-    public List<Article> findAllArticle() {
-        QueryWrapper<Article> wrapper = new QueryWrapper<>();
-        wrapper.select("id" , "views");
-        return baseMapper.selectList(wrapper);
+    public void updateArticleViews(List<Article> articleList) {
+        baseMapper.updateArticleViews(articleList);
     }
 
 }
