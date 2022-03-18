@@ -28,17 +28,10 @@ public class HistoryMsgReceiver {
             log.info("开始在用户学习足迹里面插入数据,学习足迹:" + content);
             UserStudyVo userStudyVo = JSON.parseObject(content, UserStudyVo.class);
             boolean flag = studyService.findStudyByCourseIdAndUserId(userStudyVo.getCourseId() , userStudyVo.getUserId());
-            UserStudy userStudy = new UserStudy();
             if(!flag){
+                UserStudy userStudy = new UserStudy();
                 BeanUtils.copyProperties(userStudyVo , userStudy);
                 studyService.save(userStudy);
-            }else {
-                //这里应该更新修改时间
-                QueryWrapper<UserStudy> wrapper = new QueryWrapper<>();
-                wrapper.eq("course_id" , userStudyVo.getCourseId());
-                wrapper.eq("user_id" , userStudyVo.getUserId());
-                studyService.update(userStudy , wrapper);
-
             }
         }catch(Exception e){
             log.warn("用户学习足迹数据插入失败,学习足迹:" + content);

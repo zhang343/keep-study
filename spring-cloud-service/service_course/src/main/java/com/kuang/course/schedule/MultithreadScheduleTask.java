@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,5 +62,14 @@ public class MultithreadScheduleTask {
         }else {
             log.warn(treadName + "获取课程全局锁失败");
         }
+    }
+
+
+    //缓存前三名课程
+    @Async
+    @Scheduled(fixedDelay = 10000)  //间隔10秒
+    public void first(){
+        log.info("定时任务开始, 缓存前三名课程,当前时间:" + LocalDateTime.now().toLocalTime());
+        courseService.findCourseOrderByPrice();
     }
 }

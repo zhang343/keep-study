@@ -33,34 +33,4 @@ public class UserCollectServiceImpl extends ServiceImpl<UserCollectMapper, UserC
         return integer != 0;
     }
 
-    //用户收藏文章
-    @Async
-    @Override
-    public void addCollectionArticle(String articleId, String userId) {
-        log.info("用户收藏文章,文章id:" + articleId + ",用户id:" + userId);
-        boolean flag = findUserIsCollection(articleId, userId);
-        if(!flag){
-            UserCollect userCollect = new UserCollect();
-            userCollect.setArticleId(articleId);
-            userCollect.setUserId(userId);
-            baseMapper.insert(userCollect);
-        }
-    }
-
-    //查询我的收藏文章数量
-    @Override
-    public Integer findUserCollectionNumber(String userId) {
-        log.info("用户收藏文章数量,用户id:" + userId);
-        QueryWrapper<UserCollect> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_id" , userId);
-        return baseMapper.selectCount(wrapper);
-    }
-
-    //查询用户收藏
-    @Async
-    @Override
-    public Future<List<CollectArticleVo>> findUserCollection(Long current, Long limit, String userId) {
-        current = (current - 1) * limit;
-        return new AsyncResult<>(null);
-    }
 }

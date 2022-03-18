@@ -16,18 +16,4 @@ import java.util.List;
  */
 public interface UserInfoMapper extends BaseMapper<UserInfo> {
 
-    //查找用户数量，通过条件
-    Long findUserNumberByCondition(@Param("accountOrNickname") String accountOrNickname);
-
-    //查找用户，通过条件
-    List<UserSearchVo> findUserByCondition(@Param("current") Long current,
-                                           @Param("limit") Long limit,
-                                           @Param("accountOrNickname") String accountOrNickname);
-
-
-    //查找用户安全信息
-    UserSecurity findAWEP(String userId);
-
-    //查询用户基本信息
-    UserDetailVo findDetailInformation(String userId);
 }

@@ -43,7 +43,6 @@ public class CmsVideoServiceImpl extends ServiceImpl<CmsVideoMapper, CmsVideo> i
     private CmsBillService billService;
 
     //通过课程id查找该课程下面小节数量
-    @Cacheable(value = "videoNumber")
     @Override
     public Integer findVideoNumberByCourseId(String courseId) {
         log.info("通过课程id查找对应小节数量，课程id：" + courseId);
@@ -86,17 +85,6 @@ public class CmsVideoServiceImpl extends ServiceImpl<CmsVideoMapper, CmsVideo> i
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
         }
         return userStudyVoByCourseId;
-    }
-
-    //设置课程小节数量
-    @Async
-    @Override
-    public Future<List<MessageCourseVo>> findVideoNumberByCourseId(List<MessageCourseVo> messageCourseVos) {
-        for(MessageCourseVo messageCourseVo : messageCourseVos){
-            Integer videoNumberByCourseId = findVideoNumberByCourseId(messageCourseVo.getCourseId());
-            messageCourseVo.setVideoNumber(videoNumberByCourseId);
-        }
-        return new AsyncResult<>(messageCourseVos);
     }
 
     //缓存课程播放量

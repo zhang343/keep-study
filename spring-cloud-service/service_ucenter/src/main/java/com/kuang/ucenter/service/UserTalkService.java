@@ -9,6 +9,4 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface UserTalkService extends IService<UserTalk> {
 
-    //查询出用户说说数量
-    Integer findDynamicNumberByUserId(String userId);
 }

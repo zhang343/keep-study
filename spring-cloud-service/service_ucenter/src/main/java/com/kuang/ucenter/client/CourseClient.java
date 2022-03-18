@@ -16,8 +16,4 @@ import org.springframework.web.bind.annotation.RequestParam;
 )
 public interface CourseClient {
 
-
-    @GetMapping("/cms/bill/findUserBillNumber")
-    R findUserBillNumber(@RequestParam("userId") String userId);
-
 }

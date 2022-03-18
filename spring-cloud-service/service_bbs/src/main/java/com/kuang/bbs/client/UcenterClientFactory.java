@@ -5,6 +5,7 @@ import com.kuang.springcloud.utils.R;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 /**
@@ -19,35 +20,22 @@ public class UcenterClientFactory implements FallbackFactory<UcenterClient> {
     @Override
     public UcenterClient create(Throwable throwable) {
         return new UcenterClient() {
+
             @Override
-            public R findUserNumber() {
-                log.error("远程调用service-ucenter下面的/user/account/findUserNumber方法失败");
+            public R findAvatarAndNicknameByUserId(String userId) {
                 return R.error();
             }
 
             @Override
-            public R findAvatarAndNicknameByUserId() {
-                log.error("远程调用service-ucenter下面的/user/account/findAvatarAndNicknameByUserId方法失败");
+            public R findUserIsCollection(String articleId , String userId) {
                 return R.error();
             }
 
             @Override
-            public R findUserIsCollection(String articleId) {
-                log.error("远程调用service-ucenter下面的/user/collection/findUserIsCollection方法失败");
+            public R findUserFansId(String userId) {
                 return R.error();
             }
 
-            @Override
-            public R findUserFansId(String token) {
-                log.error("远程调用service-ucenter下面的/user/attention/findUserFansId方法失败");
-                return R.error();
-            }
-
-            @Override
-            public R findMyCollectionArticleNumber(String toke) {
-                log.error("远程调用service-ucenter下面的/user/collection/findMyCollectionArticleNumber方法失败");
-                return R.error();
-            }
         };
     }
 }

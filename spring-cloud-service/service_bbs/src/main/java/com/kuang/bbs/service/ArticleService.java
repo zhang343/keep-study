@@ -39,7 +39,7 @@ public interface ArticleService extends IService<Article> {
     ArticleUpdateAndCreateVo findArticleByArticleIdAndUserId(String articleId, String userId);
 
     //用户修改文章
-    Article updateArticle(ArticleUpdateAndCreateVo articleUpdateAndCreateVo, String userId);
+    void updateArticle(ArticleUpdateAndCreateVo articleUpdateAndCreateVo, String userId);
 
     //用户删除文章
     void deleteArticle(String articleId, String userId);
@@ -47,33 +47,15 @@ public interface ArticleService extends IService<Article> {
     //查询置顶文章
     IndexArticleVo findTopArticle();
 
-    //查找文章所有者和文章标题
-    Article findArticleUserIdAndTitle(String articleId);
-
-    //查找用户所有文章数量
-    Integer findArticleNumberByUserId(String userId);
-
-    //查询用户已经发布和没有违规的文章数量
-    Integer findReleaseArticleNumber(String userId);
-
     //向好友动态发送消息
-    void sendFrientFeed(String articleId , String token);
-
-    //查找文章浏览量
-    Map<String, Object> findArticleViews(List<String> articleIdList);
-
-    //查询用户收藏文章数量
-    Future<Integer> findUserCollectionNumber(String token);
-
-    //查找用户我的文章
-    List<UserArticleVo> findMyArticle(Long current, Long limit, String userId);
-
-    //查询是不是专栏文章
-    boolean findIsColumnArticle(String articleId);
+    void sendFrientFeed(String articleId , String userId);
 
     //设置文章访问量，缓存处理
     void setArticleViews(String articleId , String ip);
 
     //更新文章浏览量
     void updateArticleViews(List<Article> articleList);
+
+    //为消息模块服务，查询文章浏览量
+    Map<String, Object> findArticleViews(List<String> articleIdList);
 }

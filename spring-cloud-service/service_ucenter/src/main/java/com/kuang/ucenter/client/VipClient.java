@@ -20,23 +20,5 @@ import java.util.List;
 )
 public interface VipClient {
 
-    @GetMapping("/vm/user/findMemberRightLogo")
-    R findMemberRightLogo(@RequestParam("userIdList") List<String> userIdList);
-
-    @GetMapping("/vm/user/findMemberRightVipLevel")
-    R findMemberRightVipLevel(@RequestParam("userId") String userId);
-
-    @PostMapping("/usertodayright/addArticle")
-    R addArticle();
-
-    @GetMapping("/vm/user/findMemberRightVipLevelAndIsSign")
-    R findMemberRightVipLevelAndIsSign(@RequestHeader("token") String token);
-
-    @GetMapping("/vm/user/findSignExperience")
-    R findSignExperience();
-
-    //用户签到接口权益
-    @PostMapping("/usertodayright/toSign")
-    R toSign();
 
 }

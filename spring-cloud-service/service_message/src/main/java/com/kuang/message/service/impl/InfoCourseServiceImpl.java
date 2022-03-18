@@ -1,12 +1,11 @@
 package com.kuang.message.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kuang.message.client.CourseClient;
 import com.kuang.message.entity.InfoCourse;
 import com.kuang.message.mapper.InfoCourseMapper;
 import com.kuang.message.service.InfoCourseService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.kuang.springcloud.entity.MessageCourseVo;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
@@ -28,9 +27,9 @@ import java.util.concurrent.Future;
 @Slf4j
 public class InfoCourseServiceImpl extends ServiceImpl<InfoCourseMapper, InfoCourse> implements InfoCourseService {
 
+
     @Resource
     private CourseClient courseClient;
-
 
     //查询未读消息
     @Override
@@ -53,10 +52,10 @@ public class InfoCourseServiceImpl extends ServiceImpl<InfoCourseMapper, InfoCou
     @Override
     public List<String> findUserNewsId(Long current, Long limit, String userId) {
         current = (current - 1) * limit;
-        List<MessageCourseVo> userNews = baseMapper.findUserNews(current, limit, userId);
+        List<InfoCourse> infoCourseList = baseMapper.findUserCourseList(current , limit , userId);
         List<String> courseIdList = new ArrayList<>();
-        for(MessageCourseVo messageCourseVo : userNews){
-            courseIdList.add(messageCourseVo.getCourseId());
+        for(InfoCourse infoCourse : infoCourseList){
+            courseIdList.add(infoCourse.getCourseId());
         }
         return courseIdList;
     }
@@ -71,15 +70,14 @@ public class InfoCourseServiceImpl extends ServiceImpl<InfoCourseMapper, InfoCou
         }
     }
 
-    //查找课程通知
+    //远程调用查询课程
     @Async
     @Override
-    public Future<Object> findUserNews(List<String> courseIdList) {
-        R messageCourseDetaile = courseClient.findMessageCourseDetaile(courseIdList);
-        if(!messageCourseDetaile.getSuccess()){
-            throw new XiaoXiaException(ResultCode.ERROR , "查询课程通知失败");
+    public Future<Object> findMessageCourseVos(List<String> courseIdList) {
+        R messageCourseVo = courseClient.findMessageCourseVo(courseIdList);
+        if(!messageCourseVo.getSuccess()){
+            throw new RuntimeException();
         }
-        Object o = messageCourseDetaile.getData().get("courseNewsList");
-        return new AsyncResult<>(o);
+        return new AsyncResult<>(messageCourseVo.getData().get("messageCourseVos"));
     }
 }

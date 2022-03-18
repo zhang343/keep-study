@@ -23,38 +23,5 @@ import java.util.concurrent.Future;
 @Slf4j
 public class UserHomepageServiceImpl extends ServiceImpl<UserHomepageMapper, UserHomepage> implements UserHomepageService {
 
-    //修改用户主页内容
-    @Override
-    public void updateContent(String content , String userId) {
-        log.info("修改用户主页内容");
-        QueryWrapper<UserHomepage> wrapper = new QueryWrapper<>();
-        wrapper.eq("id" , userId);
-        Integer integer = baseMapper.selectCount(wrapper);
-        UserHomepage userHomepage = new UserHomepage();
-        userHomepage.setId(userId);
-        userHomepage.setContent(content);
-        if(integer != 1){
-            //说明没有
-            int insert = baseMapper.insert(userHomepage);
-            if(insert != 1){
-                throw new XiaoXiaException(ResultCode.ERROR , "修改用户主页内容失败");
-            }
-        }else {
-            int i = baseMapper.updateById(userHomepage);
-            if(i != 1){
-                throw new XiaoXiaException(ResultCode.ERROR , "修改用户主页内容失败");
-            }
-        }
-    }
-
-    //查看主页内容
-    @Override
-    public UserHomepage findByUserId(String userId) {
-        UserHomepage userHomepage = baseMapper.selectById(userId);
-        if(userHomepage == null){
-            userHomepage = new UserHomepage();
-        }
-        return userHomepage;
-    }
 
 }

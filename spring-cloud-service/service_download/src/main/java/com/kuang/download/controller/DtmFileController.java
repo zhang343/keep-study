@@ -38,17 +38,5 @@ public class DtmFileController {
         List<DtmFileVo> dtmFileList = dtmFileService.findFileCondition(categoryId , fileName);
         return R.ok().data("fileList" , dtmFileList);
     }
-
-    //通过文件id查找文件名和(这里指阿里云存储)源文件名和价格
-    @GetMapping("findFileNameAndPriceById")
-    public R findFileNameAndPriceById(String id){
-        log.info("通过文件id查找文件名和(这里指阿里云存储)源文件名和价格,文件id:" + id);
-        if(StringUtils.isEmpty(id)){
-            log.warn("有人可能涉及非法操作");
-            throw new XiaoXiaException(ResultCode.ERROR , "你没有传入文件id");
-        }
-        DtmFile dtmFile = dtmFileService.findFileNameAndPriceById(id);
-        return R.ok().data("name" , dtmFile.getName()).data("fileSourceId" , dtmFile.getFileSourceId()).data("price" , dtmFile.getPrice());
-    }
 }
 

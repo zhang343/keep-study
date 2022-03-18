@@ -24,6 +24,7 @@ public class InsideVideoController {
     //根据视频id获取视频凭证
     @GetMapping("getPlayAuth")
     public R getPlayAuth(String videoSourceId) {
+        log.info("开始获取视频播放凭证，视频id为：" + videoSourceId);
         if(StringUtils.isEmpty(videoSourceId)){
             throw new XiaoXiaException(ResultCode.ERROR , "远程视频id为空");
         }

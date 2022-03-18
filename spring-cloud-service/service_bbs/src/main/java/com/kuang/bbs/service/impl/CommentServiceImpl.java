@@ -9,6 +9,7 @@ import com.kuang.bbs.entity.Article;
 import com.kuang.bbs.entity.Comment;
 import com.kuang.bbs.entity.vo.OneCommentVo;
 import com.kuang.bbs.entity.vo.TwoCommentVo;
+import com.kuang.bbs.mapper.ArticleMapper;
 import com.kuang.bbs.mapper.CommentMapper;
 import com.kuang.bbs.service.ArticleService;
 import com.kuang.bbs.service.CommentService;
@@ -17,11 +18,13 @@ import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.rabbitmq.MsgProducer;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
+import com.kuang.springcloud.utils.VipUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -35,12 +38,9 @@ import java.util.concurrent.Future;
 @Slf4j
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements CommentService {
 
-    @Resource
-    private VipClient vipClient;
-
 
     @Resource
-    private ArticleService articleService;
+    private ArticleMapper articleMapper;
 
     @Resource
     private MsgProducer msgProducer;
@@ -80,7 +80,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         String articleId = comment.getArticleId();
         log.info("增加评论,文章id:" + articleId);
         //进行远程调用查找插入评论的用户头像和昵称
-        R ucenterR = ucenterClient.findAvatarAndNicknameByUserId();
+        R ucenterR = ucenterClient.findAvatarAndNicknameByUserId(comment.getUserId());
         if(!ucenterR.getSuccess()){
             log.warn("远程调用失败，无法查询出用户头像和昵称");
             throw new XiaoXiaException(ResultCode.ERROR , "增加评论失败");
@@ -91,7 +91,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         comment.setUserNickname(nickname);
         int insert = baseMapper.insert(comment);
         if(insert != 1){
-            log.info("增加一级评论失败，文章id：" + articleId);
+            log.info("增加评论失败，文章id：" + articleId);
             throw new XiaoXiaException(ResultCode.ERROR , "增加评论失败");
         }
         //向rabbitmq发送消息
@@ -109,7 +109,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         if(oneCommentVoList == null || oneCommentVoList.size() == 0){
             return new AsyncResult<>(oneCommentVoList);
         }
-
         Set<String> userIdSet = new HashSet<>();
         //取出所有评论用户的id
         for(OneCommentVo oneCommentVo : oneCommentVoList){
@@ -118,18 +117,15 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                 userIdSet.add(twoCommentVo.getUserId());
             }
         }
-
         List<String> userIdList = new ArrayList<>(userIdSet);
-        //远程调用获取用户viplogo
-        log.info("远程调用service-vip下面的/vm/user/findMemberRightLogo,获取用户viplogo,用户:" + userIdList);
-        R vipR = vipClient.findMemberRightLogo(userIdList);
-        if(vipR.getSuccess()){
-            Map<String , Object> logo = vipR.getData();
-            for(OneCommentVo oneCommentVo : oneCommentVoList){
-                oneCommentVo.setUserVipLevel((String) logo.get(oneCommentVo.getUserId()));
-                for(TwoCommentVo twoCommentVo : oneCommentVo.getChildList()){
-                    twoCommentVo.setUserVipLevel((String) logo.get(twoCommentVo.getUserId()));
-                }
+        Map<String , String> userVipLevel = VipUtils.getUserVipLevel(userIdList);
+        if(userVipLevel == null){
+            return new AsyncResult<>(oneCommentVoList);
+        }
+        for(OneCommentVo oneCommentVo : oneCommentVoList){
+            oneCommentVo.setUserVipLevel(userVipLevel.get(oneCommentVo.getUserId()));
+            for(TwoCommentVo twoCommentVo : oneCommentVo.getChildList()){
+                twoCommentVo.setUserVipLevel(userVipLevel.get(twoCommentVo.getUserId()));
             }
         }
         return new AsyncResult<>(oneCommentVoList);
@@ -145,43 +141,29 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         return baseMapper.selectCount(wrapper);
     }
 
-    //查找回复用户的id和文章标题
-    @Override
-    public Map<String, String> findReplyUserIdAndArticleTitle(String replyCommentId, String articleId) {
-        log.info("查找回复用户的id和文章标题,评论id");
-        QueryWrapper<Comment> wrapper = new QueryWrapper<>();
-        wrapper.select("user_id");
-        wrapper.eq("id" , replyCommentId);
-        Comment comment = baseMapper.selectOne(wrapper);
-        Article article = articleService.findArticleUserIdAndTitle(articleId);
-        String userId = null;
-        String title = null;
-        //如果为null，说明回复的应该是文章所有者
-        if(comment == null){
-            userId = article.getUserId();
-        }else {
-            userId = comment.getUserId();
-        }
-        title = article.getTitle();
-        Map<String , String> map = new HashMap<>();
-        map.put("userId" , userId);
-        map.put("title" , title);
-        return map;
-    }
-
     //用户发表评论之后，向rabbitmq发送消息
     @Async
     @Override
     public void sendReplyNews(Comment comment) {
         log.info("用户发表评论之后，向rabbitmq发送消息");
         String userId = comment.getUserId();
-        Map<String, String> replyUserIdAndArticleTitle = findReplyUserIdAndArticleTitle(comment.getFatherId(), comment.getArticleId());
-        String replyUserId = replyUserIdAndArticleTitle.get("userId");
+        Article article = articleMapper.selectById(comment.getArticleId());
+        if(article == null){
+            return;
+        }
+        String title = article.getTitle();
+        String replyUserId = null;
+        if(StringUtils.isEmpty(comment.getFatherId())){
+            //说明找文章
+            replyUserId = article.getUserId();
+        }else {
+            //说明找评论
+            replyUserId = comment.getReplyUserId();
+        }
         //如果评论者和他回复的评论或者文章所有者一样，不发送消息
         if(replyUserId.equals(userId)){
             return;
         }
-        String title = replyUserIdAndArticleTitle.get("title");
         log.info("开始向rabbitmq发送数据,存储回复记录,用户id:" + userId);
         InfoReplyMeVo infoReplyMeVo = new InfoReplyMeVo();
         infoReplyMeVo.setContent(comment.getContent());
@@ -196,15 +178,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         }catch(Exception e){
             log.warn("开始向rabbitmq发送数据失败,存储回复记录,用户id:" + userId);
         }
-    }
-
-    //查找用户评论数量
-    @Override
-    public Integer findUserCommentNumber(String userId) {
-        log.info("查找用户评论数量");
-        QueryWrapper<Comment> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_id" , userId);
-        return baseMapper.selectCount(wrapper);
     }
 
     //删除文章评论

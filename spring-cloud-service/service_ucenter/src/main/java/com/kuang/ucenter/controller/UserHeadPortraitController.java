@@ -35,10 +35,6 @@ public class UserHeadPortraitController {
     @Resource
     private UserHeadPortraitService userHeadPortraitService;
 
-
-    @Resource
-    private UserInfoService userInfoService;
-
     //查询出所有头像
     @GetMapping("findAll")
     public R findAll(){
@@ -47,18 +43,6 @@ public class UserHeadPortraitController {
         return R.ok().data("avatarList" , urlList);
     }
 
-
-    //设置用户头像
-    @PostMapping("setUserHeadPortrait")
-    public R setUserHeadPortrait(String url , HttpServletRequest request){
-        String userId = JwtUtils.getMemberIdByJwtToken(request);
-        log.info("用户设置头像,用户id:" + userId);
-        if(userId == null || StringUtils.isEmpty(url)){
-            throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
-        }
-        userInfoService.setUserHeadPortrait(url , userId);
-        return R.ok();
-    }
 
 }
 

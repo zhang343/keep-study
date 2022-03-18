@@ -19,7 +19,6 @@ public class VodClientFactory implements FallbackFactory<VodClient> {
         return new VodClient() {
             @Override
             public R getPlayAuth(String videoSourceId) {
-                log.warn("远程调用service-vod接口/video/getPlayAuth失败");
                 return R.error();
             }
         };

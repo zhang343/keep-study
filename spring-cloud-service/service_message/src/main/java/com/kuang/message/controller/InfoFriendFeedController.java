@@ -42,20 +42,8 @@ public class InfoFriendFeedController {
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法查询");
         }
         List<FriendFeedVo> friendFeedVos = friendFeedService.findUserNews(current, limit, userId);
-        Future<List<FriendFeedVo>> articleViewsAndVipLevel = friendFeedService.findArticleViewsAndVipLevel(friendFeedVos);
         Integer total = friendFeedService.findUserNewsNumber(userId);
         friendFeedService.setFriendFeedRead(friendFeedVos);
-        for(int i = 0 ; i < 10 ; i++){
-            if(articleViewsAndVipLevel.isDone()){
-                break;
-            }
-            //如果没有执行完毕，则最多等待0.2秒
-            try {
-                TimeUnit.MILLISECONDS.sleep(200);
-            } catch(InterruptedException e) {
-                log.warn("休眠失败");
-            }
-        }
         return R.ok().data("total" , total).data("dynamicNewList" , friendFeedVos);
     }
 

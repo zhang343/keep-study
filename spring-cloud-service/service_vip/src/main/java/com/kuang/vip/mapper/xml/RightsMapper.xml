@@ -5,6 +5,18 @@
     <select id="findVipRight" resultType="com.kuang.vip.entity.vo.RightsVo" >
         select id , vip_level , price , course_discount , column_number ,
                sign_experience , money , article_number , time_length
-        from vip_rights;
+        from vip_rights where price != 0
+    </select>
+
+    <select id="findNotVipRight" resultType="com.kuang.springcloud.entity.RightRedis" >
+        select id , vip_level , price , course_discount , column_number ,
+               sign_experience , money , article_number , time_length
+        from vip_rights where price = 0
+    </select>
+
+    <select id="findAllRight" resultType="com.kuang.springcloud.entity.RightRedis" >
+        select id , vip_level , price , course_discount , column_number ,
+               sign_experience , money , article_number , time_length
+        from vip_rights
     </select>
 </mapper>

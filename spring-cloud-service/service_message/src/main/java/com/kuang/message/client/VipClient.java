@@ -19,13 +19,5 @@ import java.util.List;
 )
 public interface VipClient {
 
-    @GetMapping("/vm/user/findMemberRightLogo")
-    R findMemberRightLogo(@RequestParam("userIdList") List<String> userIdList);
-
-    @GetMapping("/vm/user/findMemberRightVipLevel")
-    R findMemberRightVipLevel(@RequestParam("userId") String userId);
-
-    @PostMapping("/usertodayright/addArticle")
-    R addArticle();
 
 }

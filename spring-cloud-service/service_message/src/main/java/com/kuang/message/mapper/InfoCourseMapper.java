@@ -14,12 +14,13 @@ import java.util.List;
 public interface InfoCourseMapper extends BaseMapper<InfoCourse> {
 
     //查找课程通知
-    List<MessageCourseVo> findUserNews(@Param("current") Long current,
-                                       @Param("limit") Long limit,
-                                       @Param("userId") String userId);
+    List<InfoCourse> findUserCourseList(@Param("current") Long current,
+                                        @Param("limit") Long limit,
+                                        @Param("userId") String userId);
 
 
     //让课程通知已读
     Integer setCourseRead(@Param("courseIdList") List<String> courseIdList,
                           @Param("userId") String userId);
+
 }

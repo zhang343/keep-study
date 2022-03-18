@@ -6,12 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
- * @author XiaoZhang
- * @date 2022/2/6 15:32
  * 远程调用service-vip服务类
  */
 @FeignClient(
@@ -19,14 +16,12 @@ import java.util.List;
         fallbackFactory = VipClientFactory.class
 )
 public interface VipClient {
+    @GetMapping("/inside/member/findUserVipLevelByUserIdList")
+    R findUserVipLevelByUserIdList(@RequestParam("userIdList") List<String> userIdList);
 
-    @GetMapping("/vm/user/findMemberRightLogo")
-    R findMemberRightLogo(@RequestParam("userIdList") List<String> userIdList);
+    @GetMapping("/inside/right/findRightRedisByUserId")
+    R findRightRedisByUserId(@RequestParam("userId") String userId);
 
-    @GetMapping("/vm/user/findMemberRightVipLevel")
-    R findMemberRightVipLevel(@RequestParam("userId") String userId);
-
-    @PostMapping("/usertodayright/addArticle")
-    R addArticle();
-
+    @PostMapping("/inside/dailyequity/addArticle")
+    R addArticle(@RequestParam("userId") String userId);
 }

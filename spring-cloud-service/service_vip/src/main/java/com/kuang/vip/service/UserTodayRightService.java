@@ -13,7 +13,7 @@ public interface UserTodayRightService extends IService<UserTodayRight> {
     void addArticle(String userId);
 
     //更新用户每日权益
-    void updateMemberTodayRight();
+    boolean updateMemberTodayRight();
 
     //查看用户是否签到
     Boolean findIsSign(String userId);

@@ -21,18 +21,4 @@ public class UserSignController {
 
     @Resource
     private UserInfoService userInfoService;
-
-    //签到接口
-    @PostMapping("toSignIn")
-    public R toSignIn(HttpServletRequest request){
-        System.out.println(LocalTime.now());
-        String userId = JwtUtils.getMemberIdByJwtToken(request);
-        log.info("用户签到,用户id:" + userId);
-        if(userId == null){
-            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
-        }
-        userInfoService.toSignIn(userId);
-        System.out.println(LocalTime.now());
-        return R.ok();
-    }
 }

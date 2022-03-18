@@ -13,8 +13,6 @@ import java.util.concurrent.Future;
  */
 public interface InfoFriendFeedService extends IService<InfoFriendFeed> {
 
-    //查询出所有好友动态,只查询id和文章id
-    List<InfoFriendFeed> findAllFriendFeed();
 
     //查找未读消息
     Integer findUserUnreadNumber(String userId);
@@ -28,6 +26,4 @@ public interface InfoFriendFeedService extends IService<InfoFriendFeed> {
     //设置好友动态消息已读
     void setFriendFeedRead(List<FriendFeedVo> friendFeedVos);
 
-    //查找文章浏览量和vip
-    Future<List<FriendFeedVo>> findArticleViewsAndVipLevel(List<FriendFeedVo> friendFeedVos);
 }

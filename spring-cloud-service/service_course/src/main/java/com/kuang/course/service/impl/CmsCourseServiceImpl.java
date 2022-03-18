@@ -16,11 +16,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kuang.course.service.CmsVideoService;
 import com.kuang.springcloud.entity.BbsCourseVo;
 import com.kuang.springcloud.entity.MessageCourseVo;
+import com.kuang.springcloud.entity.RightRedis;
 import com.kuang.springcloud.entity.UserStudyVo;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.rabbitmq.MsgProducer;
 import com.kuang.springcloud.utils.R;
+import com.kuang.springcloud.utils.RedisUtils;
 import com.kuang.springcloud.utils.ResultCode;
+import com.kuang.springcloud.utils.VipUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
@@ -89,10 +92,13 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
         wrapper.select("price" , "title");
         wrapper.eq("id" , courseId);
         CmsCourse course = baseMapper.selectOne(wrapper);
+        if(course == null || course.getPrice() == 0){
+            throw new XiaoXiaException(ResultCode.ERROR , "购买课程失败");
+        }
         //查询这个课程是否已经被用户购买
         boolean flag = billService.findBillByCourseIdAndUserId(courseId, userId);
         //判断课程是否存在，如果存在，看价格是否为0，再看这个课程是否已经被用户购买
-        if(course == null || course.getPrice() == 0 || flag){
+        if(flag){
             log.warn("有人进行非法购买课程操作,课程id:" + courseId);
             throw new XiaoXiaException(ResultCode.ERROR , "购买课程失败");
         }
@@ -107,12 +113,16 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
         }
         //远程调用获取用户对应课程打折数量
         log.info("开始进行远程调用,查出用户对应vip等级的打折数,用户id:" + userId);
-        R result = vipClient.findUserCourseDiscount();
-        if(!result.getSuccess()){
-            log.warn("远程调用查出用户对应vip等级的打折数失败,用户id:" + userId);
-            throw new XiaoXiaException(ResultCode.ERROR , "课程购买失败");
+        RightRedis userRightRedis = VipUtils.getUserRightRedis(userId);
+        if(userRightRedis == null){
+            R rightRedisByUserId = vipClient.findRightRedisByUserId(userId);
+            if(!rightRedisByUserId.getSuccess()){
+                throw new XiaoXiaException(ResultCode.ERROR , "课程购买失败");
+            }
+            userRightRedis = (RightRedis) rightRedisByUserId.getData().get("rightRedis");
         }
-        double courseDiscount = (double) result.getData().get("courseDiscount");
+
+        double courseDiscount = userRightRedis.getCourseDiscount();
         //对课程进行相应打折
         int price = (int) (course.getPrice() * courseDiscount);
         if(price != 0){
@@ -129,17 +139,15 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
     }
 
     //查找价格为前三的课程
-    @Cacheable(value = "bbsCourseVoList")
     @Override
     public List<BbsCourseVo> findCourseOrderByPrice() {
-        log.info("开始查询课程价格为前三的课程");
-        return baseMapper.findCourseOrderByPrice();
-    }
-
-    //查找课程相关信息，为消息模块服务
-    @Override
-    public List<MessageCourseVo> findMessageCourseDetaile(List<String> courseIdList) {
-        return baseMapper.findMessageCourseDetaile(courseIdList);
+        Object value = RedisUtils.getValue(RedisUtils.COURSEORDERBYPRICE);
+        if(value != null){
+            return (List<BbsCourseVo>) value;
+        }
+        List<BbsCourseVo> courseOrderByPrice = baseMapper.findCourseOrderByPrice();
+        RedisUtils.setValueTimeout(RedisUtils.COURSEORDERBYPRICE , courseOrderByPrice , 120);
+        return courseOrderByPrice;
     }
 
     //向用户历史记录发送消息
@@ -157,6 +165,16 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
         baseMapper.updateCourseViews(courseList);
     }
 
+    //为消息模块服务，查询课程
+    @Override
+    public List<MessageCourseVo> findMessageCourseVo(List<String> courseIdList) {
+        List<MessageCourseVo> messageCourseVos = baseMapper.findMessageCourseVo(courseIdList);
+        for(MessageCourseVo messageCourseVo : messageCourseVos){
+            Integer videoNumberByCourseId = videoService.findVideoNumberByCourseId(messageCourseVo.getId());
+            messageCourseVo.setVideoNumber(videoNumberByCourseId);
+        }
+        return messageCourseVos;
+    }
 
 
 }

@@ -1,6 +1,7 @@
 package com.kuang.message.controller;
 
 
+import com.kuang.message.client.CourseClient;
 import com.kuang.message.service.InfoCourseService;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.JwtUtils;
@@ -36,7 +37,6 @@ public class InfoCourseController {
     public R findAll(@RequestParam(value = "current", required = false, defaultValue = "1") Long current ,
                      @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
                      HttpServletRequest request){
-        System.out.println("----" + LocalTime.now() + "----");
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         log.info("查询课程通知消息,用户id:" + userId);
         if(userId == null){
@@ -44,23 +44,20 @@ public class InfoCourseController {
         }
         //查询出课程id
         List<String> courseIdList = courseService.findUserNewsId(current, limit, userId);
-        //异步远程调用查出课程详细信息
-        Future<Object> userNews = courseService.findUserNews(courseIdList);
+        Future<Object> messageCourseVos = courseService.findMessageCourseVos(courseIdList);
         Integer total = courseService.findUserNewsNumber(userId);
         courseService.setCourseRead(courseIdList , userId);
 
-        Object messageCourseVos = null;
-        for(int i = 0 ; i < 10 ; i++){
-            if(userNews.isDone()){
+        Object courseNewsList = null;
+        for(int i = 0 ; i < 5 ; i++){
+            if(messageCourseVos.isDone()){
                 try {
-                    messageCourseVos = userNews.get();
+                    courseNewsList = messageCourseVos.get();
                 }catch(Exception e){
-                    log.warn("查询课程通知失败");
-                    throw new XiaoXiaException(ResultCode.ERROR , "查询课程通知失败");
+                    log.warn("远程调用查询课程失败");
                 }
-                break;
             }
-            //如果没有执行完毕，则最多等待0.2秒
+
             try {
                 TimeUnit.MILLISECONDS.sleep(200);
             } catch(InterruptedException e) {
@@ -69,7 +66,7 @@ public class InfoCourseController {
         }
 
         System.out.println("----" + LocalTime.now() + "----");
-        return R.ok().data("total" , total).data("courseNewsList" , messageCourseVos);
+        return R.ok().data("total" , total).data("courseNewsList" , courseNewsList);
     }
 }
 

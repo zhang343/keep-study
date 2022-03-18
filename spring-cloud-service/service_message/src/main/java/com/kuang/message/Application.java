@@ -1,15 +1,11 @@
 package com.kuang.message;
 
-import com.kuang.message.entity.InfoCourse;
-import com.kuang.message.mapper.InfoCourseMapper;
 import com.kuang.springcloud.utils.JwtUtils;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import javax.annotation.Resource;
 
 /**
  * @author XiaoZhang
@@ -34,7 +30,7 @@ public class Application implements CommandLineRunner {
     //做程序启动之后工作
     @Override
     public void run(String... args) throws Exception {
-        String token = JwtUtils.getJwtToken("1489885385067622401");
+        String token = JwtUtils.getJwtToken("1496388556204023809");
         System.out.println(token);
     }
 }

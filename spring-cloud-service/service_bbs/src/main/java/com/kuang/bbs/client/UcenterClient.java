@@ -3,11 +3,8 @@ package com.kuang.bbs.client;
 import com.kuang.springcloud.utils.R;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author XiaoZhang
@@ -20,20 +17,13 @@ import javax.servlet.http.HttpServletRequest;
 )
 public interface UcenterClient {
 
-    @GetMapping("/user/account/findUserNumber")
-    R findUserNumber();
+    @GetMapping("/inside/userinfo/findAvatarAndNicknameByUserId")
+    R findAvatarAndNicknameByUserId(@RequestParam("userId") String userId);
 
-    @GetMapping("/user/account/findAvatarAndNicknameByUserId")
-    R findAvatarAndNicknameByUserId();
+    @GetMapping("/inside/collection/findUserIsCollection")
+    R findUserIsCollection(@RequestParam("articleId") String articleId , @RequestParam("userId") String userId);
 
-    @GetMapping("/user/collection/findUserIsCollection")
-    R findUserIsCollection(@RequestParam("articleId") String articleId);
-
-    @GetMapping("/user/attention/findUserFansId")
-    R findUserFansId(@RequestHeader("token") String token);
-
-    //查询我的收藏文章数量
-    @GetMapping("/user/collection/findMyCollectionArticleNumber")
-    R findMyCollectionArticleNumber(@RequestHeader("token") String token);
+    @GetMapping("/inside/attention/findUserFansId")
+    R findUserFansId(@RequestParam("userId") String userId);
 
 }

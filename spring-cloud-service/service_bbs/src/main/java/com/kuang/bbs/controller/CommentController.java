@@ -39,9 +39,6 @@ public class CommentController {
     @Resource
     private CommentService commentService;
 
-    @Resource
-    private UcenterClient ucenterClient;
-
 
     //删除评论接口
     @PostMapping("delete")

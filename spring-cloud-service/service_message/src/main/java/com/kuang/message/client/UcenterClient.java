@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 )
 public interface UcenterClient {
 
-
-    @GetMapping("/user/account/findAvatarAndNicknameByUserId")
-    R findAvatarAndNicknameByUserId(@RequestHeader("token") String token);
-
+    @GetMapping("/inside/userinfo/findAvatarAndNicknameByUserId")
+    R findAvatarAndNicknameByUserId(@RequestParam("userId") String userId);
 }

@@ -28,12 +28,12 @@ public interface CmsCourseService extends IService<CmsCourse> {
     //查找价格为前三的课程
     List<BbsCourseVo> findCourseOrderByPrice();
 
-    //查找课程相关信息，为消息模块服务
-    List<MessageCourseVo> findMessageCourseDetaile(List<String> courseIdList);
-
     //向用户历史记录发送消息
     void sendHistoryMsg(String userId, String videoId);
 
     //更新课程浏览量
     void updateCourseViews(List<CmsCourse> courseList);
+
+    //为消息模块服务，查询课程
+    List<MessageCourseVo> findMessageCourseVo(List<String> courseIdList);
 }

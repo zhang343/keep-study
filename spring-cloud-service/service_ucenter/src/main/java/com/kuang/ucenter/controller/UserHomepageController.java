@@ -31,29 +31,5 @@ public class UserHomepageController {
     @Resource
     private UserHomepageService userHomepageService;
 
-
-    //修改用户主页内容
-    @PostMapping("update")
-    public R update(String content , HttpServletRequest request){
-        String userId = JwtUtils.getMemberIdByJwtToken(request);
-        log.info("修改用户主页内容");
-        if(userId == null || StringUtils.isEmpty(content)){
-            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
-        }
-        userHomepageService.updateContent(content  , userId);
-        return R.ok();
-    }
-
-    //查看主页内容
-    @GetMapping("findByUserId")
-    public R findByUserId(String userId){
-        log.info("查看用户主页内容");
-        if(StringUtils.isEmpty(userId)){
-            throw new XiaoXiaException(ResultCode.ERROR , "请正确查询");
-        }
-        UserHomepage userHomepage = userHomepageService.findByUserId(userId);
-        return R.ok().data("content" , userHomepage.getContent());
-    }
-
 }
 

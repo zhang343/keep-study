@@ -22,8 +22,7 @@ public class CourseClientFactory implements FallbackFactory<CourseClient> {
     public CourseClient create(Throwable throwable) {
         return new CourseClient() {
             @Override
-            public R findMessageCourseDetaile(List<String> courseIdList) {
-                log.error("远程调用service-course下面的/cms/course/findMessageCourseDetaile方法失败");
+            public R findMessageCourseVo(List<String> courseIdList) {
                 return R.error();
             }
         };

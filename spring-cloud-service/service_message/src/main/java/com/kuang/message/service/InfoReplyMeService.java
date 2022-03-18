@@ -25,12 +25,9 @@ public interface InfoReplyMeService extends IService<InfoReplyMe> {
     //设置回复我的消息已读
     void setReplyMeRead(List<ReplyMeVo> replyMeVos);
 
-    //查找vip标志
-    Future<List<ReplyMeVo>> findVipLevel(List<ReplyMeVo> replyMeVos);
-
     //删除用户回复消息
     void delete(String id, String userId);
 
     //回复用户消息
-    void addreply(String id, String content, String userId , String token);
+    void addreply(String id, String content, String userId);
 }

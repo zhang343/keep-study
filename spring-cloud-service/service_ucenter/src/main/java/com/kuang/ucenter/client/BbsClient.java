@@ -17,14 +17,4 @@ import org.springframework.web.bind.annotation.RequestHeader;
 )
 public interface BbsClient {
 
-    @GetMapping("/bbs/article/findUserArticleNumber")
-    R findUserArticleNumber();
-
-    //这里手动注入token
-    @GetMapping("/bbs/article/findUserReleaseArticleNumber")
-    R findUserReleaseArticleNumber(@RequestHeader("token") String token);
-
-    @GetMapping("/bbs/article/findURANAndCN")
-    R findURANAndCN(@RequestHeader("token") String token);
-
 }

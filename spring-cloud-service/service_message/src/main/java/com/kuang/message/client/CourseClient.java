@@ -18,7 +18,7 @@ import java.util.List;
 )
 public interface CourseClient {
 
-    @GetMapping("/cms/course/findMessageCourseDetaile")
-    R findMessageCourseDetaile(@RequestParam("courseIdList") List<String> courseIdList);
+    @GetMapping("/inside/course/findMessageCourseVo")
+    R findMessageCourseVo(@RequestParam("courseIdList") List<String> courseIdList);
 
 }

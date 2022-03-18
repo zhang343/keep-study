@@ -16,5 +16,5 @@ public interface VodService {
     void removeAlyVideo(List<String> videoIdList);
 
     //根据视频id获取视频凭证
-    String getPlayAuth(String id);
+    String getPlayAuth(String videoSourceId);
 }

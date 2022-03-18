@@ -29,17 +29,4 @@ public class UserSearchController {
     @Resource
     private UserInfoService userInfoService;
 
-    //全站查找用户,未被封号的
-    @GetMapping("findUser")
-    public R findUser(@RequestParam(value = "current", required = false, defaultValue = "1") Long current ,
-                      @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
-                      String accountOrNickname){
-        log.info("开始查询用户,用户账号或者昵称为:" + accountOrNickname);
-        if(StringUtils.isEmpty(accountOrNickname)){
-            throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
-        }
-        List<UserSearchVo> userVoList = userInfoService.findUserByCondition(current , limit , accountOrNickname);
-        Long total = userInfoService.findUserNumberByCondition(accountOrNickname);
-        return R.ok().data("total" , total).data("userList" , userVoList);
-    }
 }

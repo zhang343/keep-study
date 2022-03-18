@@ -9,6 +9,7 @@ import com.kuang.message.mapper.InfoFriendFeedMapper;
 import com.kuang.message.service.InfoFriendFeedService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kuang.springcloud.utils.R;
+import com.kuang.springcloud.utils.VipUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -28,20 +29,8 @@ import java.util.concurrent.Future;
 public class InfoFriendFeedServiceImpl extends ServiceImpl<InfoFriendFeedMapper, InfoFriendFeed> implements InfoFriendFeedService {
 
     @Resource
-    private VipClient vipClient;
-
-    @Resource
     private BbsClient bbsClient;
 
-
-    //查询出所有好友动态,只查询id和文章id
-    @Override
-    public List<InfoFriendFeed> findAllFriendFeed() {
-        log.info("查询出所有好友动态");
-        QueryWrapper<InfoFriendFeed> wrapper = new QueryWrapper<>();
-        wrapper.select("id" , "article_id");
-        return baseMapper.selectList(wrapper);
-    }
 
     //查找未读消息
     @Override
@@ -64,7 +53,33 @@ public class InfoFriendFeedServiceImpl extends ServiceImpl<InfoFriendFeedMapper,
     @Override
     public List<FriendFeedVo> findUserNews(Long current, Long limit, String userId) {
         current = (current - 1) * limit;
-        return baseMapper.findUserNews(current, limit, userId);
+        List<FriendFeedVo> userNews = baseMapper.findUserNews(current, limit, userId);
+        if(userNews == null || userNews.size() == 0){
+            return userNews;
+        }
+
+        List<String> userIdList = new ArrayList<>();
+        List<String> articleIdList = new ArrayList<>();
+        for(FriendFeedVo friendFeedVo : userNews){
+            userIdList.add(friendFeedVo.getAttationUserId());
+            articleIdList.add(friendFeedVo.getArticleId());
+        }
+
+        Map<String , String> userVipLevel = VipUtils.getUserVipLevel(userIdList);
+        if(userVipLevel == null){
+            userVipLevel = new HashMap<>();
+        }
+        R articleViewsR = bbsClient.findArticleViews(articleIdList);
+        Map<String , Object> views = articleViewsR.getData();
+        for(FriendFeedVo friendFeedVo : userNews){
+            friendFeedVo.setVipLevel(userVipLevel.get(friendFeedVo.getAttationUserId()));
+            Object o = views.get(friendFeedVo.getArticleId());
+            if(o != null){
+                friendFeedVo.setViews((Integer) o);
+            }
+        }
+
+        return userNews;
     }
 
     //设置好友动态消息已读
@@ -79,38 +94,5 @@ public class InfoFriendFeedServiceImpl extends ServiceImpl<InfoFriendFeedMapper,
         if(idList.size() != 0){
             baseMapper.setFriendFeedRead(idList);
         }
-    }
-
-    //查找文章浏览量和vip
-    @Async
-    @Override
-    public Future<List<FriendFeedVo>> findArticleViewsAndVipLevel(List<FriendFeedVo> friendFeedVos) {
-
-        if(friendFeedVos == null || friendFeedVos.size() == 0){
-            return new AsyncResult<>(friendFeedVos);
-        }
-        //获取文章id和用户id
-        Set<String> userIdSet = new HashSet<>();
-        Set<String> articleIdSet = new HashSet<>();
-        for(FriendFeedVo friendFeedVo : friendFeedVos){
-            userIdSet.add(friendFeedVo.getAttationUserId());
-            articleIdSet.add(friendFeedVo.getArticleId());
-        }
-
-
-        List<String> userIdList = new ArrayList<>(userIdSet);
-        List<String> articleIdList = new ArrayList<>(articleIdSet);
-        //获取用户vip
-        R memberRightLogo = vipClient.findMemberRightLogo(userIdList);
-        Map<String , Object> mapVip = memberRightLogo.getData();
-        //获取文章浏览量
-        R articleViews = bbsClient.findArticleViews(articleIdList);
-        Map<String , Object> mapViews = articleViews.getData();
-        //设值
-        for(FriendFeedVo friendFeedVo : friendFeedVos){
-            friendFeedVo.setVipLevel((String) mapVip.get(friendFeedVo.getAttationUserId()));
-            friendFeedVo.setViews((Integer) mapViews.get(friendFeedVo.getArticleId()));
-        }
-        return new AsyncResult<>(friendFeedVos);
     }
 }

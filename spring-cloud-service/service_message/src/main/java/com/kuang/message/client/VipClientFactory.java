@@ -19,23 +19,6 @@ public class VipClientFactory implements FallbackFactory<VipClient> {
     @Override
     public VipClient create(Throwable throwable) {
         return new VipClient() {
-            @Override
-            public R findMemberRightLogo(List<String> userIdList) {
-                log.error("远程调用service-vip下面的/vm/user/findMemberRightLogo方法失败");
-                return R.error();
-            }
-
-            @Override
-            public R findMemberRightVipLevel(String userId) {
-                log.error("远程调用service-vip下面的/vm/user/findMemberRightVipLevel方法失败");
-                return R.error();
-            }
-
-            @Override
-            public R addArticle() {
-                log.error("远程调用service-vip下面的/usertodayright/addArticle方法失败");
-                return R.error();
-            }
         };
     }
 }

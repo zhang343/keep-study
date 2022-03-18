@@ -15,13 +15,4 @@ public interface UserCollectService extends IService<UserCollect> {
 
     //查询用户是否收藏了某个文章
     boolean findUserIsCollection(String articleId, String userId);
-
-    //用户收藏文章
-    void addCollectionArticle(String articleId, String userId);
-
-    //查询我的收藏文章数量
-    Integer findUserCollectionNumber(String userId);
-
-    //查询用户收藏
-    Future<List<CollectArticleVo>> findUserCollection(Long current, Long limit, String userId);
 }

@@ -47,17 +47,6 @@
     </select>
 
 
-    <select id="findMyArticle" resultType="com.kuang.bbs.entity.vo.UserArticleVo" >
-        select article.id , article.title , article.description ,
-               category.category_name ,
-               article.views , article.gmt_create ,
-               article.is_release , article.is_violation_article , article.is_excellent_article
-        from bbs_article as article join bbs_category as category on article.category_id = category.id
-        where article.user_id = #{userId} and (is_column_article = 0 or is_bbs = 1)
-        order by article.gmt_create desc
-        limit #{current} , #{limit}
-    </select>
-
     <update id="updateArticleViews" parameterType="java.util.List" >
         <foreach collection="articleList" item="article" index="index" open="" close="" separator=";">
             update bbs_article

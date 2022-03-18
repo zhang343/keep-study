@@ -47,7 +47,6 @@ public class OssFileController {
             log.warn("有用户非法下载文件,文件的id:" + id + ",用户id:" + userId);
             throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
         }
-        log.info("开始远程调用service-download下面的服务接口/dtm/file/findFileNameAndPriceById,取得文件名和(这里指阿里云存储)源文件名和价格,文件id:" + id);
         R downloadR = downloadClient.findFileNameAndPriceById(id);
         if(!downloadR.getSuccess()){
             log.error("远程调用service-download下面的服务接口/dtm/file/findFileNameAndPriceById失败,文件id:" + id);

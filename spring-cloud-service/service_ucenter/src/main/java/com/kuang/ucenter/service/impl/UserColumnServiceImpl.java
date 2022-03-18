@@ -16,12 +16,4 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class UserColumnServiceImpl extends ServiceImpl<UserColumnMapper, UserColumn> implements UserColumnService {
 
-    //查询用户专栏数量
-    @Override
-    public Integer findColumnNumberByUserId(String userId) {
-        log.info("查询用户专栏数量");
-        QueryWrapper<UserColumn> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_id" , userId);
-        return baseMapper.selectCount(wrapper);
-    }
 }

@@ -18,8 +18,7 @@ public class VipClientFactory implements FallbackFactory<VipClient> {
     public VipClient create(Throwable throwable) {
         return new VipClient() {
             @Override
-            public R findUserCourseDiscount() {
-                log.error("远程调用service-vip服务下面的/vm/trai/findUserCourseDiscount接口失败");
+            public R findRightRedisByUserId(String userId) {
                 return R.error();
             }
         };

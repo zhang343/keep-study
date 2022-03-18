@@ -3,7 +3,6 @@ package com.kuang.message.client;
 import com.kuang.springcloud.utils.R;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -19,16 +18,7 @@ import java.util.List;
 )
 public interface BbsClient {
 
-    @GetMapping("/bbs/article/findUserArticleNumber")
-    R findUserArticleNumber();
-
-    //这里手动注入token
-    @GetMapping("/bbs/article/findUserReleaseArticleNumber")
-    R findUserReleaseArticleNumber(@RequestHeader("token") String token);
-
-    @GetMapping("/bbs/article/findURANAndCN")
-    R findURANAndCN(@RequestHeader("token") String token);
-
-    @GetMapping("/bbs/article/findArticleViews")
+    @GetMapping("/inside/article/findArticleViews")
     R findArticleViews(@RequestParam("articleIdList") List<String> articleIdList);
+
 }

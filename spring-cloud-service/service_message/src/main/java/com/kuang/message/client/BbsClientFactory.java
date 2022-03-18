@@ -19,30 +19,11 @@ public class BbsClientFactory implements FallbackFactory<BbsClient> {
     @Override
     public BbsClient create(Throwable throwable) {
         return new BbsClient() {
-            @Override
-            public R findUserArticleNumber() {
-                log.error("远程调用service-bbs下面的/bbs/article/findUserArticleNumber接口失败");
-                return R.error();
-            }
 
             @Override
-            public R findUserReleaseArticleNumber(String token) {
-                log.error("远程调用service-bbs下面的/bbs/article/findUserReleaseArticleNumber接口失败");
+            public R findArticleViews(List<String> articleIdList) {
                 return R.error();
             }
-
-            @Override
-            public R findURANAndCN(String token) {
-                log.error("远程调用service-bbs下面的/bbs/article/findURANAndCN接口失败");
-                return R.error();
-            }
-
-            @Override
-            public R findArticleViews(List<String> articleList) {
-                log.error("远程调用service-bbs下面的/bbs/article/findArticleViews接口失败");
-                return R.error();
-            }
-
         };
     }
 }

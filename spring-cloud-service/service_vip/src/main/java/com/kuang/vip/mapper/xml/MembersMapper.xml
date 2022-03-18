@@ -2,4 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kuang.vip.mapper.MembersMapper">
 
+
+    <select id="findAllMembers" resultType="com.kuang.springcloud.entity.MembersRedis" >
+        select id , user_id , rights_id from vip_members
+    </select>
 </mapper>

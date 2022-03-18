@@ -68,8 +68,7 @@ public class CmsVideoController {
 
         //向用户历史记录发送消息
         courseService.sendHistoryMsg(userId , id);
-        String ip = request.getRemoteAddr();
-        videoService.setCourseViews(id , ip);
+        videoService.setCourseViews(id , request.getRemoteAddr());
         return R.ok().data("playAuth" , playAuth);
     }
 }

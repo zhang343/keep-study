@@ -13,13 +13,4 @@ import java.util.List;
  */
 public interface UserAttentionMapper extends BaseMapper<UserAttention> {
 
-    //查询用户关注
-    List<UserVo> findFocusOnUser(@Param("userId") String userId,
-                                 @Param("current") Long current,
-                                 @Param("limit") Long limit);
-
-    //查询用户粉丝
-    List<UserVo> findFansUser(@Param("userId") String userId,
-                              @Param("current") Long current,
-                              @Param("limit") Long limit);
 }

@@ -16,6 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 )
 public interface DownloadClient {
 
-    @GetMapping("/dtm/file/findFileNameAndPriceById")
+    @GetMapping("/inside/file/findFileNameAndPriceById")
     R findFileNameAndPriceById(@RequestParam("id") String id);
 }

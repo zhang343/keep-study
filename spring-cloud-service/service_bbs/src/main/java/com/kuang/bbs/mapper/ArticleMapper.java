@@ -30,10 +30,6 @@ public interface ArticleMapper extends BaseMapper<Article> {
                                               @Param("isExcellentArticle") Boolean isExcellentArticle,
                                               @Param("articleNameOrLabelName") String articleNameOrLabelName);
 
-    //查找用户我的文章
-    List<UserArticleVo> findMyArticle(@Param("current") Long current,
-                                      @Param("limit") Long limit,
-                                      @Param("userId") String userId);
 
     //更新文章浏览量
     Long updateArticleViews(@Param("articleList") List<Article> articleList);

@@ -1,13 +1,11 @@
 package com.kuang.bbs.controller;
 
-import com.kuang.bbs.client.CourseClient;
-import com.kuang.bbs.client.UcenterClient;
-import com.kuang.bbs.entity.vo.ArticleVo;
 import com.kuang.bbs.entity.vo.IndexArticleVo;
 import com.kuang.bbs.service.ArticleService;
 import com.kuang.bbs.service.CommentService;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.R;
+import com.kuang.springcloud.utils.RedisUtils;
 import com.kuang.springcloud.utils.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,9 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
@@ -32,12 +28,6 @@ import java.util.concurrent.Future;
 public class IndexController {
 
     @Resource
-    private CourseClient courseClient;
-
-    @Resource
-    private UcenterClient ucenterClient;
-
-    @Resource
     private ArticleService articleService;
 
     @Resource
@@ -47,13 +37,11 @@ public class IndexController {
     @GetMapping("getPayCourseAndUACNumber")
     public R getPayCourseAndUACNumber(){
         log.info("查询系统前三名课程还有系统用户、评论、文章数量");
-        R courseR = courseClient.findCourseOrderByPrice();
-        R userR = ucenterClient.findUserNumber();
         Integer articleNumber = articleService.findArticleNumber();
         Integer commentNumber = commentService.findCommentNumber();
         return R.ok()
-                .data("courseList" , courseR.getData().get("courseList"))
-                .data("userNumber" , userR.getData().get("userNumber"))
+                .data("courseList" , RedisUtils.getValue(RedisUtils.COURSEORDERBYPRICE))
+                .data("userNumber" , RedisUtils.getValue(RedisUtils.AllUSERNUMBER))
                 .data("articleNumber" , articleNumber)
                 .data("commentNumber" , commentNumber);
     }

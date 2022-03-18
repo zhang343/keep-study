@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
+import com.kuang.springcloud.utils.VipUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -57,7 +58,23 @@ public class InfoReplyMeServiceImpl extends ServiceImpl<InfoReplyMeMapper, InfoR
     @Override
     public List<ReplyMeVo> findUserNews(Long current, Long limit, String userId) {
         current = (current - 1) * limit;
-        return baseMapper.findUserNews(current , limit , userId);
+        List<ReplyMeVo> userNews = baseMapper.findUserNews(current, limit, userId);
+        if(userNews == null || userNews.size() == 0){
+            return userNews;
+        }
+
+        List<String> userIdList = new ArrayList<>();
+        for(ReplyMeVo replyMeVo : userNews){
+            userIdList.add(replyMeVo.getReplyUserId());
+        }
+
+        Map<String , String>  userVipLevel = VipUtils.getUserVipLevel(userIdList);
+        if(userVipLevel != null){
+            for(ReplyMeVo replyMeVo : userNews){
+                replyMeVo.setVipLevel(userVipLevel.get(replyMeVo.getReplyUserId()));
+            }
+        }
+        return userNews;
     }
 
     //设置回复我的消息已读
@@ -72,34 +89,6 @@ public class InfoReplyMeServiceImpl extends ServiceImpl<InfoReplyMeMapper, InfoR
         if(idList.size() != 0){
             baseMapper.setReplyMeRead(idList);
         }
-    }
-
-    //查找vip标志
-    @Async
-    @Override
-    public Future<List<ReplyMeVo>> findVipLevel(List<ReplyMeVo> replyMeVos) {
-        if(replyMeVos == null || replyMeVos.size() == 0){
-            return new AsyncResult<>(replyMeVos);
-        }
-
-        //准备数据
-        Set<String> userIdSet = new HashSet<>();
-        for(ReplyMeVo replyMeVo : replyMeVos){
-            userIdSet.add(replyMeVo.getReplyUserId());
-        }
-        List<String> userIdList = new ArrayList<>(userIdSet);
-
-
-        //远程调用获取vip标识
-        R memberRightLogo = vipClient.findMemberRightLogo(userIdList);
-        if(!memberRightLogo.getSuccess()){
-            return new AsyncResult<>(replyMeVos);
-        }
-        Map<String , Object> map = memberRightLogo.getData();
-        for(ReplyMeVo replyMeVo : replyMeVos){
-            replyMeVo.setVipLevel((String) map.get(replyMeVo.getReplyUserId()));
-        }
-        return new AsyncResult<>(replyMeVos);
     }
 
     //删除用户回复消息
@@ -117,9 +106,9 @@ public class InfoReplyMeServiceImpl extends ServiceImpl<InfoReplyMeMapper, InfoR
     //回复用户消息
     @Async
     @Override
-    public void addreply(String id, String content, String userId , String token) {
+    public void addreply(String id, String content, String userId) {
         InfoReplyMe infoReplyMe = baseMapper.selectById(id);
-        if(infoReplyMe == null){
+        if(infoReplyMe == null || !infoReplyMe.getUserId().equals(userId)){
             return;
         }
         InfoReplyMe infoReplyMe1 = new InfoReplyMe();
@@ -129,7 +118,7 @@ public class InfoReplyMeServiceImpl extends ServiceImpl<InfoReplyMeMapper, InfoR
         infoReplyMe1.setReplyUserId(userId);
         infoReplyMe1.setContent(content);
 
-        R avatarAndNicknameByUserId = ucenterClient.findAvatarAndNicknameByUserId(token);
+        R avatarAndNicknameByUserId = ucenterClient.findAvatarAndNicknameByUserId(userId);
         if(!avatarAndNicknameByUserId.getSuccess()){
             return;
         }

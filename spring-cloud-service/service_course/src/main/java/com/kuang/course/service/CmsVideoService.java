@@ -24,9 +24,6 @@ public interface CmsVideoService extends IService<CmsVideo> {
     //查询相关课程信息
     UserStudyVo findUserStudyVoByCourseId(String id);
 
-    //设置课程小节数量
-    Future<List<MessageCourseVo>> findVideoNumberByCourseId(List<MessageCourseVo> messageCourseVos);
-
     //缓存课程播放量
     void setCourseViews(String id, String ip);
 }

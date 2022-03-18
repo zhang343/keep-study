@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- * @author XiaoZhang
- * @date 2022/2/6 11:35
  * 远程调用service-vip服务熔断降级类
  */
 @Component
@@ -20,20 +18,17 @@ public class VipClientFactory implements FallbackFactory<VipClient> {
     public VipClient create(Throwable throwable) {
         return new VipClient() {
             @Override
-            public R findMemberRightLogo(List<String> userIdList) {
-                log.error("远程调用service-vip下面的/vm/user/findMemberRightLogo方法失败");
+            public R findUserVipLevelByUserIdList(List<String> userIdList) {
                 return R.error();
             }
 
             @Override
-            public R findMemberRightVipLevel(String userId) {
-                log.error("远程调用service-vip下面的/vm/user/findMemberRightVipLevel方法失败");
+            public R findRightRedisByUserId(String userId) {
                 return R.error();
             }
 
             @Override
-            public R addArticle() {
-                log.error("远程调用service-vip下面的/usertodayright/addArticle方法失败");
+            public R addArticle(String userId) {
                 return R.error();
             }
         };
