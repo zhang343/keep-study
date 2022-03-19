@@ -7,7 +7,7 @@ public class MyUserInfoVo {
     private String id;
     private String avatar;
     private String nickname;
-    private Integer releaseArticleNumber;
+    private Integer bbsArticleNumber;
     private Integer attentionNumber;
     private Integer fansNumber;
     private Boolean isSignIn;

@@ -17,4 +17,9 @@ public interface UserAttentionService extends IService<UserAttention> {
     List<String> findUserFansId(String userId);
 
 
+    //查询用户关注数量
+    Integer findUserFollowNumber(String userId);
+
+    //查询用户粉丝数量
+    Integer findUserFansNumber(String userId);
 }

@@ -390,4 +390,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return views;
     }
 
+    //为用户模块服务，查询用户文章在江湖可以查找到的文章
+    @Override
+    public Integer findUserbbsArticleNumber(String userId) {
+        QueryWrapper<Article> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id" , userId);
+        wrapper.eq("is_violation_article" , 0);
+        wrapper.last("and (is_release = 1 or is_bbs = 1)");
+        return baseMapper.selectCount(wrapper);
+    }
+
 }

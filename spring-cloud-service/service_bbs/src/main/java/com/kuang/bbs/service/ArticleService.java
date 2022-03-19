@@ -58,4 +58,7 @@ public interface ArticleService extends IService<Article> {
 
     //为消息模块服务，查询文章浏览量
     Map<String, Object> findArticleViews(List<String> articleIdList);
+
+    //为用户模块服务，查询用户文章在江湖可以查找到的文章
+    Integer findUserbbsArticleNumber(String userId);
 }

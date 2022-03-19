@@ -26,4 +26,11 @@ public class InsideArticleController {
         Map<String , Object> articleViews = articleService.findArticleViews(articleIdList);
         return R.ok().data(articleViews);
     }
+
+    //为用户模块服务，查询用户文章在江湖可以查找到的文章数量
+    @GetMapping("findUserbbsArticleNumber")
+    public R findUserbbsArticleNumber(String userId){
+        Integer articleNumber = articleService.findUserbbsArticleNumber(userId);
+        return R.ok().data("articleNumber" , articleNumber);
+    }
 }

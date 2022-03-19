@@ -20,6 +20,10 @@ public class VipClientFactory implements FallbackFactory<VipClient> {
     public VipClient create(Throwable throwable) {
         return new VipClient() {
 
+            @Override
+            public R findUserIsSign(String userId) {
+                return R.error();
+            }
         };
     }
 }

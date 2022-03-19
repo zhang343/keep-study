@@ -18,6 +18,10 @@ public class BbsClientFactory implements FallbackFactory<BbsClient> {
     public BbsClient create(Throwable throwable) {
         return new BbsClient() {
 
+            @Override
+            public R findUserbbsArticleNumber(String userId) {
+                return R.error();
+            }
         };
     }
 }

@@ -3,8 +3,7 @@ package com.kuang.ucenter.client;
 import com.kuang.springcloud.utils.R;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @author XiaoZhang
@@ -17,4 +16,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 )
 public interface BbsClient {
 
+    @GetMapping("/inside/article/findUserbbsArticleNumber")
+    R findUserbbsArticleNumber(@RequestParam("userId") String userId);
 }

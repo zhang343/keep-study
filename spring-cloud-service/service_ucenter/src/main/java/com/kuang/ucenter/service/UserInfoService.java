@@ -27,4 +27,7 @@ public interface UserInfoService extends IService<UserInfo> {
 
     //用户账号密码登录
     String login(String loginAct, String loginPwd);
+
+    //用户登录之后查询小方框内容
+    MyUserInfoVo findUserSmallBoxContent(String userId);
 }

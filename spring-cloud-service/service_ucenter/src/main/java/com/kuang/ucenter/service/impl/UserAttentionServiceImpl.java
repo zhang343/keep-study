@@ -48,5 +48,21 @@ public class UserAttentionServiceImpl extends ServiceImpl<UserAttentionMapper, U
         return userIdList;
     }
 
+    //查询用户关注数量
+    @Override
+    public Integer findUserFollowNumber(String userId) {
+        QueryWrapper<UserAttention> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id" , userId);
+        return baseMapper.selectCount(wrapper);
+    }
+
+    //查询用户粉丝数量
+    @Override
+    public Integer findUserFansNumber(String userId) {
+        QueryWrapper<UserAttention> wrapper = new QueryWrapper<>();
+        wrapper.eq("attention_user_id" , userId);
+        return baseMapper.selectCount(wrapper);
+    }
+
 
 }

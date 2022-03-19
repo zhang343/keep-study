@@ -1,30 +1,25 @@
 package com.kuang.ucenter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
-import com.kuang.springcloud.utils.MD5Util;
-import com.kuang.springcloud.utils.R;
-import com.kuang.springcloud.utils.RedisUtils;
-import com.kuang.springcloud.utils.ResultCode;
+import com.kuang.springcloud.utils.*;
 import com.kuang.ucenter.client.BbsClient;
 import com.kuang.ucenter.client.VipClient;
 import com.kuang.ucenter.entity.UserInfo;
-import com.kuang.ucenter.entity.vo.*;
+import com.kuang.ucenter.entity.vo.MyUserInfoVo;
 import com.kuang.ucenter.mapper.UserInfoMapper;
-import com.kuang.ucenter.service.*;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.kuang.ucenter.service.UserAttentionService;
+import com.kuang.ucenter.service.UserInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.List;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Xiaozhang
@@ -35,6 +30,14 @@ import java.util.concurrent.Future;
 public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> implements UserInfoService {
 
 
+    @Resource
+    private VipClient vipClient;
+
+    @Resource
+    private BbsClient bbsClient;
+
+    @Resource
+    private UserAttentionService attentionService;
 
     //根据微信id查询用户
     @Override
@@ -110,7 +113,53 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         return userInfo.getId();
     }
 
+    //用户登录之后查询小方框内容
+    @Override
+    public MyUserInfoVo findUserSmallBoxContent(String userId) {
 
+        Future<MyUserInfoVo> userbbsArticleNumberAndIsSign = findUserbbsArticleNumberAndIsSign(userId);
+
+        MyUserInfoVo myUserInfoVo = new MyUserInfoVo();
+        UserInfo userInfo = baseMapper.selectById(userId);
+        BeanUtils.copyProperties(userInfo , myUserInfoVo);
+        String userVipLevel = VipUtils.getUserVipLevel(userId);
+        Integer attentionNumber = attentionService.findUserFollowNumber(userId);
+        Integer fansNumber = attentionService.findUserFansNumber(userId);
+        myUserInfoVo.setVipLevel(userVipLevel);
+        myUserInfoVo.setAttentionNumber(attentionNumber);
+        myUserInfoVo.setFansNumber(fansNumber);
+
+
+        try {
+            MyUserInfoVo myUserInfoVo1 = userbbsArticleNumberAndIsSign.get(200, TimeUnit.MILLISECONDS);
+            myUserInfoVo.setIsSignIn(myUserInfoVo1.getIsSignIn());
+            myUserInfoVo.setBbsArticleNumber(myUserInfoVo1.getBbsArticleNumber());
+        }catch(Exception e){
+            log.warn("异步任务执行失败");
+        }
+
+        return myUserInfoVo;
+    }
+
+    //设置用户江湖文章数量和是否签到
+    @Async
+    public Future<MyUserInfoVo> findUserbbsArticleNumberAndIsSign(String userId){
+        MyUserInfoVo myUserInfoVo = new MyUserInfoVo();
+        R userIsSign = vipClient.findUserIsSign(userId);
+        boolean isSignIn = false;
+        if(userIsSign.getSuccess()){
+            isSignIn = (boolean) userIsSign.getData().get("isSign");
+        }
+        myUserInfoVo.setIsSignIn(isSignIn);
+        R userbbsArticleNumber = bbsClient.findUserbbsArticleNumber(userId);
+        Integer bbsArticleNumber = 0;
+        if(userbbsArticleNumber.getSuccess()){
+            bbsArticleNumber = (Integer) userbbsArticleNumber.getData().get("articleNumber");
+        }
+        myUserInfoVo.setBbsArticleNumber(bbsArticleNumber);
+        return new AsyncResult<>(myUserInfoVo);
+
+    }
 
 
 }

@@ -5,17 +5,9 @@ import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.JwtUtils;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
-import com.kuang.ucenter.client.BbsClient;
-import com.kuang.ucenter.entity.UserInfo;
-import com.kuang.ucenter.entity.vo.HomePageVo;
 import com.kuang.ucenter.entity.vo.MyUserInfoVo;
-import com.kuang.ucenter.entity.vo.UserDetailVo;
-import com.kuang.ucenter.entity.vo.UserSetDataVo;
-import com.kuang.ucenter.service.UserAttentionService;
 import com.kuang.ucenter.service.UserInfoService;
-import com.kuang.ucenter.service.UserStudyService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,8 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Xiaozhang
@@ -53,6 +43,16 @@ public class UserInfoController {
     }
 
 
+    //用户登录之后查询小方框内容
+    @GetMapping("findUserSmallBoxContent")
+    public R findUserSmallBoxContent(HttpServletRequest request){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        if(userId == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "请先登录");
+        }
+        MyUserInfoVo myUserInfoVo = userInfoService.findUserSmallBoxContent(userId);
+        return R.ok().data("myUserInfoVo" , myUserInfoVo);
+    }
 
 
 }
