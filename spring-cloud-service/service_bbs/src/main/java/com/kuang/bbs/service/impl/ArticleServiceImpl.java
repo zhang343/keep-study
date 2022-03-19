@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -63,9 +64,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     //查询文章详细数据
-    @Async
     @Override
-    public Future<ArticleVo> findArticleDetail(String articleId , String userId) {
+    public ArticleVo findArticleDetail(String articleId , String userId) {
         log.info("查询文章详细数据,文章id:" + articleId);
         Article article = baseMapper.selectById(articleId);
         if(article == null){
@@ -99,21 +99,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             articleVo.setCategoryName(categoryByCategoryId.getCategoryName());
         }
         BeanUtils.copyProperties(article , articleVo);
+        if(article.getIsColumnArticle() && article.getIsBbs()){
+            articleVo.setIsRelease(true);
+        }
         String userVipLevel = VipUtils.getUserVipLevel(userId);
-        if(userVipLevel == null){
-            R vipR = vipClient.findRightRedisByUserId(articleUserId);
-            if(vipR.getSuccess()){
-                RightRedis rightRedis = (RightRedis) vipR.getData().get("rightRedis");
-                userVipLevel = rightRedis.getVipLevel();
-            }
-        }
         articleVo.setVipLevel(userVipLevel);
-        Object value = RedisUtils.getValue(articleId);
-        if(value != null){
-            Integer views = (Integer) value;
-            articleVo.setViews(articleVo.getViews() + views);
-        }
-        return new AsyncResult<>(articleVo);
+        long value = RedisUtils.getSetSize(articleId);
+        articleVo.setViews(articleVo.getViews() + value);
+        return articleVo;
     }
 
     //文章缓存,时间是30分钟
@@ -121,9 +114,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public void setArticleCache(ArticleCacheVo articleCacheVo, String userId) {
         log.info("设置文章的缓存,用户id:" + userId);
-        Set<String> labelSet = new HashSet<>(articleCacheVo.getLabelList());
-        List<String> labelList = new ArrayList<>(labelSet);
-        articleCacheVo.setLabelList(labelList);
+        if(articleCacheVo.getLabelList() != null && articleCacheVo.getLabelList().size() != 0){
+            Set<String> labelSet = new HashSet<>(articleCacheVo.getLabelList());
+            List<String> labelList = new ArrayList<>(labelSet);
+            articleCacheVo.setLabelList(labelList);
+        }
         RedisUtils.setValueTimeout(userId , articleCacheVo , 30 * 60);
     }
 
@@ -256,7 +251,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
         ArticleUpdateAndCreateVo articleUpdateAndCreateVo = new ArticleUpdateAndCreateVo();
         BeanUtils.copyProperties(article , articleUpdateAndCreateVo);
-        if(article.getIsRelease() || article.getIsBbs()){
+        if(article.getIsColumnArticle() && article.getIsBbs()){
             articleUpdateAndCreateVo.setIsRelease(true);
         }
         return articleUpdateAndCreateVo;
@@ -295,7 +290,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             throw new XiaoXiaException(ResultCode.ERROR , "修改文章失败");
         }
 
-        if(!article.getIsColumnArticle() && !article.getIsRelease() && articleUpdateAndCreateVo.getIsRelease()){
+        if(!article.getIsColumnArticle() && !article.getIsRelease() && article1.getIsRelease()){
             sendFrientFeed(articleId , userId);
         }
     }
@@ -368,23 +363,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
 
-    //更新文章浏览量
-    @Override
-    public void updateArticleViews(List<Article> articleList) {
-        baseMapper.updateArticleViews(articleList);
-    }
-
     //为消息模块服务，查询文章浏览量
     @Override
     public Map<String, Object> findArticleViews(List<String> articleIdList) {
         List<Article> articleList = baseMapper.selectBatchIds(articleIdList);
         Map<String , Object> views = new HashMap<>();
         for(Article article : articleList){
-            Object value = RedisUtils.getValue(article.getId());
-            Long view = article.getViews();
-            if(value != null){
-                view = view + (Long) value;
-            }
+            long value = RedisUtils.getSetSize(article.getId());
+            long view = article.getViews() + value;
             views.put(article.getId() , view);
         }
         return views;
@@ -398,6 +384,18 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         wrapper.eq("is_violation_article" , 0);
         wrapper.last("and (is_release = 1 or is_bbs = 1)");
         return baseMapper.selectCount(wrapper);
+    }
+
+    //查询出文章浏览量
+    @Override
+    public List<Article> findArticleViewsList(List<String> articleIdList) {
+        return baseMapper.findArticleViewsList(articleIdList);
+    }
+
+    //更新文章浏览量
+    @Override
+    public void updateArticleViews(List<Article> articleUpdateList) {
+        baseMapper.updateArticleViews(articleUpdateList);
     }
 
 }

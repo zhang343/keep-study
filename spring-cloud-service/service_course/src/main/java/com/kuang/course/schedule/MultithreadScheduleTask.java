@@ -40,23 +40,30 @@ public class MultithreadScheduleTask {
             log.info(treadName + "获取课程全局锁成功");
             //获取这段时间被访问的课程
             Set<Object> setAll = RedisUtils.getSetAll(RedisUtils.COURSE);
+            if(setAll == null || setAll.size() == 0){
+                RedisUtils.unCourseLock();
+                return;
+            }
             RedisUtils.delKey(RedisUtils.COURSE);
-            List<CmsCourse> courseList = new ArrayList<>();
+            List<String> courseIdList = new ArrayList<>();
             for(Object o : setAll){
-                String courseId = (String) o;
-                long setSize = RedisUtils.getSetSize(courseId);
-                //可能会造成一些播放量的损失
-                RedisUtils.delKey(courseId);
+                courseIdList.add((String) o);
+            }
+
+            List<CmsCourse> courseList = courseService.findCourseViewsList(courseIdList);
+            List<CmsCourse> courseUpdateList = new ArrayList<>();
+            for(CmsCourse course : courseList){
+                long setSize = RedisUtils.getSetSize(course.getId());
+                RedisUtils.delKey(course.getId());
                 if(setSize != 0){
-                    CmsCourse course = new CmsCourse();
-                    course.setId(courseId);
-                    course.setViews(setSize);
-                    courseList.add(course);
+                    course.setViews(course.getViews() + setSize);
+                    courseUpdateList.add(course);
                 }
             }
+
             log.info(treadName + "开始去更新课程播放量");
-            if(courseList.size() != 0){
-                courseService.updateCourseViews(courseList);
+            if(courseUpdateList.size() != 0){
+                courseService.updateCourseViews(courseUpdateList);
             }
             RedisUtils.unCourseLock();
         }else {

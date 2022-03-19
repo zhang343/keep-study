@@ -41,6 +41,7 @@ public class OssFileController {
     //下载文件接口
     @PostMapping("downloadFile")
     public void downloadFile(String id , HttpServletRequest request , HttpServletResponse response){
+
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         log.info("有用户下载文件,文件的id:" + id + ",用户id:" + userId);
         if(StringUtils.isEmpty(id) || userId == null){

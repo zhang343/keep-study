@@ -75,10 +75,9 @@ public class ArticleController {
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法查找文章");
         }
 
-        Future<ArticleVo> articleDetail = articleService.findArticleDetail(articleId , userId);
+        ArticleVo articleVo = articleService.findArticleDetail(articleId , userId);
         Future<List<String>> articleLabel = labelService.findArticleLabel(articleId);
         Integer commentNumber = commentService.findArticleAllCommentNumber(articleId);
-        ArticleVo articleVo = null;
         boolean isCollection = false;
         if(userId != null){
             R ucenterR = ucenterClient.findUserIsCollection(articleId , userId);
@@ -96,14 +95,6 @@ public class ArticleController {
             labelList = new ArrayList<>();
         }
 
-        try {
-            //等待0.3秒取出结果
-            articleVo = articleDetail.get(300 , TimeUnit.MILLISECONDS);
-        }catch(Exception e){
-            log.error("查询文章数据异常,文章id:" + articleId);
-            throw new XiaoXiaException(ResultCode.ERROR , "查询文章失败");
-        }
-
         //设置文章浏览量缓存
         articleService.setArticleViews(articleId , request.getRemoteAddr());
         return R.ok().data("commentNumber" , commentNumber).data("isCollection" , isCollection).data("labelList" , labelList).data("article" , articleVo);
@@ -112,7 +103,7 @@ public class ArticleController {
 
     //用户发布文章,指江湖文章的发布
     @PostMapping("create")
-    public R create(ArticleUpdateAndCreateVo articleUpdateAndCreateVo , List<String> labelList , HttpServletRequest request){
+    public R create(ArticleUpdateAndCreateVo articleUpdateAndCreateVo  , List<String> labelList , HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         log.info("用户发布文章,用户id:" + userId);
         if(userId == null){
@@ -126,7 +117,7 @@ public class ArticleController {
         //插入文章标签
         labelService.addArticleLabel(articleId , labelList);
         //如果文章发布，向好友动态发送消息
-        if(article.getIsRelease()){
+        if(article.getIsRelease() != null && article.getIsRelease()){
             articleService.sendFrientFeed(articleId , userId);
         }
         return R.ok();
@@ -157,7 +148,7 @@ public class ArticleController {
 
     //用户修改文章
     @PostMapping("update")
-    public R update(ArticleUpdateAndCreateVo articleUpdateAndCreateVo , List<String> labelList , HttpServletRequest request){
+    public R update(ArticleUpdateAndCreateVo articleUpdateAndCreateVo , List<String> labelList  , HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         String articleId = articleUpdateAndCreateVo.getId();
         log.info("用户修改文章,用户id:" + userId + ",文章id:" + articleId);

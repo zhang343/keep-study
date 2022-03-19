@@ -1,7 +1,6 @@
 package com.kuang.message.controller;
 
 
-import com.kuang.message.client.CourseClient;
 import com.kuang.message.service.InfoCourseService;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.JwtUtils;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -64,8 +62,6 @@ public class InfoCourseController {
                 log.warn("休眠失败");
             }
         }
-
-        System.out.println("----" + LocalTime.now() + "----");
         return R.ok().data("total" , total).data("courseNewsList" , courseNewsList);
     }
 }

@@ -18,7 +18,7 @@ public interface ArticleService extends IService<Article> {
     Integer findArticleNumber();
 
     //查询文章详细数据
-    Future<ArticleVo> findArticleDetail(String articleId , String userId);
+    ArticleVo findArticleDetail(String articleId , String userId);
 
     //文章缓存,时间是30分钟
     void setArticleCache(ArticleCacheVo articleCacheVo, String userId);
@@ -53,12 +53,15 @@ public interface ArticleService extends IService<Article> {
     //设置文章访问量，缓存处理
     void setArticleViews(String articleId , String ip);
 
-    //更新文章浏览量
-    void updateArticleViews(List<Article> articleList);
-
     //为消息模块服务，查询文章浏览量
     Map<String, Object> findArticleViews(List<String> articleIdList);
 
     //为用户模块服务，查询用户文章在江湖可以查找到的文章
     Integer findUserbbsArticleNumber(String userId);
+
+    //查询出文章浏览量
+    List<Article> findArticleViewsList(List<String> articleIdList);
+
+    //更新文章浏览量
+    void updateArticleViews(List<Article> articleUpdateList);
 }

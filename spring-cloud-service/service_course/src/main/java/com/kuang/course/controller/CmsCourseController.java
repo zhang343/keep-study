@@ -43,7 +43,7 @@ public class CmsCourseController {
     private MsgProducer msgProducer;
 
     //查找课程详细信息
-    @GetMapping("findCourseDetaile")
+    @GetMapping("findCourseDetail")
     public R findCourseDetaile(String courseId , HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         if(StringUtils.isEmpty(courseId)){

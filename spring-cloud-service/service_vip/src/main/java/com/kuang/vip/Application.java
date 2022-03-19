@@ -1,5 +1,6 @@
 package com.kuang.vip;
 
+import com.kuang.springcloud.utils.JwtUtils;
 import com.kuang.vip.entity.UserTodayRight;
 import com.kuang.vip.mapper.UserTodayRightMapper;
 import org.springframework.boot.Banner;
@@ -36,5 +37,6 @@ public class Application implements CommandLineRunner {
     //做程序启动之后工作
     @Override
     public void run(String... args) throws Exception {
+        System.out.println(JwtUtils.getJwtToken("1496388556204023809"));
     }
 }

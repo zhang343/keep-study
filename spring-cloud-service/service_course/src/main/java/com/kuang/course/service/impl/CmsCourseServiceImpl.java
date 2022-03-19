@@ -159,21 +159,27 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
         msgProducer.sendHistoryMsg(JSON.toJSONString(userStudyVoByCourseId));
     }
 
-    //更新课程浏览量
-    @Override
-    public void updateCourseViews(List<CmsCourse> courseList) {
-        baseMapper.updateCourseViews(courseList);
-    }
-
     //为消息模块服务，查询课程
     @Override
     public List<MessageCourseVo> findMessageCourseVo(List<String> courseIdList) {
         List<MessageCourseVo> messageCourseVos = baseMapper.findMessageCourseVo(courseIdList);
         for(MessageCourseVo messageCourseVo : messageCourseVos){
-            Integer videoNumberByCourseId = videoService.findVideoNumberByCourseId(messageCourseVo.getId());
+            Integer videoNumberByCourseId = videoService.findVideoNumberByCourseId(messageCourseVo.getCourseId());
             messageCourseVo.setVideoNumber(videoNumberByCourseId);
         }
         return messageCourseVos;
+    }
+
+    //查找课程播放量
+    @Override
+    public List<CmsCourse> findCourseViewsList(List<String> courseIdList) {
+        return baseMapper.findCourseViewsList(courseIdList);
+    }
+
+    //更新课程浏览量
+    @Override
+    public void updateCourseViews(List<CmsCourse> courseList) {
+        baseMapper.updateCourseViews(courseList);
     }
 
 

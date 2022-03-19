@@ -40,24 +40,33 @@ public class MultithreadScheduleTask {
             log.info(treadName + "获取文章全局锁成功");
             //获取这段时间被访问的文章
             Set<Object> setAll = RedisUtils.getSetAll(RedisUtils.ARTICLLE);
+            if(setAll == null || setAll.size() == 0){
+                RedisUtils.unArticleLock();
+                return;
+            }
             RedisUtils.delKey(RedisUtils.ARTICLLE);
-            List<Article> articleList = new ArrayList<>();
+            List<String> articleIdList = new ArrayList<>();
             for(Object o : setAll){
-                String articleId = (String) o;
-                long setSize = RedisUtils.getSetSize(articleId);
-                //可能会造成一些浏览量的损失
-                RedisUtils.delKey(articleId);
+                articleIdList.add((String) o);
+            }
+
+            //查询出文章浏览量
+            List<Article> articleList = articleService.findArticleViewsList(articleIdList);
+            List<Article> articleUpdateList = new ArrayList<>();
+            for(Article article : articleList){
+                long setSize = RedisUtils.getSetSize(article.getId());
+                RedisUtils.delKey(article.getId());
                 if(setSize != 0){
-                    Article article = new Article();
-                    article.setId(articleId);
-                    article.setViews(setSize);
-                    articleList.add(article);
+                    article.setViews(article.getViews() + setSize);
+                    articleUpdateList.add(article);
                 }
             }
+
             log.info(treadName + "开始去更新文章浏览量");
-            if(articleList.size() != 0){
-                articleService.updateArticleViews(articleList);
+            if(articleUpdateList.size() != 0){
+                articleService.updateArticleViews(articleUpdateList);
             }
+
             RedisUtils.unArticleLock();
         }else {
             log.warn(treadName + "获取文章全局锁失败");

@@ -46,13 +46,16 @@
         limit #{current} , #{limit}
     </select>
 
+    <select id="findArticleViewsList" resultType="com.kuang.bbs.entity.Article" >
+        select id , views from bbs_article where id in
+        <foreach collection="articleIdList" item="articleId" open="(" separator="," close=")">
+            #{articleId}
+        </foreach>
+    </select>
 
     <update id="updateArticleViews" parameterType="java.util.List" >
-        <foreach collection="articleList" item="article" index="index" open="" close="" separator=";">
-            update bbs_article
-            <set >
-                views = #{article.views} + views
-            </set>
+        <foreach collection="articleUpdateList" item="article" index="index" open="" close="" separator=";">
+            update bbs_article set views = #{article.views}
             where id = #{article.id}
         </foreach>
     </update>

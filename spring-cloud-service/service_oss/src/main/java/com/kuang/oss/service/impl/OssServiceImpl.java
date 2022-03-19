@@ -114,6 +114,7 @@ public class OssServiceImpl implements OssService {
             name = UUIDUtil.getUUID() + "." + suffix;
         }
         response.setHeader("content-disposition" , "attachment;filename=" + name);
+
         OutputStream outputStream = null;
         try {
             log.info("获取response输出流OutputStream");

@@ -48,7 +48,7 @@ public class InfoIndexController {
         Integer courseNumber = courseService.findUserUnreadNumber(userId);
         try {
             //等待0.1秒
-            mfr.get(100 , TimeUnit.MILLISECONDS);
+            mfr.get(200 , TimeUnit.MILLISECONDS);
         }catch(Exception e){
             log.warn("查询我的消息、好友动态、回复我的失败");
         }

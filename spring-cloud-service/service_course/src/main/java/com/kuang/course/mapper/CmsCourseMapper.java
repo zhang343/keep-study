@@ -26,8 +26,11 @@ public interface CmsCourseMapper extends BaseMapper<CmsCourse> {
     List<BbsCourseVo> findCourseOrderByPrice();
 
     //更新课程浏览量
-    Long updateCourseViews(@Param("courseList") List<CmsCourse> courseList);
+    void updateCourseViews(@Param("courseList") List<CmsCourse> courseList);
 
     //为消息模块服务，查询课程
     List<MessageCourseVo> findMessageCourseVo(@Param("courseIdList") List<String> courseIdList);
+
+    //查找课程播放量
+    List<CmsCourse> findCourseViewsList(@Param("courseIdList") List<String> courseIdList);
 }

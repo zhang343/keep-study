@@ -30,7 +30,9 @@ public interface ArticleMapper extends BaseMapper<Article> {
                                               @Param("isExcellentArticle") Boolean isExcellentArticle,
                                               @Param("articleNameOrLabelName") String articleNameOrLabelName);
 
+    //查询出文章浏览量
+    List<Article> findArticleViewsList(@Param("articleIdList") List<String> articleIdList);
 
     //更新文章浏览量
-    Long updateArticleViews(@Param("articleList") List<Article> articleList);
+    void updateArticleViews(@Param("articleUpdateList") List<Article> articleUpdateList);
 }

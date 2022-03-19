@@ -20,16 +20,20 @@
 
     <update id="updateCourseViews" parameterType="java.util.List" >
         <foreach collection="courseList" item="course" index="index" open="" close="" separator=";">
-            update cms_course
-            <set >
-                views = #{course.views} + views
-            </set>
+            update cms_course set views = #{course.views}
             where id = #{course.id}
         </foreach>
     </update>
 
+    <select id="findCourseViewsList" resultType="com.kuang.course.entity.CmsCourse" >
+        select id , views from cms_course where id in
+        <foreach collection="courseIdList" item="courseId" open="(" close=")" separator="," >
+            #{courseId}
+        </foreach>
+    </select>
+
     <select id="findMessageCourseVo" resultType="com.kuang.springcloud.entity.MessageCourseVo" >
-        select course.id , course.cover , course.title , course.description ,
+        select course.id as courseId, course.cover , course.title , course.description ,
                details.teacher ,
                course.views , course.gmt_modified
         from cms_course as course left outer join cms_details as details on course.id = details.course_id

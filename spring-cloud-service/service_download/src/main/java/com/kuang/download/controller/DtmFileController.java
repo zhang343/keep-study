@@ -32,9 +32,6 @@ public class DtmFileController {
     @GetMapping("findFileCondition")
     public R findFileCondition(String categoryId , String fileName){
         log.info("开始查找文件,categoryId:" + categoryId + ",fileName:" + fileName);
-        if(StringUtils.isEmpty(categoryId) && StringUtils.isEmpty(fileName)){
-            throw new XiaoXiaException(ResultCode.ERROR , "请传入参数");
-        }
         List<DtmFileVo> dtmFileList = dtmFileService.findFileCondition(categoryId , fileName);
         return R.ok().data("fileList" , dtmFileList);
     }
