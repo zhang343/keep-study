@@ -20,6 +20,13 @@ public class InsideArticleController {
     @Resource
     private ArticleService articleService;
 
+    //查询用户所有江湖文章数量
+    @GetMapping("findUserAllArticleNumber")
+    public R findUserAllArticleNumber(String userId){
+        Integer userAllArticleNumber = articleService.findUserAllArticleNumber(userId);
+        return R.ok().data("userAllArticleNumber" , userAllArticleNumber);
+    }
+
     //为消息模块服务，查询文章浏览量
     @GetMapping("findArticleViews")
     public R findArticleViews(@RequestParam("articleIdList") List<String> articleIdList){

@@ -16,4 +16,6 @@ import java.util.List;
  */
 public interface UserInfoMapper extends BaseMapper<UserInfo> {
 
+    //更新用户每日签到
+    Integer updateUserIsSign();
 }

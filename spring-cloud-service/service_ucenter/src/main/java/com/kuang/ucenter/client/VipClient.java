@@ -21,7 +21,4 @@ import java.util.List;
 public interface VipClient {
 
 
-    @GetMapping("/inside/dailyequity/findUserIsSign")
-    R findUserIsSign(@RequestParam("userId") String userId);
-
 }

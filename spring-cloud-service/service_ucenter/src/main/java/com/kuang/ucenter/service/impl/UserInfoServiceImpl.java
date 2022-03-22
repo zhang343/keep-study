@@ -2,20 +2,21 @@ package com.kuang.ucenter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.kuang.springcloud.entity.RightRedis;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.*;
 import com.kuang.ucenter.client.BbsClient;
-import com.kuang.ucenter.client.VipClient;
 import com.kuang.ucenter.entity.UserInfo;
 import com.kuang.ucenter.entity.vo.MyUserInfoVo;
+import com.kuang.ucenter.entity.vo.UserDetailVo;
 import com.kuang.ucenter.mapper.UserInfoMapper;
-import com.kuang.ucenter.service.UserAttentionService;
-import com.kuang.ucenter.service.UserInfoService;
+import com.kuang.ucenter.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.concurrent.Future;
@@ -29,15 +30,20 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> implements UserInfoService {
 
-
-    @Resource
-    private VipClient vipClient;
-
     @Resource
     private BbsClient bbsClient;
 
     @Resource
     private UserAttentionService attentionService;
+
+    @Resource
+    private UserColumnService columnService;
+
+    @Resource
+    private UserStudyService studyService;
+
+    @Resource
+    private UserTalkService talkService;
 
     //根据微信id查询用户
     @Override
@@ -117,7 +123,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Override
     public MyUserInfoVo findUserSmallBoxContent(String userId) {
 
-        Future<MyUserInfoVo> userbbsArticleNumberAndIsSign = findUserbbsArticleNumberAndIsSign(userId);
+        Future<MyUserInfoVo> userbbsArticleNumberAndIsSign = findUserbbsArticleNumber(userId);
 
         MyUserInfoVo myUserInfoVo = new MyUserInfoVo();
         UserInfo userInfo = baseMapper.selectById(userId);
@@ -132,7 +138,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
         try {
             MyUserInfoVo myUserInfoVo1 = userbbsArticleNumberAndIsSign.get(200, TimeUnit.MILLISECONDS);
-            myUserInfoVo.setIsSignIn(myUserInfoVo1.getIsSignIn());
             myUserInfoVo.setBbsArticleNumber(myUserInfoVo1.getBbsArticleNumber());
         }catch(Exception e){
             log.warn("异步任务执行失败");
@@ -141,16 +146,85 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         return myUserInfoVo;
     }
 
-    //设置用户江湖文章数量和是否签到
-    @Async
-    public Future<MyUserInfoVo> findUserbbsArticleNumberAndIsSign(String userId){
-        MyUserInfoVo myUserInfoVo = new MyUserInfoVo();
-        R userIsSign = vipClient.findUserIsSign(userId);
-        boolean isSignIn = false;
-        if(userIsSign.getSuccess()){
-            isSignIn = (boolean) userIsSign.getData().get("isSign");
+    //查询用户上边框的内容
+    @Override
+    public UserDetailVo findUserBorderTop(String userId) {
+        Future<UserDetailVo> afcsd = findAFCSD(userId);
+
+        UserInfo userInfo = baseMapper.selectById(userId);
+        UserDetailVo userDetailVo = new UserDetailVo();
+        BeanUtils.copyProperties(userInfo , userDetailVo);
+
+        R userAllArticleNumber = bbsClient.findUserAllArticleNumber(userId);
+        Integer allArticleNumber = 0;
+        if(userAllArticleNumber.getSuccess()){
+            allArticleNumber = (Integer) userAllArticleNumber.getData().get("userAllArticleNumber");
         }
-        myUserInfoVo.setIsSignIn(isSignIn);
+        userDetailVo.setAllArticleNumber(allArticleNumber);
+
+        try {
+            UserDetailVo userDetailVo1 = afcsd.get();
+            userDetailVo.setFansNumber(userDetailVo1.getFansNumber());
+            userDetailVo.setAttentionNumber(userDetailVo1.getAttentionNumber());
+            userDetailVo.setStudyNumber(userDetailVo1.getStudyNumber());
+            userDetailVo.setColumnNumber(userDetailVo1.getColumnNumber());
+            userDetailVo.setDynamicNumber(userDetailVo1.getDynamicNumber());
+        }catch(Exception e){
+            log.warn("查询用户关注、粉丝、专栏、学习、说说数量失败");
+        }
+
+        return userDetailVo;
+    }
+
+
+    //查询用户关注、粉丝、专栏、学习、说说数量
+    @Async
+    public Future<UserDetailVo> findAFCSD(String userId){
+        UserDetailVo userDetailVo = new UserDetailVo();
+        Integer userFollowNumber = attentionService.findUserFollowNumber(userId);
+        Integer userFansNumber = attentionService.findUserFansNumber(userId);
+
+
+        userDetailVo.setFansNumber(userFansNumber);
+        userDetailVo.setAttentionNumber(userFollowNumber);
+        return new AsyncResult<>(userDetailVo);
+    }
+
+    //用户签到
+    @Transactional
+    @Override
+    public int userSignIn(String userId) {
+        RightRedis userRightRedis = VipUtils.getUserRightRedis(userId);
+        if(userRightRedis == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "签到失败");
+        }
+        Integer signExperience = userRightRedis.getSignExperience();
+        UserInfo userInfo = baseMapper.selectById(userId);
+        if(userInfo.getIsSign()){
+            throw new XiaoXiaException(ResultCode.ERROR , "你已经签到了");
+        }
+        UserInfo userInfoUpdate = new UserInfo();
+        userInfoUpdate.setId(userId);
+        userInfoUpdate.setExperience(userInfo.getExperience() + signExperience);
+        userInfoUpdate.setIsSign(true);
+        userInfoUpdate.setVersion(userInfo.getVersion());
+        int i = baseMapper.updateById(userInfoUpdate);
+        if(i != 1){
+            throw new XiaoXiaException(ResultCode.ERROR , "签到失败");
+        }
+        return signExperience;
+    }
+
+    //更新用户每日签到
+    @Override
+    public void updateUserIsSign() {
+        baseMapper.updateUserIsSign();
+    }
+
+    //设置用户江湖文章数量
+    @Async
+    public Future<MyUserInfoVo> findUserbbsArticleNumber(String userId){
+        MyUserInfoVo myUserInfoVo = new MyUserInfoVo();
         R userbbsArticleNumber = bbsClient.findUserbbsArticleNumber(userId);
         Integer bbsArticleNumber = 0;
         if(userbbsArticleNumber.getSuccess()){

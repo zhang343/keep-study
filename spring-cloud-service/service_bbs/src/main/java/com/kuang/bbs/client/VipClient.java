@@ -21,7 +21,4 @@ public interface VipClient {
 
     @GetMapping("/inside/right/findRightRedisByUserId")
     R findRightRedisByUserId(@RequestParam("userId") String userId);
-
-    @PostMapping("/inside/dailyequity/addArticle")
-    R addArticle(@RequestParam("userId") String userId);
 }

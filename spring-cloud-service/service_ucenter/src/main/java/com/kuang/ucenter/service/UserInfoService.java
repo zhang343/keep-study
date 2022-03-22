@@ -30,4 +30,13 @@ public interface UserInfoService extends IService<UserInfo> {
 
     //用户登录之后查询小方框内容
     MyUserInfoVo findUserSmallBoxContent(String userId);
+
+    //查询用户上边框的内容
+    UserDetailVo findUserBorderTop(String userId);
+
+    //用户签到
+    int userSignIn(String userId);
+
+    //更新用户每日签到
+    void updateUserIsSign();
 }

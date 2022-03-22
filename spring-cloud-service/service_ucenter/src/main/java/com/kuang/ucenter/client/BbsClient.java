@@ -18,4 +18,8 @@ public interface BbsClient {
 
     @GetMapping("/inside/article/findUserbbsArticleNumber")
     R findUserbbsArticleNumber(@RequestParam("userId") String userId);
+
+    //查询用户所有江湖文章数量
+    @GetMapping("/inside/article/findUserAllArticleNumber")
+    R findUserAllArticleNumber(@RequestParam("userId") String userId);
 }

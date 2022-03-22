@@ -1,8 +1,6 @@
 package com.kuang.vip;
 
 import com.kuang.springcloud.utils.JwtUtils;
-import com.kuang.vip.entity.UserTodayRight;
-import com.kuang.vip.mapper.UserTodayRightMapper;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,9 +16,6 @@ import javax.annotation.Resource;
  */
 @SpringBootApplication
 public class Application implements CommandLineRunner {
-
-    @Resource
-    private UserTodayRightMapper userTodayRightMapper;
 
 
     public static void main(String[] args) {

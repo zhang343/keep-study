@@ -3,20 +3,16 @@ package com.kuang.bbs.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.kuang.bbs.client.UcenterClient;
-import com.kuang.bbs.client.VipClient;
 import com.kuang.bbs.entity.Article;
 import com.kuang.bbs.entity.Comment;
 import com.kuang.bbs.entity.vo.OneCommentVo;
 import com.kuang.bbs.entity.vo.TwoCommentVo;
 import com.kuang.bbs.mapper.ArticleMapper;
 import com.kuang.bbs.mapper.CommentMapper;
-import com.kuang.bbs.service.ArticleService;
 import com.kuang.bbs.service.CommentService;
 import com.kuang.springcloud.entity.InfoReplyMeVo;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.rabbitmq.MsgProducer;
-import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
 import com.kuang.springcloud.utils.VipUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -44,9 +40,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     @Resource
     private MsgProducer msgProducer;
-
-    @Resource
-    private UcenterClient ucenterClient;
 
     //查询系统评论数量
     @Cacheable(value = "commentNumber")
@@ -79,16 +72,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     public void addComment(Comment comment) {
         String articleId = comment.getArticleId();
         log.info("增加评论,文章id:" + articleId);
-        //进行远程调用查找插入评论的用户头像和昵称
-        R ucenterR = ucenterClient.findAvatarAndNicknameByUserId(comment.getUserId());
-        if(!ucenterR.getSuccess()){
-            log.warn("远程调用失败，无法查询出用户头像和昵称");
-            throw new XiaoXiaException(ResultCode.ERROR , "增加评论失败");
-        }
-        String avatar = (String) ucenterR.getData().get("avatar");
-        String nickname = (String) ucenterR.getData().get("nickname");
-        comment.setUserAvatar(avatar);
-        comment.setUserNickname(nickname);
         int insert = baseMapper.insert(comment);
         if(insert != 1){
             log.info("增加评论失败，文章id：" + articleId);

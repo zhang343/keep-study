@@ -36,6 +36,12 @@ public class UcenterClientFactory implements FallbackFactory<UcenterClient> {
                 return R.error();
             }
 
+            @Override
+            public R add(Integer kCoinNumber) {
+                return R.error();
+            }
+
+
         };
     }
 }

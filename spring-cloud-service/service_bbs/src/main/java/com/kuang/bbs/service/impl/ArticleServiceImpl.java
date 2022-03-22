@@ -6,9 +6,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kuang.bbs.client.UcenterClient;
 import com.kuang.bbs.client.VipClient;
 import com.kuang.bbs.entity.Article;
+import com.kuang.bbs.entity.ArticleRight;
 import com.kuang.bbs.entity.Category;
-import com.kuang.bbs.entity.vo.*;
+import com.kuang.bbs.entity.vo.ArticleCacheVo;
+import com.kuang.bbs.entity.vo.ArticleUpdateAndCreateVo;
+import com.kuang.bbs.entity.vo.ArticleVo;
+import com.kuang.bbs.entity.vo.IndexArticleVo;
 import com.kuang.bbs.mapper.ArticleMapper;
+import com.kuang.bbs.mapper.ArticleRightMapper;
 import com.kuang.bbs.service.ArticleService;
 import com.kuang.bbs.service.CategoryService;
 import com.kuang.springcloud.entity.InfoFriendFeedVo;
@@ -29,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -53,6 +57,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Resource
     private CategoryService categoryService;
+
+    @Resource
+    private ArticleRightMapper articleRightMapper;
 
 
     //查询系统文章数量
@@ -201,20 +208,22 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     //用户发布文章
     @Transactional
     @Override
-    public Article addArticle(ArticleUpdateAndCreateVo articleUpdateAndCreateVo , String userId) {
+    public Article addArticle(ArticleUpdateAndCreateVo articleUpdateAndCreateVo , String avatar , String nickname  , String userId) {
         log.info("用户发布文章,用户id:" + userId);
+
+        RightRedis userRightRedis = VipUtils.getUserRightRedis(userId);
+        if(userRightRedis == null){
+            R rightRedisByUserId = vipClient.findRightRedisByUserId(userId);
+            if(!rightRedisByUserId.getSuccess()){
+                throw new XiaoXiaException(ResultCode.ERROR , "发布文章失败");
+            }
+            userRightRedis = (RightRedis) rightRedisByUserId.getData().get("rightRedis");
+        }
+
         Article article = new Article();
         BeanUtils.copyProperties(articleUpdateAndCreateVo , article);
         article.setId(null);
         article.setUserId(userId);
-        //进行远程调用查找发布文章的用户头像和昵称
-        R ucenterR = ucenterClient.findAvatarAndNicknameByUserId(userId);
-        if(!ucenterR.getSuccess()){
-            log.warn("远程调用失败，无法查询出用户头像和昵称");
-            throw new XiaoXiaException(ResultCode.ERROR , "发布文章失败");
-        }
-        String avatar = (String) ucenterR.getData().get("avatar");
-        String nickname = (String) ucenterR.getData().get("nickname");
         article.setAvatar(avatar);
         article.setNickname(nickname);
         int insert = baseMapper.insert(article);
@@ -223,13 +232,31 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             throw new XiaoXiaException(ResultCode.ERROR , "发布文章失败");
         }
 
-        //进行远程调用调整用户每日权益
-        R vipR = vipClient.addArticle(userId);
-        if(!vipR.getSuccess()){
-            log.warn("远程调用失败,无法调整用户每日权益");
-            throw new XiaoXiaException(ResultCode.ERROR , "发布文章失败");
-        }
 
+        QueryWrapper<ArticleRight> wrapper = new QueryWrapper<>();
+        wrapper.select("id" , "money" , "article_number" , "version");
+        wrapper.eq("user_id" , userId);
+        ArticleRight articleRight = articleRightMapper.selectOne(wrapper);
+        if(articleRight.getArticleNumber() + 1 > userRightRedis.getArticleNumber()){
+            throw new XiaoXiaException(ResultCode.ERROR , "今日文章发布数量已满");
+        }
+        articleRight.setArticleNumber(articleRight.getArticleNumber() + 1);
+
+        if(articleRight.getMoney() + 10 > userRightRedis.getMoney()){
+            articleRight.setMoney(null);
+            int i = articleRightMapper.updateById(articleRight);
+            if(i != 1){
+                throw new XiaoXiaException(ResultCode.ERROR , "发布文章失败");
+            }
+        }else {
+            articleRight.setMoney(articleRight.getMoney() + 10);
+            int i = articleRightMapper.updateById(articleRight);
+            if(i != 1){
+                throw new XiaoXiaException(ResultCode.ERROR , "发布文章失败");
+            }
+            //不强制一样
+            ucenterClient.add(10);
+        }
         return article;
     }
 
@@ -396,6 +423,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public void updateArticleViews(List<Article> articleUpdateList) {
         baseMapper.updateArticleViews(articleUpdateList);
+    }
+
+    //查询用户所有江湖文章数量
+    @Override
+    public Integer findUserAllArticleNumber(String userId) {
+        QueryWrapper<Article> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id" , userId);
+        wrapper.last("and (is_column_article = 0 or is_bbs = 1)");
+        return baseMapper.selectCount(wrapper);
     }
 
 }

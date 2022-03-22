@@ -6,6 +6,7 @@ import com.kuang.springcloud.utils.JwtUtils;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
 import com.kuang.ucenter.entity.vo.MyUserInfoVo;
+import com.kuang.ucenter.entity.vo.UserDetailVo;
 import com.kuang.ucenter.service.UserInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
@@ -54,6 +55,29 @@ public class UserInfoController {
         return R.ok().data("myUserInfoVo" , myUserInfoVo);
     }
 
+
+    //用户签到
+    @PostMapping("userSignIn")
+    public R userSignIn(HttpServletRequest request){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        if(userId == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "请先登录");
+        }
+        int signExperience = userInfoService.userSignIn(userId);
+        return R.ok().data("signExperience" , signExperience);
+    }
+
+
+    //查询用户上边框的内容
+    @GetMapping("findUserBorderTop")
+    public R findUserBorderTop(HttpServletRequest request){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        if(userId == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "请先登录");
+        }
+        UserDetailVo userDetailVo = userInfoService.findUserBorderTop(userId);
+        return R.ok().data("UserDetail" , userDetailVo);
+    }
 
 }
 

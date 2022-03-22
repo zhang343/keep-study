@@ -13,7 +13,7 @@ public class UserDetailVo {
     private String sign;
     private Integer attentionNumber;
     private Integer fansNumber;
-    private Integer articleNumber;
+    private Integer allArticleNumber;
     private Integer columnNumber;
     private Integer studyNumber;
     private Integer dynamicNumber;

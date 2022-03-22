@@ -2,6 +2,7 @@ package com.kuang.bbs.schedule;
 
 
 import com.kuang.bbs.entity.Article;
+import com.kuang.bbs.mapper.ArticleRightMapper;
 import com.kuang.bbs.service.ArticleService;
 import com.kuang.springcloud.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,9 @@ public class MultithreadScheduleTask {
 
     @Resource
     private ArticleService articleService;
+
+    @Resource
+    private ArticleRightMapper articleRightMapper;
 
     //每五分钟执行一次
     @Async
@@ -71,5 +76,14 @@ public class MultithreadScheduleTask {
         }else {
             log.warn(treadName + "获取文章全局锁失败");
         }
+    }
+
+
+
+    //定时任务,更新用户每日文章权益，每天凌晨执行
+    @Scheduled(cron = "0 0 0 * * ? ")
+    public void updateUserArticleRight(){
+        log.info("开始执行定时任务,更新用户每日文章权益,当前时间为:" + LocalDateTime.now());
+        articleRightMapper.updateUserArticleRight();
     }
 }

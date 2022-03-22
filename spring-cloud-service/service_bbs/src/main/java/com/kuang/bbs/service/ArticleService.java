@@ -33,7 +33,7 @@ public interface ArticleService extends IService<Article> {
     Future<List<IndexArticleVo>> pageArticleCondition(Long current, Long limit, String categoryId, Boolean isExcellentArticle, String articleNameOrLabelName);
 
     //用户发布文章
-    Article addArticle(ArticleUpdateAndCreateVo articleUpdateAndCreateVo, String userId);
+    Article addArticle(ArticleUpdateAndCreateVo articleUpdateAndCreateVo, String avatar , String nickname , String userId);
 
     //查询文章通过文章id和用户id
     ArticleUpdateAndCreateVo findArticleByArticleIdAndUserId(String articleId, String userId);
@@ -64,4 +64,7 @@ public interface ArticleService extends IService<Article> {
 
     //更新文章浏览量
     void updateArticleViews(List<Article> articleUpdateList);
+
+    //查询用户所有江湖文章数量
+    Integer findUserAllArticleNumber(String userId);
 }

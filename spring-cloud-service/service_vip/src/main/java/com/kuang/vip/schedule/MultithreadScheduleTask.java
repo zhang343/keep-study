@@ -1,10 +1,8 @@
 package com.kuang.vip.schedule;
 
-import com.kuang.springcloud.utils.RedisUtils;
 import com.kuang.vip.entity.Members;
 import com.kuang.vip.mapper.MembersMapper;
 import com.kuang.vip.service.CacheService;
-import com.kuang.vip.service.UserTodayRightService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -31,9 +29,6 @@ public class MultithreadScheduleTask {
     @Resource
     private MembersMapper membersMapper;
 
-    @Resource
-    private UserTodayRightService userTodayRightService;
-
     //定时任务,删除vip会员表中过期的会员,每一个小时执行一次
     @Scheduled(cron = "0 0 0/1 * * ? ")
     public void deleteVipMember(){
@@ -49,25 +44,6 @@ public class MultithreadScheduleTask {
 
         if(userIdList.size() != 0){
             membersMapper.deleteBatchIds(userIdList);
-        }
-    }
-
-
-    //定时任务,更新用户每日权益，每天凌晨执行
-    @Scheduled(cron = "0 0 0 * * ? ")
-    public void updateMemberTodayRight(){
-        log.info("开始执行定时任务,更新用户每日权益,当前时间为:" + LocalDateTime.now());
-        log.info("开始尝试去获取分布式全局锁,获取用户每日权益更新锁");
-        boolean flag = RedisUtils.tryUserTodayRightLock(240);
-        if(flag){
-            log.info("获取分布式全局锁,获取用户每日权益更新锁成功");
-            boolean b = userTodayRightService.updateMemberTodayRight();
-            if(!b){
-                userTodayRightService.updateMemberTodayRight();
-            }
-            RedisUtils.unUserTodayRightLock();
-        }else {
-            log.warn("获取分布式全局锁,获取用户每日权益更新锁失败");
         }
     }
 

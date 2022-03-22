@@ -28,4 +28,11 @@ public class MultithreadScheduleTask {
         log.info("定时任务开始, 缓存全部用户数量,当前时间:" + LocalDateTime.now().toLocalTime());
         userInfoService.findUserNumber();
     }
+
+    //定时任务,更新用户每日签到权益，每天凌晨执行
+    @Scheduled(cron = "0 0 0 * * ? ")
+    public void updateUserArticleRight(){
+        log.info("开始执行定时任务,更新用户每日签到权益,当前时间为:" + LocalDateTime.now());
+        userInfoService.updateUserIsSign();
+    }
 }

@@ -22,6 +22,11 @@ public class BbsClientFactory implements FallbackFactory<BbsClient> {
             public R findUserbbsArticleNumber(String userId) {
                 return R.error();
             }
+
+            @Override
+            public R findUserAllArticleNumber(String userId) {
+                return R.error();
+            }
         };
     }
 }

@@ -26,11 +26,6 @@ public class VipClientFactory implements FallbackFactory<VipClient> {
             public R findRightRedisByUserId(String userId) {
                 return R.error();
             }
-
-            @Override
-            public R addArticle(String userId) {
-                return R.error();
-            }
         };
     }
 }

@@ -103,14 +103,14 @@ public class ArticleController {
 
     //用户发布文章,指江湖文章的发布
     @PostMapping("create")
-    public R create(ArticleUpdateAndCreateVo articleUpdateAndCreateVo  , List<String> labelList , HttpServletRequest request){
+    public R create(ArticleUpdateAndCreateVo articleUpdateAndCreateVo , String avatar , String nickname , List<String> labelList , HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         log.info("用户发布文章,用户id:" + userId);
         if(userId == null){
             log.warn("用户非法发布文章,用户id:" + null);
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
         }
-        Article article = articleService.addArticle(articleUpdateAndCreateVo, userId);
+        Article article = articleService.addArticle(articleUpdateAndCreateVo, avatar , nickname , userId);
         //删除用户缓存
         RedisUtils.delKey(userId);
         String articleId = article.getId();

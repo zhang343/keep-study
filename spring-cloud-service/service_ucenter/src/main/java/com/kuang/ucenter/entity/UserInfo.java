@@ -70,6 +70,9 @@ public class UserInfo implements Serializable {
     @TableLogic
     private Boolean isDeleted;
 
+    @ApiModelProperty(value = "0未签到 1签到")
+    private Boolean isSign;
+
     @ApiModelProperty(value = "乐观锁")
     @Version
     private Long version;
