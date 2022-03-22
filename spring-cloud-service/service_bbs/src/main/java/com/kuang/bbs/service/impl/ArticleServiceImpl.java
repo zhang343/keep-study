@@ -180,28 +180,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                         indexArticleVoList.set(0 , topArticle);
                     }
                 }
-            }
-            RedisUtils.setValueTimeout("TopArticleList" , indexArticleVoList , 30);
-        }
-
-        List<String> userIdList = new ArrayList<>();
-        for(IndexArticleVo indexArticleVo : indexArticleVoList){
-            Object value = RedisUtils.getValue(indexArticleVo.getId());
-            if(value != null){
-                Integer views = (Integer) value;
-                indexArticleVo.setViews(indexArticleVo.getViews() + views);
-            }
-            userIdList.add(indexArticleVo.getUserId());
-        }
-
-
-        Map<String , String> userVipLevel = VipUtils.getUserVipLevel(userIdList);
-        if(userVipLevel != null){
-            for(IndexArticleVo indexArticleVo : indexArticleVoList){
-                String vipLevel = userVipLevel.get(indexArticleVo.getUserId());
-                indexArticleVo.setVipLevel(vipLevel);
+                RedisUtils.setValueTimeout("TopArticleList" , indexArticleVoList , 30);
             }
         }
+        VipUtils.setVipLevel(indexArticleVoList , indexArticleVoList.get(0));
         return new AsyncResult<>(indexArticleVoList);
     }
 

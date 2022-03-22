@@ -6,9 +6,9 @@ import com.kuang.springcloud.entity.RightRedis;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.*;
 import com.kuang.ucenter.client.BbsClient;
+import com.kuang.ucenter.client.VipClient;
 import com.kuang.ucenter.entity.UserInfo;
-import com.kuang.ucenter.entity.vo.MyUserInfoVo;
-import com.kuang.ucenter.entity.vo.UserDetailVo;
+import com.kuang.ucenter.entity.vo.*;
 import com.kuang.ucenter.mapper.UserInfoMapper;
 import com.kuang.ucenter.service.*;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +17,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -32,6 +35,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     @Resource
     private BbsClient bbsClient;
+
+    @Resource
+    private VipClient vipClient;
 
     @Resource
     private UserAttentionService attentionService;
@@ -146,21 +152,41 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         return myUserInfoVo;
     }
 
-    //查询用户上边框的内容
+    //查询用户主页的内容,这里查自己
     @Override
-    public UserDetailVo findUserBorderTop(String userId) {
-        Future<UserDetailVo> afcsd = findAFCSD(userId);
+    public UserDetailVo findUserHomePage(String userId) {
+        //查询用户关注、粉丝、专栏、学习、说说、vip
+        Future<UserDetailVo> afcsd = findAFCSDV(userId);
 
+        //查询基本信息
         UserInfo userInfo = baseMapper.selectById(userId);
         UserDetailVo userDetailVo = new UserDetailVo();
         BeanUtils.copyProperties(userInfo , userDetailVo);
 
+        //查询用户所有江湖文章
         R userAllArticleNumber = bbsClient.findUserAllArticleNumber(userId);
         Integer allArticleNumber = 0;
         if(userAllArticleNumber.getSuccess()){
             allArticleNumber = (Integer) userAllArticleNumber.getData().get("userAllArticleNumber");
         }
         userDetailVo.setAllArticleNumber(allArticleNumber);
+
+        //查询用户在江湖可以被别人看见的文章数量
+        R userbbsArticleNumber = bbsClient.findUserbbsArticleNumber(userId);
+        Integer bbsArticleNumber = 0;
+        if(userbbsArticleNumber.getSuccess()){
+            bbsArticleNumber = (Integer) userbbsArticleNumber.getData().get("articleNumber");
+        }
+        userDetailVo.setBbsArticleNumber(bbsArticleNumber);
+
+
+        Integer commentNumber = 0;
+        R userCommentNumber = bbsClient.findUserCommentNumber(userId);
+        if(userCommentNumber.getSuccess()){
+            commentNumber = (Integer) userCommentNumber.getData().get("commentNumber");
+        }
+        userDetailVo.setCommentNumber(commentNumber);
+
 
         try {
             UserDetailVo userDetailVo1 = afcsd.get();
@@ -169,6 +195,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             userDetailVo.setStudyNumber(userDetailVo1.getStudyNumber());
             userDetailVo.setColumnNumber(userDetailVo1.getColumnNumber());
             userDetailVo.setDynamicNumber(userDetailVo1.getDynamicNumber());
+            userDetailVo.setVipLevel(userDetailVo1.getVipLevel());
         }catch(Exception e){
             log.warn("查询用户关注、粉丝、专栏、学习、说说数量失败");
         }
@@ -177,16 +204,30 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     }
 
 
-    //查询用户关注、粉丝、专栏、学习、说说数量
+    //查询用户关注、粉丝、专栏、学习、说说数量、vip
     @Async
-    public Future<UserDetailVo> findAFCSD(String userId){
+    public Future<UserDetailVo> findAFCSDV(String userId){
         UserDetailVo userDetailVo = new UserDetailVo();
         Integer userFollowNumber = attentionService.findUserFollowNumber(userId);
         Integer userFansNumber = attentionService.findUserFansNumber(userId);
-
-
+        Integer columnNumber = columnService.findUserColumnNumber(userId);
+        Integer studyNumber = studyService.findUserStudyNumber(userId);
+        Integer dynamicNumber = talkService.findUserTalkNumber(userId);
+        //查询vip
+        String userVipLevel = VipUtils.getUserVipLevel(userId);
+        if(userVipLevel == null){
+            R rightRedisByUserId = vipClient.findRightRedisByUserId(userId);
+            if(rightRedisByUserId.getSuccess()){
+                RightRedis rightRedis = (RightRedis) rightRedisByUserId.getData().get("rightRedis");
+                userVipLevel = rightRedis.getVipLevel();
+            }
+        }
         userDetailVo.setFansNumber(userFansNumber);
         userDetailVo.setAttentionNumber(userFollowNumber);
+        userDetailVo.setColumnNumber(columnNumber);
+        userDetailVo.setStudyNumber(studyNumber);
+        userDetailVo.setDynamicNumber(dynamicNumber);
+        userDetailVo.setVipLevel(userVipLevel);
         return new AsyncResult<>(userDetailVo);
     }
 
@@ -219,6 +260,84 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Override
     public void updateUserIsSign() {
         baseMapper.updateUserIsSign();
+    }
+
+    //修改用户背景图像
+    @Override
+    public void setUserBgimg(String userId, String url) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(userId);
+        userInfo.setBgImg(url);
+        int i = baseMapper.updateById(userInfo);
+        if(i != 1){
+            throw new XiaoXiaException(ResultCode.ERROR , "修改背景图像失败");
+        }
+    }
+
+    //查询出用户资料
+    @Override
+    public UserDateVo findUserData(String userId) {
+        UserInfo userInfo = baseMapper.selectById(userId);
+        UserDateVo userDateVo = new UserDateVo();
+        BeanUtils.copyProperties(userInfo , userDateVo);
+        return userDateVo;
+    }
+
+    //修改用户资料
+    @Override
+    public void setUserData(String userId, UserSetDataVo userSetDataVo) {
+        if(StringUtils.isEmpty(userSetDataVo.getAddress()) &&
+                StringUtils.isEmpty(userSetDataVo.getSex()) &&
+                StringUtils.isEmpty(userSetDataVo.getAvatar()) &&
+                StringUtils.isEmpty(userSetDataVo.getNickname()) &&
+                StringUtils.isEmpty(userSetDataVo.getSign())){
+            throw new XiaoXiaException(ResultCode.ERROR , "请不要传入空值");
+        }
+
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(userId);
+        BeanUtils.copyProperties(userSetDataVo , userInfo);
+        int i = baseMapper.updateById(userInfo);
+        if(i != 1){
+            throw new XiaoXiaException(ResultCode.ERROR , "修改失败");
+        }
+    }
+
+    //查询用户安全信息
+    @Override
+    public UserSecurity findUserSecurityData(String userId) {
+        UserInfo userInfo = baseMapper.selectById(userId);
+        UserSecurity userSecurity = new UserSecurity();
+        BeanUtils.copyProperties(userInfo , userSecurity);
+        return userSecurity;
+    }
+
+    //修改用户安全信息
+    @Override
+    public void setUserSecurityData(String userId, String email, String password) {
+        if(StringUtils.isEmpty(email) && StringUtils.isEmpty(password)){
+            throw new XiaoXiaException(ResultCode.ERROR , "不可以为空");
+        }
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(userId);
+        userInfo.setEmail(email);
+        userInfo.setPassword(MD5Util.getMD5(password));
+        int i = baseMapper.updateById(userInfo);
+        if(i != 1){
+            throw new XiaoXiaException(ResultCode.ERROR , "修改失败");
+        }
+    }
+
+    //根据条件查找用户数量
+    @Override
+    public Integer findUserByAccountOrNicknameNumber(String accountOrNickname) {
+        return null;
+    }
+
+    //根据条件查找用户
+    @Override
+    public List<UserSearchVo> findUserByAccountOrNickname(String accountOrNickname) {
+        return null;
     }
 
     //设置用户江湖文章数量

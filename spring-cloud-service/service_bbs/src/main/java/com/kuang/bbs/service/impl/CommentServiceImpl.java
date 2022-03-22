@@ -92,25 +92,19 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         if(oneCommentVoList == null || oneCommentVoList.size() == 0){
             return new AsyncResult<>(oneCommentVoList);
         }
-        Set<String> userIdSet = new HashSet<>();
+
+        VipUtils.setVipLevel(oneCommentVoList , oneCommentVoList.get(0));
+
+        List<TwoCommentVo> twoCommentVos = new ArrayList<>();
         //取出所有评论用户的id
-        for(OneCommentVo oneCommentVo : oneCommentVoList){
-            userIdSet.add(oneCommentVo.getUserId());
-            for(TwoCommentVo twoCommentVo : oneCommentVo.getChildList()){
-                userIdSet.add(twoCommentVo.getUserId());
-            }
+        for(OneCommentVo oneCommentVo : oneCommentVoList) {
+            twoCommentVos.addAll(oneCommentVo.getChildList());
         }
-        List<String> userIdList = new ArrayList<>(userIdSet);
-        Map<String , String> userVipLevel = VipUtils.getUserVipLevel(userIdList);
-        if(userVipLevel == null){
-            return new AsyncResult<>(oneCommentVoList);
+
+        if(twoCommentVos.size() != 0){
+            VipUtils.setVipLevel(twoCommentVos , twoCommentVos.get(0));
         }
-        for(OneCommentVo oneCommentVo : oneCommentVoList){
-            oneCommentVo.setUserVipLevel(userVipLevel.get(oneCommentVo.getUserId()));
-            for(TwoCommentVo twoCommentVo : oneCommentVo.getChildList()){
-                twoCommentVo.setUserVipLevel(userVipLevel.get(twoCommentVo.getUserId()));
-            }
-        }
+
         return new AsyncResult<>(oneCommentVoList);
     }
 
@@ -177,6 +171,14 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     public Integer findArticleAllCommentNumber(String articleId) {
         QueryWrapper<Comment> wrapper = new QueryWrapper<>();
         wrapper.eq("article_id" , articleId);
+        return baseMapper.selectCount(wrapper);
+    }
+
+    //查询用户所有评论数量
+    @Override
+    public Integer findUserCommentNumber(String userId) {
+        QueryWrapper<Comment> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id" , userId);
         return baseMapper.selectCount(wrapper);
     }
 }

@@ -1,14 +1,7 @@
 package com.kuang.ucenter.mapper;
 
-import com.kuang.ucenter.entity.UserInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.kuang.ucenter.entity.vo.UserDetailVo;
-import com.kuang.ucenter.entity.vo.UserSearchVo;
-import com.kuang.ucenter.entity.vo.UserSecurity;
-import com.kuang.ucenter.entity.vo.UserVo;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
+import com.kuang.ucenter.entity.UserInfo;
 
 /**
  * @author Xiaozhang

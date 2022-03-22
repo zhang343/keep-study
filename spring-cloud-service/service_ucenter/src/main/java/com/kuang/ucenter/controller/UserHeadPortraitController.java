@@ -28,7 +28,7 @@ import java.util.List;
  * @since 2022-03-07
  */
 @RestController
-@RequestMapping("/user/headportrait")
+@RequestMapping("/user/avatar")
 @Slf4j
 public class UserHeadPortraitController {
 
@@ -36,10 +36,9 @@ public class UserHeadPortraitController {
     private UserHeadPortraitService userHeadPortraitService;
 
     //查询出所有头像
-    @GetMapping("findAll")
-    public R findAll(){
-        log.info("查询出所有头像");
-        List<String> urlList = userHeadPortraitService.findAll();
+    @GetMapping("findAllAvatar")
+    public R findAllAvatar(){
+        List<String> urlList = userHeadPortraitService.findAllAvatar();
         return R.ok().data("avatarList" , urlList);
     }
 

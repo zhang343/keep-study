@@ -4,18 +4,15 @@ import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
 import com.kuang.ucenter.entity.vo.UserSearchVo;
-import com.kuang.ucenter.entity.vo.UserVo;
 import com.kuang.ucenter.service.UserInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.concurrent.Future;
 
 /**
  * @author Xiaozhang
@@ -28,5 +25,16 @@ public class UserSearchController {
 
     @Resource
     private UserInfoService userInfoService;
+
+    //全站查找用户
+    @GetMapping("findUserByAccountOrNickname")
+    public R findUserByAccountOrNickname(String accountOrNickname){
+        if(StringUtils.isEmpty(accountOrNickname)) {
+            throw new XiaoXiaException(ResultCode.ERROR, "请输入");
+        }
+        Integer total = userInfoService.findUserByAccountOrNicknameNumber(accountOrNickname);
+        List<UserSearchVo> userSearchVoList = userInfoService.findUserByAccountOrNickname(accountOrNickname);
+        return R.ok().data("total" , total).data("userList" , userSearchVoList);
+    }
 
 }

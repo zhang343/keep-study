@@ -22,4 +22,8 @@ public interface BbsClient {
     //查询用户所有江湖文章数量
     @GetMapping("/inside/article/findUserAllArticleNumber")
     R findUserAllArticleNumber(@RequestParam("userId") String userId);
+
+    //查询用户所有评论数量
+    @GetMapping("/inside/comment/findUserCommentNumber")
+    R findUserCommentNumber(@RequestParam("userId") String userId);
 }

@@ -16,5 +16,5 @@ import java.util.List;
 public interface UserHeadPortraitService extends IService<UserHeadPortrait> {
 
     //查询出所有头像
-    List<String> findAll();
+    List<String> findAllAvatar();
 }

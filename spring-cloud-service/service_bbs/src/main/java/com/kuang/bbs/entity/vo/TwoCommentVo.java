@@ -12,7 +12,7 @@ public class TwoCommentVo {
     private String userAvatar;
     private String userNickname;
     private String content;
-    private String userVipLevel;
+    private String vipLevel;
     private String replyUserId;
     private String replyUserNickname;
     private Date gmtCreate;

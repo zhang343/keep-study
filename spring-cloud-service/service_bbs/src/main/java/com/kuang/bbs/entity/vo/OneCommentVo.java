@@ -13,7 +13,7 @@ public class OneCommentVo {
     private String userAvatar;
     private String userNickname;
     private String content;
-    private String userVipLevel;
+    private String vipLevel;
     private Date gmtCreate;
     private List<TwoCommentVo> childList;
 }

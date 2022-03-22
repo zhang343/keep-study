@@ -1,29 +1,19 @@
 package com.kuang.ucenter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
-import com.kuang.springcloud.utils.R;
-import com.kuang.springcloud.utils.ResultCode;
-import com.kuang.ucenter.client.VipClient;
-import com.kuang.ucenter.entity.UserAttention;
-import com.kuang.ucenter.entity.UserInfo;
-import com.kuang.ucenter.entity.vo.UserVo;
-import com.kuang.ucenter.mapper.UserAttentionMapper;
-import com.kuang.ucenter.mapper.UserInfoMapper;
-import com.kuang.ucenter.service.UserAttentionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.kuang.ucenter.service.UserInfoService;
+import com.kuang.springcloud.utils.VipUtils;
+import com.kuang.ucenter.entity.UserAttention;
+import com.kuang.ucenter.entity.vo.UserFollowOrFans;
+import com.kuang.ucenter.mapper.UserAttentionMapper;
+import com.kuang.ucenter.service.UserAttentionService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Future;
 
 /**
  * @author Xiaozhang
@@ -62,6 +52,30 @@ public class UserAttentionServiceImpl extends ServiceImpl<UserAttentionMapper, U
         QueryWrapper<UserAttention> wrapper = new QueryWrapper<>();
         wrapper.eq("attention_user_id" , userId);
         return baseMapper.selectCount(wrapper);
+    }
+
+    //查询关注用户
+    @Override
+    public List<UserFollowOrFans> findUserFollow(String userId, Long current, Long limit) {
+        current = (current - 1) * limit;
+        List<UserFollowOrFans> userFollowOrFansList =  baseMapper.findUserFollow(userId , current , limit);
+        if(userFollowOrFansList == null || userFollowOrFansList.size() == 0){
+            return userFollowOrFansList;
+        }
+        VipUtils.setVipLevel(userFollowOrFansList , userFollowOrFansList.get(0));
+        return userFollowOrFansList;
+    }
+
+    //查询粉丝
+    @Override
+    public List<UserFollowOrFans> findUserFans(String userId, Long current, Long limit) {
+        current = (current - 1) * limit;
+        List<UserFollowOrFans> userFollowOrFansList =  baseMapper.findUserFans(userId , current , limit);
+        if(userFollowOrFansList == null || userFollowOrFansList.size() == 0){
+            return userFollowOrFansList;
+        }
+        VipUtils.setVipLevel(userFollowOrFansList , userFollowOrFansList.get(0));
+        return userFollowOrFansList;
     }
 
 

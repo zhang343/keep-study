@@ -2,4 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kuang.ucenter.mapper.UserAttentionMapper">
 
+
+    <select id="findUserFollow" resultType="com.kuang.ucenter.entity.vo.UserFollowOrFans" >
+        select userinfo.id as userId, userinfo.avatar , userinfo.nickname , userinfo.sign , attention.gmt_create
+        from user_attention as attention join user_info as userinfo on attention.attention_user_id = userinfo.id
+        where attention.user_id = #{userId}
+        order by attention.gmt_create desc
+        limit #{current} , #{limit}
+    </select>
+
+    <select id="findUserFans" resultType="com.kuang.ucenter.entity.vo.UserFollowOrFans" >
+        select userinfo.id as userId, userinfo.avatar , userinfo.nickname , userinfo.sign , attention.gmt_create
+        from user_attention as attention join user_info as userinfo on attention.user_id = userinfo.id
+        where attention.attention_user_id = #{userId}
+        order by attention.gmt_create desc
+        limit #{current} , #{limit}
+    </select>
+
 </mapper>

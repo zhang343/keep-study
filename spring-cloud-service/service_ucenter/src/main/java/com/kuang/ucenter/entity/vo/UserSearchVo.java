@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class UserSearchVo {
-    private String id;
+    private String userId;
     private String nickname;
     private String avatar;
 }

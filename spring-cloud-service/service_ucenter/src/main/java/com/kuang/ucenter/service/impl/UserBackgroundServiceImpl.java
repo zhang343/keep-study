@@ -20,7 +20,7 @@ public class UserBackgroundServiceImpl extends ServiceImpl<UserBackgroundMapper,
     //查看所有背景图像
     @Cacheable(value = "bgImgList")
     @Override
-    public List<String> findAll() {
+    public List<String> findAllBgimg() {
         List<UserBackground> userBackgrounds = baseMapper.selectList(null);
         List<String> bgImgList = new ArrayList<>();
         for(UserBackground userBackground : userBackgrounds){

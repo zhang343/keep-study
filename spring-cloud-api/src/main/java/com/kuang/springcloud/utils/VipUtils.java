@@ -4,10 +4,10 @@ import com.kuang.springcloud.entity.MembersRedis;
 import com.kuang.springcloud.entity.RightRedis;
 import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
 
 public class VipUtils {
 
@@ -122,5 +122,66 @@ public class VipUtils {
             map.put(userId , rightRedis.getVipLevel());
         }
         return map;
+    }
+
+
+    //此处要求对象存在两个方法setVipLevel和getUserId，两个参数类型一样
+    public static void setVipLevel(Collection<?> objectList , Object o) {
+        TreeMap<String, MembersRedis> membersRedisTreeMap = getAllMembersTreeMap();
+        TreeMap<String , RightRedis> rightRedisTreeMap = getAllRightTreeMap();
+        RightRedis notVipRight = getNotVipRight();
+        if(membersRedisTreeMap == null || rightRedisTreeMap == null || notVipRight == null){
+            return;
+        }
+
+
+        Method setVipLevel = null;
+        Method getUserId = null;
+        try {
+            setVipLevel = o.getClass().getDeclaredMethod("setVipLevel", String.class);
+            getUserId = o.getClass().getDeclaredMethod("getUserId");
+        } catch(NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+
+        if(setVipLevel == null || getUserId == null){
+            return;
+        }
+
+
+
+
+
+        for(Object object : objectList){
+            String userId = null;
+            try {
+                userId = (String) getUserId.invoke(object);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+
+            if(userId == null){
+                continue;
+            }
+
+            MembersRedis membersRedis = membersRedisTreeMap.get(userId);
+            if(membersRedis == null){
+                try {
+                    setVipLevel.invoke(object , notVipRight.getVipLevel());
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+                continue;
+            }
+
+            String rightsId = membersRedis.getRightsId();
+            RightRedis rightRedis = rightRedisTreeMap.get(rightsId);
+            try {
+                setVipLevel.invoke(object , rightRedis.getVipLevel());
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 }

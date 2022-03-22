@@ -8,10 +8,7 @@ import com.kuang.ucenter.service.UserBackgroundService;
 import com.kuang.ucenter.service.UserInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -30,12 +27,25 @@ public class UserBackgroundController {
     @Resource
     private UserBackgroundService backgroundService;
 
+    @Resource
+    private UserInfoService userInfoService;
+
     //查看所有背景图像
-    @GetMapping("findAll")
-    public R findAll(){
-        log.info("查看所有背景图像");
-        List<String> urlList = backgroundService.findAll();
+    @GetMapping("findAllBgimg")
+    public R findAllBgimg(){
+        List<String> urlList = backgroundService.findAllBgimg();
         return R.ok().data("bgImgList" , urlList);
+    }
+
+    //修改用户背景图像
+    @PostMapping("setUserBgimg")
+    public R setUserBgimg(HttpServletRequest request , String url){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        if(userId == null || StringUtils.isEmpty(url)){
+            throw new XiaoXiaException(ResultCode.ERROR , "请先登录");
+        }
+        userInfoService.setUserBgimg(userId , url);
+        return R.ok();
     }
 
 }

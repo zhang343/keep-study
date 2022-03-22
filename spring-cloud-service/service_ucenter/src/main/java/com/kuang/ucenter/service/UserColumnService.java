@@ -10,5 +10,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface UserColumnService extends IService<UserColumn> {
 
 
-
+    //查找用户专栏数量
+    Integer findUserColumnNumber(String userId);
 }

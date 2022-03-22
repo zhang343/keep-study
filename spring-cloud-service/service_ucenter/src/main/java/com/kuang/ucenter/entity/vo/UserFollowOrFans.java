@@ -5,11 +5,12 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class UserVo {
-    private String id;
-    private String nickname;
+public class UserFollowOrFans {
+
+    private String userId;
     private String avatar;
-    private String sign;
+    private String nickname;
     private String vipLevel;
     private Date gmtCreate;
+    private String sign;
 }

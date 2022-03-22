@@ -26,8 +26,7 @@ public class UserHeadPortraitServiceImpl extends ServiceImpl<UserHeadPortraitMap
     //查询出所有头像
     @Cacheable(value = "avatarList")
     @Override
-    public List<String> findAll() {
-        log.info("查询出所有头像");
+    public List<String> findAllAvatar() {
         List<UserHeadPortrait> userHeadPortraits = baseMapper.selectList(null);
         List<String> urlList = new ArrayList<>();
         for(UserHeadPortrait userHeadPortrait : userHeadPortraits){

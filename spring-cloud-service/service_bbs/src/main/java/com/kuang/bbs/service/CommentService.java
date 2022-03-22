@@ -37,4 +37,7 @@ public interface CommentService extends IService<Comment> {
 
     //查询文章所有评论数量
     Integer findArticleAllCommentNumber(String articleId);
+
+    //查询用户所有评论数量
+    Integer findUserCommentNumber(String userId);
 }

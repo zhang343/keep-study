@@ -19,6 +19,10 @@ public class VipClientFactory implements FallbackFactory<VipClient> {
     @Override
     public VipClient create(Throwable throwable) {
         return new VipClient() {
+            @Override
+            public R findRightRedisByUserId(String userId) {
+                return R.error();
+            }
         };
     }
 }

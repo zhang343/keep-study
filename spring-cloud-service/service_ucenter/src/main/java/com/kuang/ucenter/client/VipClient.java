@@ -20,5 +20,7 @@ import java.util.List;
 )
 public interface VipClient {
 
+    @GetMapping("/inside/right/findRightRedisByUserId")
+    R findRightRedisByUserId(@RequestParam("userId") String userId);
 
 }

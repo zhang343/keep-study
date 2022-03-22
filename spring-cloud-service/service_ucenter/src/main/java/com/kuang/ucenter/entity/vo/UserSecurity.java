@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class UserSecurity{
-    private String id;
     private String account;
     private String nickname;
     private String email;

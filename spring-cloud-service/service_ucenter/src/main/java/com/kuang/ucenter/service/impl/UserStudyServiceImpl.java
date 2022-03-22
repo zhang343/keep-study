@@ -32,4 +32,12 @@ public class UserStudyServiceImpl extends ServiceImpl<UserStudyMapper, UserStudy
         return baseMapper.selectCount(wrapper) != 0;
     }
 
+    //查找用户学习数量
+    @Override
+    public Integer findUserStudyNumber(String userId) {
+        QueryWrapper<UserStudy> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id" , userId);
+        return baseMapper.selectCount(wrapper);
+    }
+
 }

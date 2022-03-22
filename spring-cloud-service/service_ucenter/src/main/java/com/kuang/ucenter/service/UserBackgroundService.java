@@ -12,5 +12,5 @@ import java.util.List;
 public interface UserBackgroundService extends IService<UserBackground> {
 
     //查看所有背景图像
-    List<String> findAll();
+    List<String> findAllBgimg();
 }

@@ -31,7 +31,7 @@ public class MultithreadScheduleTask {
 
     //定时任务,更新用户每日签到权益，每天凌晨执行
     @Scheduled(cron = "0 0 0 * * ? ")
-    public void updateUserArticleRight(){
+    public void updateUserIsSign(){
         log.info("开始执行定时任务,更新用户每日签到权益,当前时间为:" + LocalDateTime.now());
         userInfoService.updateUserIsSign();
     }

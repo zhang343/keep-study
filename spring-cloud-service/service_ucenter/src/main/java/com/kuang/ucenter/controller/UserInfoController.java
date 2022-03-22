@@ -6,7 +6,9 @@ import com.kuang.springcloud.utils.JwtUtils;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
 import com.kuang.ucenter.entity.vo.MyUserInfoVo;
+import com.kuang.ucenter.entity.vo.UserDateVo;
 import com.kuang.ucenter.entity.vo.UserDetailVo;
+import com.kuang.ucenter.entity.vo.UserSetDataVo;
 import com.kuang.ucenter.service.UserInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalTime;
 
 /**
  * @author Xiaozhang
@@ -68,15 +71,41 @@ public class UserInfoController {
     }
 
 
-    //查询用户上边框的内容
-    @GetMapping("findUserBorderTop")
-    public R findUserBorderTop(HttpServletRequest request){
+    //查询用户主页的内容,这里查自己
+    @GetMapping("findUserHomePage")
+    public R findUserHomePage(HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         if(userId == null){
             throw new XiaoXiaException(ResultCode.ERROR , "请先登录");
         }
-        UserDetailVo userDetailVo = userInfoService.findUserBorderTop(userId);
+        UserDetailVo userDetailVo = userInfoService.findUserHomePage(userId);
         return R.ok().data("UserDetail" , userDetailVo);
+    }
+
+
+    //查询出用户资料
+    @GetMapping("findUserData")
+    public R findUserData(HttpServletRequest request){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        if(userId == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "请先登录");
+        }
+
+        UserDateVo userDateVo = userInfoService.findUserData(userId);
+        return R.ok().data("userDate" , userDateVo);
+
+    }
+
+
+    //修改用户资料
+    @PostMapping("setUserData")
+    public R setUserData(HttpServletRequest request , UserSetDataVo userSetDataVo){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        if(userId == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "请先登录");
+        }
+        userInfoService.setUserData(userId , userSetDataVo);
+        return R.ok();
     }
 
 }

@@ -9,4 +9,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface UserTalkService extends IService<UserTalk> {
 
+    //查询用户说说数量
+    Integer findUserTalkNumber(String userId);
 }
