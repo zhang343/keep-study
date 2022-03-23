@@ -59,5 +59,5 @@ public interface UserInfoService extends IService<UserInfo> {
     Integer findUserByAccountOrNicknameNumber(String accountOrNickname);
 
     //根据条件查找用户
-    List<UserSearchVo> findUserByAccountOrNickname(String accountOrNickname);
+    List<UserSearchVo> findUserByAccountOrNickname(String accountOrNickname , Long current , Long limit);
 }

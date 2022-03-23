@@ -1,8 +1,7 @@
 package com.kuang.bbs.mapper;
 
-import com.kuang.bbs.entity.Article;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.kuang.bbs.entity.vo.ArticleVo;
+import com.kuang.bbs.entity.Article;
 import com.kuang.bbs.entity.vo.IndexArticleVo;
 import com.kuang.bbs.entity.vo.UserArticleVo;
 import org.apache.ibatis.annotations.Param;

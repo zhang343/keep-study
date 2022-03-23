@@ -2,20 +2,20 @@ package com.kuang.bbs.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kuang.bbs.client.UcenterClient;
 import com.kuang.bbs.client.VipClient;
 import com.kuang.bbs.entity.Article;
 import com.kuang.bbs.entity.ArticleRight;
 import com.kuang.bbs.entity.Category;
-import com.kuang.bbs.entity.vo.ArticleCacheVo;
-import com.kuang.bbs.entity.vo.ArticleUpdateAndCreateVo;
-import com.kuang.bbs.entity.vo.ArticleVo;
-import com.kuang.bbs.entity.vo.IndexArticleVo;
+import com.kuang.bbs.entity.vo.*;
 import com.kuang.bbs.mapper.ArticleMapper;
 import com.kuang.bbs.mapper.ArticleRightMapper;
 import com.kuang.bbs.service.ArticleService;
 import com.kuang.bbs.service.CategoryService;
+import com.kuang.bbs.service.CommentService;
+import com.kuang.bbs.service.LabelService;
 import com.kuang.springcloud.entity.InfoFriendFeedVo;
 import com.kuang.springcloud.entity.RightRedis;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -60,6 +61,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Resource
     private ArticleRightMapper articleRightMapper;
+
+    @Resource
+    private CommentService commentService;
+
+    @Resource
+    private LabelService labelService;
 
 
     //查询系统文章数量
@@ -111,8 +118,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
         String userVipLevel = VipUtils.getUserVipLevel(userId);
         articleVo.setVipLevel(userVipLevel);
-        long value = RedisUtils.getSetSize(articleId);
-        articleVo.setViews(articleVo.getViews() + value);
         return articleVo;
     }
 
@@ -299,7 +304,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             throw new XiaoXiaException(ResultCode.ERROR , "修改文章失败");
         }
 
-        if(!article.getIsColumnArticle() && !article.getIsRelease() && article1.getIsRelease()){
+        if(articleUpdateAndCreateVo.getIsRelease() == null || !articleUpdateAndCreateVo.getIsRelease()){
+            return;
+        }
+
+        if(!article.getIsColumnArticle() && !article.getIsRelease() && articleUpdateAndCreateVo.getIsRelease()){
             sendFrientFeed(articleId , userId);
         }
     }
@@ -308,13 +317,36 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public void deleteArticle(String articleId, String userId) {
         log.info("用户删除文章,用户id:" + userId + ",文章id:" + articleId);
-        QueryWrapper<Article> wrapper = new QueryWrapper<>();
-        wrapper.eq("id" , articleId);
-        wrapper.eq("user_id" , userId);
-        int delete = baseMapper.delete(wrapper);
-        if(delete != 1){
-            throw new XiaoXiaException(ResultCode.ERROR , "用户删除文章失败");
+        Article article = baseMapper.selectById(articleId);
+        if(article == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确删除");
         }
+        if(!userId.equals(article.getUserId())){
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确删除");
+        }
+        if(article.getIsColumnArticle() && !article.getIsBbs()){
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确删除");
+        }
+
+        //下面有两种状况
+        if(article.getIsColumnArticle() && article.getIsBbs()){
+            //专栏文章同步到江湖的状态
+            Article articleUpdate = new Article();
+            articleUpdate.setId(articleId);
+            articleUpdate.setIsBbs(false);
+            int i = baseMapper.updateById(articleUpdate);
+            if(i != 1){
+                throw new XiaoXiaException(ResultCode.ERROR , "删除失败");
+            }
+        }else {
+            //江湖文章
+            int i = baseMapper.deleteById(articleId);
+            if(i != 1){
+                throw new XiaoXiaException(ResultCode.ERROR , "删除失败");
+            }
+            labelService.deleteArticleLabel(articleId);
+        }
+        commentService.deleteCommentByArticleId(articleId);
     }
 
     //查询置顶文章
@@ -414,6 +446,34 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         wrapper.eq("user_id" , userId);
         wrapper.last("and (is_column_article = 0 or is_bbs = 1)");
         return baseMapper.selectCount(wrapper);
+    }
+
+    //查找用户在江湖的所有文章
+    @Override
+    public List<UserArticleVo> findUserArticle(String userId, Long current, Long limit) {
+        System.out.println(LocalTime.now());
+        current = (current - 1) * limit;
+        QueryWrapper<Article> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id" , userId);
+        wrapper.last("and (is_column_article = 0 or is_bbs = 1) order by gmt_create desc limit " + current + " , " + limit);
+        List<Article> articleList = baseMapper.selectList(wrapper);
+        List<UserArticleVo> userArticleVoList = new ArrayList<>();
+        TreeMap<String, Category> allCategoryTreeMap = categoryService.findAllCategoryTreeMap();
+        for(Article article : articleList){
+            UserArticleVo userArticleVo = new UserArticleVo();
+            BeanUtils.copyProperties(article , userArticleVo);
+            userArticleVo.setArticleId(article.getId());
+            Category category = allCategoryTreeMap.get(article.getCategoryId());
+            if(category != null){
+                userArticleVo.setCategoryName(category.getCategoryName());
+            }
+            if(article.getIsColumnArticle() && article.getIsBbs()){
+                userArticleVo.setIsRelease(true);
+            }
+            userArticleVoList.add(userArticleVo);
+        }
+        System.out.println(LocalTime.now());
+        return userArticleVoList;
     }
 
 }

@@ -1,15 +1,10 @@
 package com.kuang.ucenter;
 
-import com.kuang.springcloud.utils.JwtUtils;
-import com.kuang.ucenter.entity.UserBackground;
-import com.kuang.ucenter.mapper.UserBackgroundMapper;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import javax.annotation.Resource;
 
 /**
  * @author XiaoZhang
@@ -18,9 +13,6 @@ import javax.annotation.Resource;
  */
 @SpringBootApplication
 public class Application implements CommandLineRunner {
-
-    @Resource
-    private UserBackgroundMapper backgroundMapper;
 
     public static void main(String[] args) {
         SpringApplication springApplication = new SpringApplication(Application.class);
@@ -36,8 +28,6 @@ public class Application implements CommandLineRunner {
     //做程序启动之后工作
     @Override
     public void run(String... args) throws Exception {
-        String jwtToken = JwtUtils.getJwtToken("1489885385067622401");
-        System.out.println(jwtToken);
 
     }
 }

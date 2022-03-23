@@ -60,7 +60,7 @@ public class CommentController {
         BeanUtils.copyProperties(userOneCommentVo , comment);
         comment.setUserId(userId);
         commentService.addComment(comment);
-        return R.ok();
+        return R.ok().data("commentId" , comment.getId());
     }
 
     //增加二级评论
@@ -76,7 +76,7 @@ public class CommentController {
         BeanUtils.copyProperties(userTwoCommentVo , comment);
         comment.setUserId(userId);
         commentService.addComment(comment);
-        return R.ok();
+        return R.ok().data("commentId" , comment.getId());
     }
 
     //查找文章评论,分页查找

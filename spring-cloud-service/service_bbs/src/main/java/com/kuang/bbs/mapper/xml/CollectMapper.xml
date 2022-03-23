@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kuang.bbs.mapper.CollectMapper">
+
+
+    <select id="findUserCollectArticle" resultType="com.kuang.bbs.entity.vo.CollectArticleVo" >
+        select distinct (collect.id) , collect.id , collect.article_id , collect.gmt_create ,
+                        article.title , article.description , article.views , article.is_excellent_article ,
+                        category.category_name
+        from bbs_collect as collect
+             join bbs_article as article
+        on collect.article_id = article.id
+             join bbs_category as category
+        on article.category_id = category.id
+        where collect.user_id = #{userId}
+        order by collect.gmt_create desc
+        limit #{current} , #{limit}
+    </select>
+</mapper>

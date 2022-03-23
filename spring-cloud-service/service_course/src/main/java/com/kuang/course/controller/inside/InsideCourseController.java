@@ -1,6 +1,5 @@
 package com.kuang.course.controller.inside;
 
-import com.kuang.course.entity.CmsCourse;
 import com.kuang.course.service.CmsBillService;
 import com.kuang.course.service.CmsCourseService;
 import com.kuang.springcloud.entity.MessageCourseVo;

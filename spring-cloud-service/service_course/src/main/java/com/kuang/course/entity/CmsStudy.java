@@ -1,4 +1,4 @@
-package com.kuang.ucenter.entity;
+package com.kuang.course.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 
@@ -11,15 +11,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-05
- */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="UserStudy对象", description="")
-public class UserStudy implements Serializable {
+@ApiModel(value="CmsStudy对象", description="")
+public class CmsStudy implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -32,12 +28,6 @@ public class UserStudy implements Serializable {
 
     @ApiModelProperty(value = "课程id")
     private String courseId;
-
-    @ApiModelProperty(value = "课程标题")
-    private String title;
-
-    @ApiModelProperty(value = "课程封面地址")
-    private String cover;
 
     @ApiModelProperty(value = "乐观锁")
     @Version

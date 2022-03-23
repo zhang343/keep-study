@@ -21,9 +21,6 @@ public interface UcenterClient {
     @GetMapping("/inside/userinfo/findAvatarAndNicknameByUserId")
     R findAvatarAndNicknameByUserId(@RequestParam("userId") String userId);
 
-    @GetMapping("/inside/collection/findUserIsCollection")
-    R findUserIsCollection(@RequestParam("articleId") String articleId , @RequestParam("userId") String userId);
-
     @GetMapping("/inside/attention/findUserFansId")
     R findUserFansId(@RequestParam("userId") String userId);
 

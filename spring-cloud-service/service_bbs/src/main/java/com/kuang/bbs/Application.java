@@ -1,6 +1,5 @@
 package com.kuang.bbs;
 
-import com.kuang.springcloud.utils.JwtUtils;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -29,6 +28,5 @@ public class Application implements CommandLineRunner {
     //做程序启动之后工作
     @Override
     public void run(String... args) throws Exception {
-        System.out.println(JwtUtils.getJwtToken("1496388556204023809"));
     }
 }

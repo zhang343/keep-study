@@ -19,6 +19,10 @@ public class CourseClientFactory implements FallbackFactory<CourseClient> {
     @Override
     public CourseClient create(Throwable throwable) {
         return new CourseClient() {
+            @Override
+            public R findUserStudyNumber(String userId) {
+                return R.error();
+            }
         };
     }
 }

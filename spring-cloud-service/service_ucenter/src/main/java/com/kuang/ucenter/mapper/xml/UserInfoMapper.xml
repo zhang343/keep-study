@@ -6,4 +6,10 @@
     <update id="updateUserIsSign" >
         update user_info set is_sign = 0
     </update>
+
+    <select id="findUserByAccountOrNickname" resultType="com.kuang.ucenter.entity.vo.UserSearchVo" >
+        select id as userId , nickname , avatar from user_info
+        where account like '%' #{accountOrNickname} '%' or nickname like '%' #{accountOrNickname} '%'
+        limit #{current} , #{limit}
+    </select>
 </mapper>

@@ -16,4 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 )
 public interface CourseClient {
 
+    //查询用户学习数量
+    @GetMapping("/inside/study/findUserStudyNumber")
+    R findUserStudyNumber(@RequestParam("userId") String userId);
 }

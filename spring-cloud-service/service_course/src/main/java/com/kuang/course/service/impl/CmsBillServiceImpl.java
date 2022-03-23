@@ -2,11 +2,14 @@ package com.kuang.course.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.kuang.course.entity.CmsBill;
+import com.kuang.course.entity.vo.CourseStudyVo;
 import com.kuang.course.mapper.CmsBillMapper;
 import com.kuang.course.service.CmsBillService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author Xiaozhang
@@ -33,5 +36,12 @@ public class CmsBillServiceImpl extends ServiceImpl<CmsBillMapper, CmsBill> impl
         QueryWrapper<CmsBill> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id" , userId);
         return baseMapper.selectCount(wrapper);
+    }
+
+    //查询用户购买课程
+    @Override
+    public List<CourseStudyVo> findUserBuyCourse(String userId, Long current, Long limit) {
+        current = (current - 1) * limit;
+        return baseMapper.findUserBuyCourse(userId , current , limit);
     }
 }

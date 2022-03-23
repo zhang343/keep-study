@@ -22,14 +22,6 @@ public class MsgProducer implements RabbitTemplate.ConfirmCallback {
     }
 
 
-    //当用户观看了一个视频，我们发送一个消息到用户学习足迹里面去
-    public void sendHistoryMsg(String content) {
-        CorrelationData correlationId = new CorrelationData(UUIDUtil.getUUID());
-        //发送学习足迹消息
-        rabbitTemplate.convertAndSend(RabbitConfig.HistoryExchange, "", content, correlationId);
-    }
-
-
     //当我们回复了一个消息，则发送到用户消息中
     public void sendReplyMeMsg(String content) {
         CorrelationData correlationId = new CorrelationData(UUIDUtil.getUUID());

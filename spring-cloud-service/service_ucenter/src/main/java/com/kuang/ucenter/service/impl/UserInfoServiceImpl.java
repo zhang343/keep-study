@@ -6,11 +6,15 @@ import com.kuang.springcloud.entity.RightRedis;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.*;
 import com.kuang.ucenter.client.BbsClient;
+import com.kuang.ucenter.client.CourseClient;
 import com.kuang.ucenter.client.VipClient;
 import com.kuang.ucenter.entity.UserInfo;
 import com.kuang.ucenter.entity.vo.*;
 import com.kuang.ucenter.mapper.UserInfoMapper;
-import com.kuang.ucenter.service.*;
+import com.kuang.ucenter.service.UserAttentionService;
+import com.kuang.ucenter.service.UserColumnService;
+import com.kuang.ucenter.service.UserInfoService;
+import com.kuang.ucenter.service.UserTalkService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
@@ -20,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -40,13 +43,13 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     private VipClient vipClient;
 
     @Resource
+    private CourseClient courseClient;
+
+    @Resource
     private UserAttentionService attentionService;
 
     @Resource
     private UserColumnService columnService;
-
-    @Resource
-    private UserStudyService studyService;
 
     @Resource
     private UserTalkService talkService;
@@ -211,7 +214,11 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         Integer userFollowNumber = attentionService.findUserFollowNumber(userId);
         Integer userFansNumber = attentionService.findUserFansNumber(userId);
         Integer columnNumber = columnService.findUserColumnNumber(userId);
-        Integer studyNumber = studyService.findUserStudyNumber(userId);
+        R userStudyNumber = courseClient.findUserStudyNumber(userId);
+        Integer studyNumber = 0;
+        if(userStudyNumber.getSuccess()){
+            studyNumber = (Integer) userStudyNumber.getData().get("studyNumber");
+        }
         Integer dynamicNumber = talkService.findUserTalkNumber(userId);
         //查询vip
         String userVipLevel = VipUtils.getUserVipLevel(userId);
@@ -331,13 +338,16 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     //根据条件查找用户数量
     @Override
     public Integer findUserByAccountOrNicknameNumber(String accountOrNickname) {
-        return null;
+        QueryWrapper<UserInfo> wrapper = new QueryWrapper<>();
+        wrapper.like("account" , accountOrNickname).or().like("nickname" , accountOrNickname);
+        return baseMapper.selectCount(wrapper);
     }
 
     //根据条件查找用户
     @Override
-    public List<UserSearchVo> findUserByAccountOrNickname(String accountOrNickname) {
-        return null;
+    public List<UserSearchVo> findUserByAccountOrNickname(String accountOrNickname , Long current , Long limit) {
+        current = (current - 1) * limit;
+        return baseMapper.findUserByAccountOrNickname(accountOrNickname , current , limit);
     }
 
     //设置用户江湖文章数量

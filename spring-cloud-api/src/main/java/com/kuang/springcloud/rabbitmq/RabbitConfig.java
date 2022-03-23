@@ -29,10 +29,6 @@ public class RabbitConfig {
     @Value("${spring.rabbitmq.password}")
     private String password;
 
-    public static final String HistoryExchange = "historyExchange";
-
-    public static final String HistoryQUEUE = "historyQueue";
-
     public static final String ReplyMeExchange = "replyMeExchange";
 
     public static final String ReplyMeQUEUE = "replyMeQUEUE";
@@ -62,22 +58,6 @@ public class RabbitConfig {
         return new RabbitTemplate(connectionFactory());
     }
 
-
-    //配置学习足迹fanout_exchange
-    @Bean
-    public FanoutExchange historyFanoutExchange() {
-        return new FanoutExchange(RabbitConfig.HistoryExchange);
-    }
-    //创建学习足迹队列
-    @Bean
-    public Queue historyQueue() {
-        return new Queue(RabbitConfig.HistoryQUEUE, true); //队列持久
-    }
-    //将学习足迹队列绑定到学习足迹交换机上
-    @Bean
-    Binding bindingExchangeHistory(Queue historyQueue,FanoutExchange historyFanoutExchange) {
-        return BindingBuilder.bind(historyQueue).to(historyFanoutExchange);
-    }
 
 
     //配置回复我的fanout_exchange

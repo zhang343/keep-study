@@ -13,29 +13,26 @@ import lombok.experimental.Accessors;
 
 /**
  * @author Xiaozhang
- * @since 2022-03-21
+ * @since 2022-03-23
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("bbs_article_right")
-@ApiModel(value="ArticleRight对象", description="")
-public class ArticleRight implements Serializable {
+@TableName("bbs_collect")
+@ApiModel(value="Collect对象", description="")
+public class Collect implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "主键id")
+    @ApiModelProperty(value = "用户收藏文章id")
     @TableId(value = "id", type = IdType.ID_WORKER_STR)
     private String id;
 
     @ApiModelProperty(value = "用户id")
     private String userId;
 
-    @ApiModelProperty(value = "每日k币")
-    private Integer money;
-
-    @ApiModelProperty(value = "每日发帖数量")
-    private Integer articleNumber;
+    @ApiModelProperty(value = "收藏的文章id")
+    private String articleId;
 
     @ApiModelProperty(value = "乐观锁")
     @Version

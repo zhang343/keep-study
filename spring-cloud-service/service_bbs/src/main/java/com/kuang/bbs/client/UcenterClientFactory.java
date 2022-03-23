@@ -27,11 +27,6 @@ public class UcenterClientFactory implements FallbackFactory<UcenterClient> {
             }
 
             @Override
-            public R findUserIsCollection(String articleId , String userId) {
-                return R.error();
-            }
-
-            @Override
             public R findUserFansId(String userId) {
                 return R.error();
             }

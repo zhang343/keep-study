@@ -67,4 +67,7 @@ public interface ArticleService extends IService<Article> {
 
     //查询用户所有江湖文章数量
     Integer findUserAllArticleNumber(String userId);
+
+    //查找用户在江湖的所有文章
+    List<UserArticleVo> findUserArticle(String userId, Long current, Long limit);
 }

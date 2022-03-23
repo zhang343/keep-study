@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kuang.course.mapper.CmsStudyMapper">
+
+
+    <select id="findUserStudy" resultType="com.kuang.course.entity.vo.CourseStudyVo" >
+        select study.course_id , course.title , course.cover , course.views
+        from cms_study as study left outer join cms_course as course
+        on study.course_id = course.id
+        where study.user_id = #{userId}
+        order by study.gmt_modified desc
+        limit #{current} , #{limit}
+    </select>
+</mapper>

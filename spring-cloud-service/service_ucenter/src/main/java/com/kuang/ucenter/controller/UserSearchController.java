@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -28,12 +29,14 @@ public class UserSearchController {
 
     //全站查找用户
     @GetMapping("findUserByAccountOrNickname")
-    public R findUserByAccountOrNickname(String accountOrNickname){
+    public R findUserByAccountOrNickname(@RequestParam(value = "current", required = false, defaultValue = "1") Long current ,
+                                         @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
+                                         String accountOrNickname){
         if(StringUtils.isEmpty(accountOrNickname)) {
             throw new XiaoXiaException(ResultCode.ERROR, "请输入");
         }
         Integer total = userInfoService.findUserByAccountOrNicknameNumber(accountOrNickname);
-        List<UserSearchVo> userSearchVoList = userInfoService.findUserByAccountOrNickname(accountOrNickname);
+        List<UserSearchVo> userSearchVoList = userInfoService.findUserByAccountOrNickname(accountOrNickname , current , limit);
         return R.ok().data("total" , total).data("userList" , userSearchVoList);
     }
 

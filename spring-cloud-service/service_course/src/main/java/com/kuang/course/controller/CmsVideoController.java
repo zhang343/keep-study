@@ -3,6 +3,7 @@ package com.kuang.course.controller;
 
 import com.kuang.course.client.VodClient;
 import com.kuang.course.service.CmsCourseService;
+import com.kuang.course.service.CmsStudyService;
 import com.kuang.course.service.CmsVideoService;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.JwtUtils;
@@ -33,7 +34,7 @@ public class CmsVideoController {
     private CmsVideoService videoService;
 
     @Resource
-    private CmsCourseService courseService;
+    private CmsStudyService studyService;
 
     @Resource
     private VodClient vodClient;
@@ -47,28 +48,28 @@ public class CmsVideoController {
             log.warn("有人进行非法查询是否可以播放指定视频,");
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
         }
-        Future<Boolean> userAbility = videoService.findUserAbility(id, videoSourceId , userId);
+        Future<String> userAbility = videoService.findUserAbility(id, videoSourceId , userId);
         R playAuthR = vodClient.getPlayAuth(videoSourceId);
         if(!playAuthR.getSuccess()){
             throw new XiaoXiaException(ResultCode.ERROR , "播放视频失败");
         }
         String playAuth = (String) playAuthR.getData().get("playAuth");
 
-        boolean isAbility = false;
+        String courseId = null;
         try {
             //等待0.3秒
-            isAbility = userAbility.get(300 , TimeUnit.MILLISECONDS);
+            courseId = userAbility.get(300 , TimeUnit.MILLISECONDS);
         } catch(Exception e) {
             log.error("根据条件查询是否可用播放失败");
         }
 
-        if(!isAbility){
+        if(courseId == null){
             throw new XiaoXiaException(ResultCode.ERROR , "请先购买够观看");
         }
 
-        //向用户历史记录发送消息
-        courseService.sendHistoryMsg(userId , id);
-        videoService.setCourseViews(id , request.getRemoteAddr());
+
+        studyService.addUserStudy(userId , courseId);
+        videoService.setCourseViews(courseId , request.getRemoteAddr());
         return R.ok().data("playAuth" , playAuth);
     }
 }

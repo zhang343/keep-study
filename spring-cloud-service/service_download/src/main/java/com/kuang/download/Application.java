@@ -1,13 +1,10 @@
 package com.kuang.download;
 
-import com.kuang.download.service.DtmCategoryService;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import javax.annotation.Resource;
 
 /**
  * @author XiaoZhang
@@ -16,10 +13,6 @@ import javax.annotation.Resource;
  */
 @SpringBootApplication
 public class Application implements CommandLineRunner {
-
-
-    @Resource
-    private DtmCategoryService dtmCategoryService;
 
     public static void main(String[] args) {
         SpringApplication springApplication = new SpringApplication(Application.class);

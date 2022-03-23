@@ -1,14 +1,11 @@
 package com.kuang.bbs.controller;
 
 
-import com.kuang.bbs.client.UcenterClient;
 import com.kuang.bbs.entity.Article;
 import com.kuang.bbs.entity.vo.ArticleUpdateAndCreateVo;
 import com.kuang.bbs.entity.vo.ArticleVo;
-import com.kuang.bbs.service.ArticleService;
-import com.kuang.bbs.service.CommentService;
-import com.kuang.bbs.service.LabelService;
-import com.kuang.bbs.service.ReportService;
+import com.kuang.bbs.entity.vo.UserArticleVo;
+import com.kuang.bbs.service.*;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.JwtUtils;
 import com.kuang.springcloud.utils.R;
@@ -16,10 +13,7 @@ import com.kuang.springcloud.utils.RedisUtils;
 import com.kuang.springcloud.utils.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -45,13 +39,13 @@ public class ArticleController {
     private ReportService reportService;
 
     @Resource
-    private UcenterClient ucenterClient;
-
-    @Resource
     private LabelService labelService;
 
     @Resource
     private CommentService commentService;
+
+    @Resource
+    private CollectService collectService;
 
 
     //举报文章接口
@@ -78,13 +72,8 @@ public class ArticleController {
         ArticleVo articleVo = articleService.findArticleDetail(articleId , userId);
         Future<List<String>> articleLabel = labelService.findArticleLabel(articleId);
         Integer commentNumber = commentService.findArticleAllCommentNumber(articleId);
-        boolean isCollection = false;
-        if(userId != null){
-            R ucenterR = ucenterClient.findUserIsCollection(articleId , userId);
-            if(ucenterR.getSuccess()){
-                isCollection = (boolean) ucenterR.getData().get("isCollection");
-            }
-        }
+
+        boolean isCollection = collectService.findUserIsCollection(articleId , userId);
 
         //等待0.2秒取出结果
         List<String> labelList = null;
@@ -162,7 +151,7 @@ public class ArticleController {
         return R.ok();
     }
 
-    //用户删除文章,真删除,这里不管专栏文章还是江湖文章
+    //用户删除文章,如果是江湖文章是真删除，如果是专栏文章同步到江湖的，将会改为专栏文章，不同步到江湖
     @PostMapping("delete")
     public R delete(String articleId , HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
@@ -172,12 +161,22 @@ public class ArticleController {
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
         }
         articleService.deleteArticle(articleId , userId);
-        //删除文章评论
-        commentService.deleteCommentByArticleId(articleId);
-        //删除文章标签
-        labelService.deleteArticleLabel(articleId);
         return R.ok();
     }
 
+
+    //查找用户在江湖的所有文章
+    @GetMapping("findUserArticle")
+    public R findUserArticle(@RequestParam(value = "current", required = false, defaultValue = "1") Long current ,
+                             @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
+                             HttpServletRequest request){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        if(userId == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
+        }
+        Integer total = articleService.findUserAllArticleNumber(userId);
+        List<UserArticleVo> userArticleVoList = articleService.findUserArticle(userId , current , limit);
+        return R.ok().data("total" , total).data("userBbsArticleList" , userArticleVoList);
+    }
 }
 

@@ -66,10 +66,6 @@ public class UserInfo implements Serializable {
     @ApiModelProperty(value = "是否禁用 0（false）未禁用，  1（true）禁用")
     private Boolean isDisabled;
 
-    @ApiModelProperty(value = "逻辑删除，0未删除，1删除")
-    @TableLogic
-    private Boolean isDeleted;
-
     @ApiModelProperty(value = "0未签到 1签到")
     private Boolean isSign;
 

@@ -1,7 +1,7 @@
 package com.kuang.course.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kuang.course.client.UcenterClient;
 import com.kuang.course.client.VipClient;
 import com.kuang.course.entity.CmsBill;
@@ -12,12 +12,10 @@ import com.kuang.course.mapper.CmsBillMapper;
 import com.kuang.course.mapper.CmsCourseMapper;
 import com.kuang.course.service.CmsBillService;
 import com.kuang.course.service.CmsCourseService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kuang.course.service.CmsVideoService;
 import com.kuang.springcloud.entity.BbsCourseVo;
 import com.kuang.springcloud.entity.MessageCourseVo;
 import com.kuang.springcloud.entity.RightRedis;
-import com.kuang.springcloud.entity.UserStudyVo;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.rabbitmq.MsgProducer;
 import com.kuang.springcloud.utils.R;
@@ -148,15 +146,6 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
         List<BbsCourseVo> courseOrderByPrice = baseMapper.findCourseOrderByPrice();
         RedisUtils.setValueTimeout(RedisUtils.COURSEORDERBYPRICE , courseOrderByPrice , 120);
         return courseOrderByPrice;
-    }
-
-    //向用户历史记录发送消息
-    @Async
-    @Override
-    public void sendHistoryMsg(String userId, String videoId) {
-        UserStudyVo userStudyVoByCourseId = videoService.findUserStudyVoByCourseId(videoId);
-        userStudyVoByCourseId.setUserId(userId);
-        msgProducer.sendHistoryMsg(JSON.toJSONString(userStudyVoByCourseId));
     }
 
     //为消息模块服务，查询课程

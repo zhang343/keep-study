@@ -6,11 +6,12 @@ import java.util.Date;
 
 @Data
 public class UserArticleVo {
-    private String id;
+
+    private String articleId;
     private String title;
     private String description;
     private String categoryName;
-    private Integer views;
+    private Long views;
     private Date gmtCreate;
     private Boolean isRelease;
     private Boolean isViolationArticle;

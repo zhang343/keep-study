@@ -2,6 +2,9 @@ package com.kuang.course.service;
 
 import com.kuang.course.entity.CmsBill;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.kuang.course.entity.vo.CourseStudyVo;
+
+import java.util.List;
 
 /**
  * @author Xiaozhang
@@ -14,4 +17,7 @@ public interface CmsBillService extends IService<CmsBill> {
 
     //查询用户购买课程数量
     Integer findUserBillNumber(String userId);
+
+    //查询用户购买课程
+    List<CourseStudyVo> findUserBuyCourse(String userId, Long current, Long limit);
 }

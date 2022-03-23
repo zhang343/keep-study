@@ -2,4 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kuang.course.mapper.CmsBillMapper">
 
+
+    <select id="findUserBuyCourse" resultType="com.kuang.course.entity.vo.CourseStudyVo" >
+        select bill.course_id , course.title , course.cover , course.views
+        from cms_bill as bill left outer join cms_course as course
+        on bill.course_id = course.id
+        where bill.user_id = #{userId}
+        order by bill.gmt_create desc
+        limit #{current} , #{limit}
+    </select>
 </mapper>
