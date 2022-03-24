@@ -5,6 +5,7 @@ import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.JwtUtils;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
+import com.kuang.ucenter.entity.vo.OtherUserTalkVo;
 import com.kuang.ucenter.entity.vo.UserTalkVo;
 import com.kuang.ucenter.service.UserTalkService;
 import org.springframework.util.StringUtils;
@@ -70,6 +71,20 @@ public class UserTalkController {
         }
         talkService.updateUserTalkIsPublic(userId , id , isPublic);
         return R.ok();
+    }
+
+
+    //查询他人用户说说
+    @GetMapping("findOtherUserTalk")
+    public R findOtherUserTalk(@RequestParam(value = "current", required = false, defaultValue = "1") Long current ,
+                               @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
+                               String userId){
+        if(StringUtils.isEmpty(userId)){
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
+        }
+        Integer total = talkService.findOtherUserTalkNumber(userId);
+        List<OtherUserTalkVo> otherUserTalkVos = talkService.findOtherUserTalk(userId , current , limit);
+        return R.ok().data("total" , total).data("otherUserTalkList" , otherUserTalkVos);
     }
 }
 

@@ -8,4 +8,11 @@
         order by gmt_create desc
         limit #{current} , #{limit}
     </select>
+
+    <select id="findOtherUserTalk" resultType="com.kuang.ucenter.entity.vo.OtherUserTalkVo" >
+        select id , content , gmt_create from user_talk
+        where user_id = #{userId} and is_public = 1
+        order by gmt_create desc
+        limit #{current} , #{limit}
+    </select>
 </mapper>

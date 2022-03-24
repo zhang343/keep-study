@@ -70,4 +70,7 @@ public interface ArticleService extends IService<Article> {
 
     //查找用户在江湖的所有文章
     List<UserArticleVo> findUserArticle(String userId, Long current, Long limit);
+
+    //查询他人在江湖发布的文章
+    List<OtherUserArticleVo> findOtherUserArticle(String userId, Long current, Long limit);
 }

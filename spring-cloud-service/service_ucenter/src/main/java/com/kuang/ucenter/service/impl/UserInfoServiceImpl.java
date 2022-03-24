@@ -25,6 +25,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -132,15 +133,13 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Override
     public MyUserInfoVo findUserSmallBoxContent(String userId) {
 
-        Future<MyUserInfoVo> userbbsArticleNumberAndIsSign = findUserbbsArticleNumber(userId);
+        Future<MyUserInfoVo> userbbsArticleNumberAndIsSign = findUserbbsArticleNumberAndVipLevel(userId);
 
         MyUserInfoVo myUserInfoVo = new MyUserInfoVo();
         UserInfo userInfo = baseMapper.selectById(userId);
         BeanUtils.copyProperties(userInfo , myUserInfoVo);
-        String userVipLevel = VipUtils.getUserVipLevel(userId);
         Integer attentionNumber = attentionService.findUserFollowNumber(userId);
         Integer fansNumber = attentionService.findUserFansNumber(userId);
-        myUserInfoVo.setVipLevel(userVipLevel);
         myUserInfoVo.setAttentionNumber(attentionNumber);
         myUserInfoVo.setFansNumber(fansNumber);
 
@@ -148,6 +147,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         try {
             MyUserInfoVo myUserInfoVo1 = userbbsArticleNumberAndIsSign.get(200, TimeUnit.MILLISECONDS);
             myUserInfoVo.setBbsArticleNumber(myUserInfoVo1.getBbsArticleNumber());
+            myUserInfoVo.setVipLevel(myUserInfoVo1.getVipLevel());
         }catch(Exception e){
             log.warn("异步任务执行失败");
         }
@@ -200,7 +200,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             userDetailVo.setDynamicNumber(userDetailVo1.getDynamicNumber());
             userDetailVo.setVipLevel(userDetailVo1.getVipLevel());
         }catch(Exception e){
-            log.warn("查询用户关注、粉丝、专栏、学习、说说数量失败");
+            log.warn("查询用户关注、粉丝、专栏、学习、说说、vip失败");
         }
 
         return userDetailVo;
@@ -350,9 +350,44 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         return baseMapper.findUserByAccountOrNickname(accountOrNickname , current , limit);
     }
 
-    //设置用户江湖文章数量
+    //查询其他用户主页内容
+    @Override
+    public OtherUserDetailVo findOtherUserHomePage(String userId) {
+        Future<UserDetailVo> afcsdv = findAFCSDV(userId);
+
+        UserInfo userInfo = baseMapper.selectById(userId);
+        OtherUserDetailVo otherUserDetailVo = new OtherUserDetailVo();
+        BeanUtils.copyProperties(userInfo , otherUserDetailVo);
+        R userbbsArticleNumber = bbsClient.findUserbbsArticleNumber(userId);
+        R userCommentNumber = bbsClient.findUserCommentNumber(userId);
+        Integer articleNumber = 0;
+        if(userbbsArticleNumber.getSuccess()){
+            articleNumber = (Integer) userbbsArticleNumber.getData().get("articleNumber");
+        }
+        Integer commentNumber = 0;
+        if(userCommentNumber.getSuccess()){
+            commentNumber = (Integer) userCommentNumber.getData().get("commentNumber");
+        }
+        otherUserDetailVo.setBbsArticleNumber(articleNumber);
+        otherUserDetailVo.setCommentNumber(commentNumber);
+
+        try {
+            UserDetailVo userDetailVo = afcsdv.get();
+            otherUserDetailVo.setFansNumber(userDetailVo.getFansNumber());
+            otherUserDetailVo.setAttentionNumber(userDetailVo.getAttentionNumber());
+            otherUserDetailVo.setStudyNumber(userDetailVo.getStudyNumber());
+            otherUserDetailVo.setColumnNumber(userDetailVo.getColumnNumber());
+            otherUserDetailVo.setDynamicNumber(userDetailVo.getDynamicNumber());
+            otherUserDetailVo.setVipLevel(userDetailVo.getVipLevel());
+        }catch(Exception e){
+            log.warn("查询用户关注、粉丝、专栏、学习、说说、vip失败");
+        }
+        return otherUserDetailVo;
+    }
+
+    //设置用户江湖文章数量和vip
     @Async
-    public Future<MyUserInfoVo> findUserbbsArticleNumber(String userId){
+    public Future<MyUserInfoVo> findUserbbsArticleNumberAndVipLevel(String userId){
         MyUserInfoVo myUserInfoVo = new MyUserInfoVo();
         R userbbsArticleNumber = bbsClient.findUserbbsArticleNumber(userId);
         Integer bbsArticleNumber = 0;
@@ -360,8 +395,16 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             bbsArticleNumber = (Integer) userbbsArticleNumber.getData().get("articleNumber");
         }
         myUserInfoVo.setBbsArticleNumber(bbsArticleNumber);
+        String userVipLevel = VipUtils.getUserVipLevel(userId);
+        if(userVipLevel == null){
+            R rightRedisByUserId = vipClient.findRightRedisByUserId(userId);
+            if(rightRedisByUserId.getSuccess()){
+                RightRedis rightRedis = (RightRedis) rightRedisByUserId.getData().get("rightRedis");
+                userVipLevel = rightRedis.getVipLevel();
+            }
+        }
+        myUserInfoVo.setVipLevel(userVipLevel);
         return new AsyncResult<>(myUserInfoVo);
-
     }
 
 

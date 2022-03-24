@@ -451,7 +451,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     //查找用户在江湖的所有文章
     @Override
     public List<UserArticleVo> findUserArticle(String userId, Long current, Long limit) {
-        System.out.println(LocalTime.now());
         current = (current - 1) * limit;
         QueryWrapper<Article> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id" , userId);
@@ -472,8 +471,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             }
             userArticleVoList.add(userArticleVo);
         }
-        System.out.println(LocalTime.now());
         return userArticleVoList;
+    }
+
+    //查询他人在江湖发布的文章
+    @Override
+    public List<OtherUserArticleVo> findOtherUserArticle(String userId, Long current, Long limit) {
+        current = (current - 1) * limit;
+        return baseMapper.findOtherUserArticle(userId , current , limit);
     }
 
 }

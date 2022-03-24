@@ -8,10 +8,8 @@ import com.kuang.springcloud.utils.ResultCode;
 import com.kuang.ucenter.entity.vo.UserFollowOrFans;
 import com.kuang.ucenter.service.UserAttentionService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -34,10 +32,9 @@ public class UserAttentionController {
     @GetMapping("findUserFollow")
     public R findUserFollow(@RequestParam(value = "current", required = false, defaultValue = "1") Long current ,
                             @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
-                            HttpServletRequest request){
-        String userId = JwtUtils.getMemberIdByJwtToken(request);
-        if(userId == null){
-            throw new XiaoXiaException(ResultCode.ERROR , "请先登录");
+                            String userId){
+        if(StringUtils.isEmpty(userId)){
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
         }
         Integer total = userAttentionService.findUserFollowNumber(userId);
         List<UserFollowOrFans> userFollowOrFansList = userAttentionService.findUserFollow(userId , current , limit);
@@ -48,14 +45,36 @@ public class UserAttentionController {
     @GetMapping("findUserFans")
     public R findUserFans(@RequestParam(value = "current", required = false, defaultValue = "1") Long current ,
                           @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
-                          HttpServletRequest request){
-        String userId = JwtUtils.getMemberIdByJwtToken(request);
-        if(userId == null){
-            throw new XiaoXiaException(ResultCode.ERROR , "请先登录");
+                          String userId){
+        if(StringUtils.isEmpty(userId)){
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
         }
         Integer total = userAttentionService.findUserFansNumber(userId);
         List<UserFollowOrFans> userFollowOrFansList = userAttentionService.findUserFans(userId , current , limit);
         return R.ok().data("total" , total).data("userFansList" , userFollowOrFansList);
+    }
+
+
+    //增加用户关注
+    @PostMapping("addUserAttention")
+    public R addUserAttention(String otherUserId , HttpServletRequest request){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        if(userId == null || StringUtils.isEmpty(otherUserId) || userId.equals(otherUserId)){
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
+        }
+        userAttentionService.addUserAttention(userId , otherUserId);
+        return R.ok();
+    }
+
+    //取消用户关注
+    @PostMapping("deleteUserAttention")
+    public R deleteUserAttention(String otherUserId , HttpServletRequest request){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        if(userId == null || StringUtils.isEmpty(otherUserId)){
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
+        }
+        userAttentionService.deleteUserAttention(userId , otherUserId);
+        return R.ok();
     }
 
 

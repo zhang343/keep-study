@@ -2,6 +2,7 @@ package com.kuang.ucenter.service;
 
 import com.kuang.ucenter.entity.UserTalk;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.kuang.ucenter.entity.vo.OtherUserTalkVo;
 import com.kuang.ucenter.entity.vo.UserTalkVo;
 
 import java.util.List;
@@ -26,4 +27,10 @@ public interface UserTalkService extends IService<UserTalk> {
 
     //修改用户说说是否可以公开
     void updateUserTalkIsPublic(String userId, String id, Boolean isPublic);
+
+    //查询他人用户说说数量
+    Integer findOtherUserTalkNumber(String userId);
+
+    //查询他人用户说说
+    List<OtherUserTalkVo> findOtherUserTalk(String userId, Long current, Long limit);
 }

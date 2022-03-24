@@ -60,5 +60,17 @@
         </foreach>
     </update>
 
+    <select id="findOtherUserArticle" resultType="com.kuang.bbs.entity.vo.OtherUserArticleVo" >
+        select article.id as articleId , article.title , article.description ,
+               article.views , article.gmt_create , article.is_excellent_article ,
+               category.category_name
+        from bbs_article as article join bbs_category as category
+        on article.category_id = category.id
+        where article.user_id = #{userId} and article.is_violation_article = 0
+                                          and (is_release = 1 or is_bbs = 1)
+        order by article.gmt_create desc
+        limit #{current} , #{limit}
+    </select>
+
 
 </mapper>

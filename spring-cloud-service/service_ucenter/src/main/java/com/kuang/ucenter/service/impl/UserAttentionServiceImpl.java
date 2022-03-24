@@ -2,6 +2,8 @@ package com.kuang.ucenter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
+import com.kuang.springcloud.utils.ResultCode;
 import com.kuang.springcloud.utils.VipUtils;
 import com.kuang.ucenter.entity.UserAttention;
 import com.kuang.ucenter.entity.vo.UserFollowOrFans;
@@ -76,6 +78,43 @@ public class UserAttentionServiceImpl extends ServiceImpl<UserAttentionMapper, U
         }
         VipUtils.setVipLevel(userFollowOrFansList , userFollowOrFansList.get(0));
         return userFollowOrFansList;
+    }
+
+    //查询A是否关注了B
+    @Override
+    public boolean findAIsAttentionB(String myuserId, String userId) {
+        QueryWrapper<UserAttention> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id" , myuserId);
+        wrapper.eq("attention_user_id" , userId);
+        return baseMapper.selectCount(wrapper) != 0;
+    }
+
+    //增加用户关注
+    @Override
+    public void addUserAttention(String userId, String otherUserId) {
+        boolean aIsAttentionB = findAIsAttentionB(userId, otherUserId);
+        if(aIsAttentionB){
+            throw new XiaoXiaException(ResultCode.ERROR , "你已经关注了，请不要重复操作");
+        }
+        UserAttention userAttention = new UserAttention();
+        userAttention.setUserId(userId);
+        userAttention.setAttentionUserId(otherUserId);
+        int insert = baseMapper.insert(userAttention);
+        if(insert != 1){
+            throw new XiaoXiaException(ResultCode.ERROR , "关注失败");
+        }
+    }
+
+    //取消用户关注
+    @Override
+    public void deleteUserAttention(String userId, String otherUserId) {
+        QueryWrapper<UserAttention> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id" , userId);
+        wrapper.eq("attention_user_id" , otherUserId);
+        int delete = baseMapper.delete(wrapper);
+        if(delete != 1){
+            throw new XiaoXiaException(ResultCode.ERROR , "取消关注失败");
+        }
     }
 
 

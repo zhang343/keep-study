@@ -78,7 +78,7 @@ public class UserInfoController {
             throw new XiaoXiaException(ResultCode.ERROR , "请先登录");
         }
         UserDetailVo userDetailVo = userInfoService.findUserHomePage(userId);
-        return R.ok().data("UserDetail" , userDetailVo);
+        return R.ok().data("userDetail" , userDetailVo);
     }
 
 

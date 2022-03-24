@@ -4,6 +4,7 @@ package com.kuang.bbs.controller;
 import com.kuang.bbs.entity.Article;
 import com.kuang.bbs.entity.vo.ArticleUpdateAndCreateVo;
 import com.kuang.bbs.entity.vo.ArticleVo;
+import com.kuang.bbs.entity.vo.OtherUserArticleVo;
 import com.kuang.bbs.entity.vo.UserArticleVo;
 import com.kuang.bbs.service.*;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
@@ -177,6 +178,19 @@ public class ArticleController {
         Integer total = articleService.findUserAllArticleNumber(userId);
         List<UserArticleVo> userArticleVoList = articleService.findUserArticle(userId , current , limit);
         return R.ok().data("total" , total).data("userBbsArticleList" , userArticleVoList);
+    }
+
+    //查询他人在江湖发布的文章
+    @GetMapping("findOtherUserArticle")
+    public R findOtherUserArticle(@RequestParam(value = "current", required = false, defaultValue = "1") Long current ,
+                                  @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
+                                  String userId){
+        if(StringUtils.isEmpty(userId)){
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
+        }
+        Integer total = articleService.findUserbbsArticleNumber(userId);
+        List<OtherUserArticleVo> otherUserArticleVos = articleService.findOtherUserArticle(userId , current , limit);
+        return R.ok().data("total" , total).data("otherUserArticleList" , otherUserArticleVos);
     }
 }
 

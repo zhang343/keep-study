@@ -10,7 +10,7 @@ public class MyUserInfoVo {
     private Integer bbsArticleNumber;
     private Integer attentionNumber;
     private Integer fansNumber;
-    private Boolean isSignIn;
+    private Boolean isSign;
     private String vipLevel;
     private String account;
     private Integer experience;

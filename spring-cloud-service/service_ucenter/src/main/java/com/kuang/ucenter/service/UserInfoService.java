@@ -60,4 +60,7 @@ public interface UserInfoService extends IService<UserInfo> {
 
     //根据条件查找用户
     List<UserSearchVo> findUserByAccountOrNickname(String accountOrNickname , Long current , Long limit);
+
+    //查询其他用户主页内容
+    OtherUserDetailVo findOtherUserHomePage(String userId);
 }

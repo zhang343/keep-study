@@ -27,4 +27,13 @@ public interface UserAttentionService extends IService<UserAttention> {
 
     //查询粉丝
     List<UserFollowOrFans> findUserFans(String userId, Long current, Long limit);
+
+    //查询A是否关注了B
+    boolean findAIsAttentionB(String myuserId, String userId);
+
+    //增加用户关注
+    void addUserAttention(String userId, String otherUserId);
+
+    //取消用户关注
+    void deleteUserAttention(String userId, String otherUserId);
 }

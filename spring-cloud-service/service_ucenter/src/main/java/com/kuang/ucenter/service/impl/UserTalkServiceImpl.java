@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.ResultCode;
 import com.kuang.ucenter.entity.UserTalk;
+import com.kuang.ucenter.entity.vo.OtherUserTalkVo;
 import com.kuang.ucenter.entity.vo.UserTalkVo;
 import com.kuang.ucenter.mapper.UserTalkMapper;
 import com.kuang.ucenter.service.UserTalkService;
@@ -78,5 +79,21 @@ public class UserTalkServiceImpl extends ServiceImpl<UserTalkMapper, UserTalk> i
         if(update != 1){
             throw new XiaoXiaException(ResultCode.ERROR , "修改失败");
         }
+    }
+
+    //查询他人用户说说数量
+    @Override
+    public Integer findOtherUserTalkNumber(String userId) {
+        QueryWrapper<UserTalk> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id" , userId);
+        wrapper.eq("is_public" , 1);
+        return baseMapper.selectCount(wrapper);
+    }
+
+    //查询他人用户说说
+    @Override
+    public List<OtherUserTalkVo> findOtherUserTalk(String userId, Long current, Long limit) {
+        current = (current - 1) * limit;
+        return baseMapper.findOtherUserTalk(userId , current , limit);
     }
 }

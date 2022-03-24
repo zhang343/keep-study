@@ -2,6 +2,7 @@ package com.kuang.ucenter.mapper;
 
 import com.kuang.ucenter.entity.UserTalk;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.kuang.ucenter.entity.vo.OtherUserTalkVo;
 import com.kuang.ucenter.entity.vo.UserTalkVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -17,4 +18,9 @@ public interface UserTalkMapper extends BaseMapper<UserTalk> {
     List<UserTalkVo> findUserTalk(@Param("userId") String userId,
                                   @Param("current") Long current,
                                   @Param("limit") Long limit);
+
+    //查询他人用户说说
+    List<OtherUserTalkVo> findOtherUserTalk(@Param("userId") String userId,
+                                            @Param("current") Long current,
+                                            @Param("limit") Long limit);
 }
