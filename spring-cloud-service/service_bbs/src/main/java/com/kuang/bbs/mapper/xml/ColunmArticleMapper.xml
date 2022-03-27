@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kuang.bbs.mapper.ColunmArticleMapper">
+
+
+    <select id="findColumnArticle" resultType="com.kuang.bbs.entity.vo.ColumnArticleVo" >
+        select colunmarticle.article_id , article.sort , article.title
+        from bbs_colunm_article as colunmarticle join bbs_article as article
+        on colunmarticle.article_id = article.id
+        where colunmarticle.column_id = #{columnId}
+        order by article.sort asc
+    </select>
+</mapper>

@@ -1,4 +1,4 @@
-package com.kuang.ucenter.entity;
+package com.kuang.bbs.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 
@@ -13,13 +13,14 @@ import lombok.experimental.Accessors;
 
 /**
  * @author Xiaozhang
- * @since 2022-02-05
+ * @since 2022-03-24
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="UserColumn对象", description="")
-public class UserColumn implements Serializable {
+@TableName("bbs_column")
+@ApiModel(value="Column对象", description="")
+public class Column implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -36,8 +37,8 @@ public class UserColumn implements Serializable {
     @ApiModelProperty(value = "浏览数")
     private Long views;
 
-    @ApiModelProperty(value = "可见度(0所有人 1月会员 2年会员 3终身会员)")
-    private Integer vsibility;
+    @ApiModelProperty(value = "可见度")
+    private Long vsibility;
 
     @ApiModelProperty(value = "0 不发布 1 发布，这里指专栏是否可被别人看见")
     private Boolean isRelease;

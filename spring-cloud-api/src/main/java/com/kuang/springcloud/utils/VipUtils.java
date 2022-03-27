@@ -40,7 +40,6 @@ public class VipUtils {
         return (TreeMap<String, MembersRedis>) valueMember;
     }
 
-
     //查询出用户指定权益
     public static RightRedis getUserRightRedis(String userId) {
         TreeMap<String, MembersRedis> membersRedisTreeMap = getAllMembersTreeMap();

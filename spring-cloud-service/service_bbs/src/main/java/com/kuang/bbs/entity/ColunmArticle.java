@@ -1,4 +1,4 @@
-package com.kuang.ucenter.entity;
+package com.kuang.bbs.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 
@@ -13,13 +13,14 @@ import lombok.experimental.Accessors;
 
 /**
  * @author Xiaozhang
- * @since 2022-02-05
+ * @since 2022-03-27
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="UserColumnArticle对象", description="")
-public class UserColumnArticle implements Serializable {
+@TableName("bbs_colunm_article")
+@ApiModel(value="ColunmArticle对象", description="")
+public class ColunmArticle implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

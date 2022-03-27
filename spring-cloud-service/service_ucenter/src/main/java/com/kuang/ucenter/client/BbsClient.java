@@ -26,4 +26,12 @@ public interface BbsClient {
     //查询用户所有评论数量
     @GetMapping("/inside/comment/findUserCommentNumber")
     R findUserCommentNumber(@RequestParam("userId") String userId);
+
+    //查看用户专栏数量
+    @GetMapping("/inside/column/findUserColumnNumber")
+    R findUserColumnNumber(String userId);
+
+    //查看其他用户专栏数量
+    @GetMapping("/inside/column/findOtherUserColumnNumber")
+    R findOtherUserColumnNumber(String userId);
 }

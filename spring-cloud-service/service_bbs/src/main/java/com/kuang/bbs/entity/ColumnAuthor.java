@@ -1,4 +1,4 @@
-package com.kuang.ucenter.entity;
+package com.kuang.bbs.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 
@@ -13,25 +13,32 @@ import lombok.experimental.Accessors;
 
 /**
  * @author Xiaozhang
- * @since 2022-02-05
+ * @since 2022-03-25
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="UserCollect对象", description="")
-public class UserCollect implements Serializable {
+@TableName("bbs_column_author")
+@ApiModel(value="ColumnAuthor对象", description="")
+public class ColumnAuthor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "用户收藏文章id")
+    @ApiModelProperty(value = "主键id")
     @TableId(value = "id", type = IdType.ID_WORKER_STR)
     private String id;
+
+    @ApiModelProperty(value = "用户专栏id")
+    private String columnId;
 
     @ApiModelProperty(value = "用户id")
     private String userId;
 
-    @ApiModelProperty(value = "收藏的文章id")
-    private String articleId;
+    @ApiModelProperty(value = "昵称")
+    private String nickname;
+
+    @ApiModelProperty(value = "用户头像")
+    private String avatar;
 
     @ApiModelProperty(value = "乐观锁")
     @Version

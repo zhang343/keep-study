@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kuang.bbs.mapper.ColumnAuthorMapper">
+
+
+    <select id="findColumnAuthorList" resultType="com.kuang.bbs.entity.vo.ColumnAuthorVo" >
+        select user_id , nickname , avatar from bbs_column_author
+        where column_id = #{columnId}
+    </select>
+</mapper>

@@ -7,11 +7,17 @@ public class MyUserInfoVo {
     private String id;
     private String avatar;
     private String nickname;
+
+
     private Integer bbsArticleNumber;
     private Integer attentionNumber;
     private Integer fansNumber;
-    private Boolean isSign;
+
+
     private String vipLevel;
+
+
+    private Boolean isSign;
     private String account;
     private Integer experience;
     private Integer money;

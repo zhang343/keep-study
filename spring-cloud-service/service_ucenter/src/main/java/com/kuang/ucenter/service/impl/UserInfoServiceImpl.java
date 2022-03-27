@@ -12,7 +12,6 @@ import com.kuang.ucenter.entity.UserInfo;
 import com.kuang.ucenter.entity.vo.*;
 import com.kuang.ucenter.mapper.UserInfoMapper;
 import com.kuang.ucenter.service.UserAttentionService;
-import com.kuang.ucenter.service.UserColumnService;
 import com.kuang.ucenter.service.UserInfoService;
 import com.kuang.ucenter.service.UserTalkService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -48,9 +48,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     @Resource
     private UserAttentionService attentionService;
-
-    @Resource
-    private UserColumnService columnService;
 
     @Resource
     private UserTalkService talkService;
@@ -158,68 +155,43 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     //查询用户主页的内容,这里查自己
     @Override
     public UserDetailVo findUserHomePage(String userId) {
-        //查询用户关注、粉丝、专栏、学习、说说、vip
-        Future<UserDetailVo> afcsd = findAFCSDV(userId);
-
+        Future<CopyVo> userAFVBSC = findUserAFVBSC(userId);
         //查询基本信息
         UserInfo userInfo = baseMapper.selectById(userId);
         UserDetailVo userDetailVo = new UserDetailVo();
         BeanUtils.copyProperties(userInfo , userDetailVo);
-
-        //查询用户所有江湖文章
-        R userAllArticleNumber = bbsClient.findUserAllArticleNumber(userId);
-        Integer allArticleNumber = 0;
-        if(userAllArticleNumber.getSuccess()){
-            allArticleNumber = (Integer) userAllArticleNumber.getData().get("userAllArticleNumber");
+        //查看说说数量
+        Integer userTalkNumber = talkService.findUserTalkNumber(userId);
+        userDetailVo.setDynamicNumber(userTalkNumber);
+        //查看全部的江湖文章
+        Integer userAllArticleNumber = 0;
+        R userAllArticleNumberR = bbsClient.findUserAllArticleNumber(userId);
+        if(userAllArticleNumberR.getSuccess()){
+            userAllArticleNumber = (Integer) userAllArticleNumberR.getData().get("userAllArticleNumber");
         }
-        userDetailVo.setAllArticleNumber(allArticleNumber);
-
-        //查询用户在江湖可以被别人看见的文章数量
-        R userbbsArticleNumber = bbsClient.findUserbbsArticleNumber(userId);
-        Integer bbsArticleNumber = 0;
-        if(userbbsArticleNumber.getSuccess()){
-            bbsArticleNumber = (Integer) userbbsArticleNumber.getData().get("articleNumber");
+        userDetailVo.setAllArticleNumber(userAllArticleNumber);
+        //查看全部的专栏数量
+        Integer columnNumber = 0;
+        R userColumnNumber = bbsClient.findUserColumnNumber(userId);
+        if(userColumnNumber.getSuccess()){
+            columnNumber = (Integer) userColumnNumber.getData().get("columnNumber");
         }
-        userDetailVo.setBbsArticleNumber(bbsArticleNumber);
-
-
-        Integer commentNumber = 0;
-        R userCommentNumber = bbsClient.findUserCommentNumber(userId);
-        if(userCommentNumber.getSuccess()){
-            commentNumber = (Integer) userCommentNumber.getData().get("commentNumber");
-        }
-        userDetailVo.setCommentNumber(commentNumber);
-
-
+        userDetailVo.setColumnNumber(columnNumber);
         try {
-            UserDetailVo userDetailVo1 = afcsd.get();
-            userDetailVo.setFansNumber(userDetailVo1.getFansNumber());
-            userDetailVo.setAttentionNumber(userDetailVo1.getAttentionNumber());
-            userDetailVo.setStudyNumber(userDetailVo1.getStudyNumber());
-            userDetailVo.setColumnNumber(userDetailVo1.getColumnNumber());
-            userDetailVo.setDynamicNumber(userDetailVo1.getDynamicNumber());
-            userDetailVo.setVipLevel(userDetailVo1.getVipLevel());
+            CopyVo copyVo = userAFVBSC.get();
+            BeanUtils.copyProperties(copyVo , userDetailVo);
         }catch(Exception e){
-            log.warn("查询用户关注、粉丝、专栏、学习、说说、vip失败");
+            log.warn("查询粉丝、关注、vip、江湖文章可以被看到的数量、学习数量、评论数量失败");
         }
-
         return userDetailVo;
     }
 
-
-    //查询用户关注、粉丝、专栏、学习、说说数量、vip
+    //查询粉丝、关注、vip、江湖文章可以被看到的数量、学习数量、评论数量
     @Async
-    public Future<UserDetailVo> findAFCSDV(String userId){
-        UserDetailVo userDetailVo = new UserDetailVo();
+    public Future<CopyVo> findUserAFVBSC(String userId){
+        //查询关注数量和粉丝数量
         Integer userFollowNumber = attentionService.findUserFollowNumber(userId);
         Integer userFansNumber = attentionService.findUserFansNumber(userId);
-        Integer columnNumber = columnService.findUserColumnNumber(userId);
-        R userStudyNumber = courseClient.findUserStudyNumber(userId);
-        Integer studyNumber = 0;
-        if(userStudyNumber.getSuccess()){
-            studyNumber = (Integer) userStudyNumber.getData().get("studyNumber");
-        }
-        Integer dynamicNumber = talkService.findUserTalkNumber(userId);
         //查询vip
         String userVipLevel = VipUtils.getUserVipLevel(userId);
         if(userVipLevel == null){
@@ -229,13 +201,32 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                 userVipLevel = rightRedis.getVipLevel();
             }
         }
-        userDetailVo.setFansNumber(userFansNumber);
-        userDetailVo.setAttentionNumber(userFollowNumber);
-        userDetailVo.setColumnNumber(columnNumber);
-        userDetailVo.setStudyNumber(studyNumber);
-        userDetailVo.setDynamicNumber(dynamicNumber);
-        userDetailVo.setVipLevel(userVipLevel);
-        return new AsyncResult<>(userDetailVo);
+        //查询江湖文章可以被看到的数量
+        Integer bbsArticleNumber = 0;
+        R userbbsArticleNumber = bbsClient.findUserbbsArticleNumber(userId);
+        if(userbbsArticleNumber.getSuccess()){
+            bbsArticleNumber = (Integer) userbbsArticleNumber.getData().get("articleNumber");
+        }
+        //查看学习数量
+        Integer studyNumber = 0;
+        R userStudyNumber = courseClient.findUserStudyNumber(userId);
+        if(userStudyNumber.getSuccess()){
+            studyNumber = (Integer) userStudyNumber.getData().get("studyNumber");
+        }
+        //查看评论数量
+        Integer commentNumber = 0;
+        R userCommentNumber = bbsClient.findUserCommentNumber(userId);
+        if(userCommentNumber.getSuccess()){
+            commentNumber = (Integer) userCommentNumber.getData().get("commentNumber");
+        }
+        CopyVo copyVo = new CopyVo();
+        copyVo.setAttentionNumber(userFollowNumber);
+        copyVo.setFansNumber(userFansNumber);
+        copyVo.setVipLevel(userVipLevel);
+        copyVo.setBbsArticleNumber(bbsArticleNumber);
+        copyVo.setStudyNumber(studyNumber);
+        copyVo.setCommentNumber(commentNumber);
+        return new AsyncResult<>(copyVo);
     }
 
     //用户签到
@@ -353,35 +344,29 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     //查询其他用户主页内容
     @Override
     public OtherUserDetailVo findOtherUserHomePage(String userId) {
-        Future<UserDetailVo> afcsdv = findAFCSDV(userId);
+
+        Future<CopyVo> userAFVBSC = findUserAFVBSC(userId);
 
         UserInfo userInfo = baseMapper.selectById(userId);
         OtherUserDetailVo otherUserDetailVo = new OtherUserDetailVo();
         BeanUtils.copyProperties(userInfo , otherUserDetailVo);
-        R userbbsArticleNumber = bbsClient.findUserbbsArticleNumber(userId);
-        R userCommentNumber = bbsClient.findUserCommentNumber(userId);
-        Integer articleNumber = 0;
-        if(userbbsArticleNumber.getSuccess()){
-            articleNumber = (Integer) userbbsArticleNumber.getData().get("articleNumber");
-        }
-        Integer commentNumber = 0;
-        if(userCommentNumber.getSuccess()){
-            commentNumber = (Integer) userCommentNumber.getData().get("commentNumber");
-        }
-        otherUserDetailVo.setBbsArticleNumber(articleNumber);
-        otherUserDetailVo.setCommentNumber(commentNumber);
 
-        try {
-            UserDetailVo userDetailVo = afcsdv.get();
-            otherUserDetailVo.setFansNumber(userDetailVo.getFansNumber());
-            otherUserDetailVo.setAttentionNumber(userDetailVo.getAttentionNumber());
-            otherUserDetailVo.setStudyNumber(userDetailVo.getStudyNumber());
-            otherUserDetailVo.setColumnNumber(userDetailVo.getColumnNumber());
-            otherUserDetailVo.setDynamicNumber(userDetailVo.getDynamicNumber());
-            otherUserDetailVo.setVipLevel(userDetailVo.getVipLevel());
-        }catch(Exception e){
-            log.warn("查询用户关注、粉丝、专栏、学习、说说、vip失败");
+        Integer otherUserTalkNumber = talkService.findOtherUserTalkNumber(userId);
+        otherUserDetailVo.setDynamicNumber(otherUserTalkNumber);
+
+        Integer columnNumber = 0;
+        R otherUserColumnNumberR = bbsClient.findOtherUserColumnNumber(userId);
+        if(otherUserColumnNumberR.getSuccess()){
+            columnNumber = (Integer) otherUserColumnNumberR.getData().get("columnNumber");
         }
+        otherUserDetailVo.setColumnNumber(columnNumber);
+        try {
+            CopyVo copyVo = userAFVBSC.get();
+            BeanUtils.copyProperties(copyVo , otherUserDetailVo);
+        }catch(Exception e){
+            log.warn("查询粉丝、关注、vip、江湖文章可以被看到的数量、学习数量、评论数量失败");
+        }
+
         return otherUserDetailVo;
     }
 

@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50536
 File Encoding         : 65001
 
-Date: 2022-03-23 18:06:38
+Date: 2022-03-27 15:10:56
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -47,7 +47,7 @@ CREATE TABLE `bbs_article` (
 -- ----------------------------
 INSERT INTO `bbs_article` VALUES ('1496359576990121985', '1492434355002302466', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '我的大学历程', '描述我的大学生活', '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈', '0', '0', '1', '0', '8', '0', '0', '0', '1', '2022-02-23 13:41:38', '2022-03-15 17:51:07');
 INSERT INTO `bbs_article` VALUES ('1497831076091961345', '1492434355253960706', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '网站遵守规范', '本网站遵守规范', '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈', '0', '0', '1', '0', '2', '0', '0', '1', '1', '2022-02-27 15:08:51', '2022-02-27 15:08:51');
-INSERT INTO `bbs_article` VALUES ('1499243244901490690', '1492434355291709441', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', 'Feign远程调用时创建请求头注入token', 'Feign远程调用时创建请求头注入token', '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈', '0', '0', '1', '0', '12', '0', '0', '0', '1', '2022-03-03 12:40:18', '2022-03-23 17:47:08');
+INSERT INTO `bbs_article` VALUES ('1499243244901490690', '1492434355291709441', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', 'Feign远程调用时创建请求头注入token', 'Feign远程调用时创建请求头注入token', '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈', '1', '1', '0', '1', '12', '0', '0', '0', '1', '2022-03-03 12:40:18', '2022-03-23 17:47:08');
 INSERT INTO `bbs_article` VALUES ('1505114107760623617', '1492434355333652482', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', 'redis解决分布式下面定时任务的重复执行', 'redis解决分布式下面定时任务的重复执行', '哈哈哈哈哈哈哈哈哈哈', '0', '0', '1', '0', '0', '0', '0', '0', '1', '2022-03-19 17:29:01', '2022-03-19 17:48:38');
 
 -- ----------------------------
@@ -120,6 +120,80 @@ CREATE TABLE `bbs_collect` (
 -- Records of bbs_collect
 -- ----------------------------
 INSERT INTO `bbs_collect` VALUES ('1506541601705443329', '1496388556204023809', '1499243244901490690', '1', '2022-03-23 16:01:22', '2022-03-23 16:01:22');
+
+-- ----------------------------
+-- Table structure for `bbs_column`
+-- ----------------------------
+DROP TABLE IF EXISTS `bbs_column`;
+CREATE TABLE `bbs_column` (
+  `id` char(19) NOT NULL COMMENT '用户专栏id',
+  `user_id` char(19) NOT NULL COMMENT '用户id',
+  `title` varchar(30) NOT NULL COMMENT '专栏名称',
+  `views` bigint(10) NOT NULL DEFAULT '0' COMMENT '浏览数',
+  `vsibility` bigint(10) NOT NULL DEFAULT '0' COMMENT '可见度',
+  `is_release` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0 不发布 1 发布，这里指专栏是否可被别人看见',
+  `description` varchar(100) DEFAULT '' COMMENT '专栏描述',
+  `color` varchar(255) NOT NULL DEFAULT 'background-image: linear-gradient(to right, rgb(130, 178, 242) 0%, rgb(51, 51, 51) 100%);' COMMENT '专栏渐变色',
+  `version` bigint(20) NOT NULL DEFAULT '1' COMMENT '乐观锁',
+  `gmt_create` datetime NOT NULL COMMENT '创建时间',
+  `gmt_modified` datetime NOT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
+-- ----------------------------
+-- Records of bbs_column
+-- ----------------------------
+INSERT INTO `bbs_column` VALUES ('1507246515616329729', '1489885385067622401', 'Spring Cloud Alibaba专栏', '0', '0', '1', '', 'background-image: linear-gradient(to right, rgb(130, 178, 242) 0%, rgb(51, 51, 51) 100%);', '1', '2022-03-25 14:42:27', '2022-03-25 14:42:27');
+INSERT INTO `bbs_column` VALUES ('1507256310268231681', '1489885385067622401', 'Spring Cloud专栏', '0', '0', '1', '', 'background-image: linear-gradient(to right, rgb(130, 178, 242) 0%, rgb(51, 51, 51) 100%);', '1', '2022-03-25 15:21:22', '2022-03-25 15:21:22');
+INSERT INTO `bbs_column` VALUES ('1507256364869681154', '1489885385067622401', 'Spring Security专栏', '0', '0', '1', '', 'background-image: linear-gradient(to right, rgb(130, 178, 242) 0%, rgb(51, 51, 51) 100%);', '1', '2022-03-25 15:21:35', '2022-03-25 15:21:35');
+INSERT INTO `bbs_column` VALUES ('1507256416908410882', '1489885385067622401', '数据结构专栏', '0', '0', '0', '', 'background-image: linear-gradient(to right, rgb(130, 178, 242) 0%, rgb(51, 51, 51) 100%);', '1', '2022-03-25 15:21:47', '2022-03-25 15:21:47');
+INSERT INTO `bbs_column` VALUES ('1507256517731090434', '1489885385067622401', 'Spring Boot专栏', '0', '0', '1', '', 'background-image: linear-gradient(to right, rgb(130, 178, 242) 0%, rgb(51, 51, 51) 100%);', '1', '2022-03-25 15:22:11', '2022-03-25 15:22:11');
+INSERT INTO `bbs_column` VALUES ('1507947208253677570', '1489885385067622401', 'redis分布式锁', '0', '0', '1', '', 'background-image: linear-gradient(to right, rgb(130, 178, 242) 0%, rgb(51, 51, 51) 100%);', '1', '2022-03-27 13:06:45', '2022-03-27 13:06:45');
+
+-- ----------------------------
+-- Table structure for `bbs_column_author`
+-- ----------------------------
+DROP TABLE IF EXISTS `bbs_column_author`;
+CREATE TABLE `bbs_column_author` (
+  `id` char(19) NOT NULL COMMENT '主键id',
+  `column_id` char(19) NOT NULL COMMENT '用户专栏id',
+  `user_id` char(19) NOT NULL COMMENT '用户id',
+  `nickname` varchar(50) NOT NULL COMMENT '昵称',
+  `avatar` varchar(255) NOT NULL COMMENT '用户头像',
+  `version` bigint(20) NOT NULL DEFAULT '1' COMMENT '乐观锁',
+  `gmt_create` datetime NOT NULL COMMENT '创建时间',
+  `gmt_modified` datetime NOT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
+-- ----------------------------
+-- Records of bbs_column_author
+-- ----------------------------
+INSERT INTO `bbs_column_author` VALUES ('1507246515654078465', '1507246515616329729', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '1', '2022-03-25 14:42:27', '2022-03-25 14:42:27');
+INSERT INTO `bbs_column_author` VALUES ('1507256310297591810', '1507256310268231681', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '1', '2022-03-25 15:21:22', '2022-03-25 15:21:22');
+INSERT INTO `bbs_column_author` VALUES ('1507256364878069761', '1507256364869681154', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '1', '2022-03-25 15:21:35', '2022-03-25 15:21:35');
+INSERT INTO `bbs_column_author` VALUES ('1507256416920993794', '1507256416908410882', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '1', '2022-03-25 15:21:47', '2022-03-25 15:21:47');
+INSERT INTO `bbs_column_author` VALUES ('1507256517735284737', '1507256517731090434', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '1', '2022-03-25 15:22:11', '2022-03-25 15:22:11');
+INSERT INTO `bbs_column_author` VALUES ('1507947208274649089', '1507947208253677570', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '1', '2022-03-27 13:06:45', '2022-03-27 13:06:45');
+
+-- ----------------------------
+-- Table structure for `bbs_colunm_article`
+-- ----------------------------
+DROP TABLE IF EXISTS `bbs_colunm_article`;
+CREATE TABLE `bbs_colunm_article` (
+  `id` char(19) NOT NULL COMMENT '专栏文章id',
+  `column_id` char(19) NOT NULL COMMENT '专栏id',
+  `article_id` char(19) NOT NULL COMMENT '文章id',
+  `version` bigint(20) NOT NULL DEFAULT '1' COMMENT '乐观锁',
+  `gmt_create` datetime NOT NULL COMMENT '创建时间',
+  `gmt_modified` datetime NOT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
+-- ----------------------------
+-- Records of bbs_colunm_article
+-- ----------------------------
+INSERT INTO `bbs_colunm_article` VALUES ('1507977357951025154', '1507246515616329729', '1499243244901490690', '1', '2022-03-27 15:06:33', '2022-03-27 15:06:33');
 
 -- ----------------------------
 -- Table structure for `bbs_comment`
@@ -630,67 +704,6 @@ INSERT INTO `user_background` VALUES ('1502147797435092994', 'https://edu-2-0-2-
 INSERT INTO `user_background` VALUES ('1502147797451870210', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/32bc7c02d98b43cb90e9cf48e78a52fa.jpg', '1', '2022-03-11 13:01:58', '2022-03-11 13:01:58');
 INSERT INTO `user_background` VALUES ('1502147797464453122', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/243f2c59e0464b4ea2b5dfbc1d902e35.jpg', '1', '2022-03-11 13:01:58', '2022-03-11 13:01:58');
 INSERT INTO `user_background` VALUES ('1502147797477036034', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/d27cfbc9edb0472e95a36bf58f19e462.jpg', '1', '2022-03-11 13:01:58', '2022-03-11 13:01:58');
-
--- ----------------------------
--- Table structure for `user_column`
--- ----------------------------
-DROP TABLE IF EXISTS `user_column`;
-CREATE TABLE `user_column` (
-  `id` char(19) NOT NULL COMMENT '用户专栏id',
-  `user_id` char(19) NOT NULL COMMENT '用户id',
-  `title` varchar(20) NOT NULL COMMENT '专栏名称',
-  `views` bigint(10) NOT NULL DEFAULT '0' COMMENT '浏览数',
-  `vsibility` tinyint(4) NOT NULL DEFAULT '0' COMMENT '可见度(0所有人 1月会员 2年会员 3终身会员)',
-  `is_release` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0 不发布 1 发布，这里指专栏是否可被别人看见',
-  `description` varchar(100) DEFAULT NULL COMMENT '专栏描述',
-  `color` varchar(255) NOT NULL DEFAULT 'background-image: linear-gradient(to right, rgb(130, 178, 242) 0%, rgb(51, 51, 51) 100%);' COMMENT '专栏渐变色',
-  `version` bigint(20) NOT NULL DEFAULT '1' COMMENT '乐观锁',
-  `gmt_create` datetime NOT NULL COMMENT '创建时间',
-  `gmt_modified` datetime NOT NULL COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
-
--- ----------------------------
--- Records of user_column
--- ----------------------------
-
--- ----------------------------
--- Table structure for `user_column_article`
--- ----------------------------
-DROP TABLE IF EXISTS `user_column_article`;
-CREATE TABLE `user_column_article` (
-  `id` char(19) NOT NULL COMMENT '专栏文章id',
-  `column_id` char(19) NOT NULL COMMENT '专栏id',
-  `article_id` char(19) NOT NULL COMMENT '文章id',
-  `version` bigint(20) NOT NULL DEFAULT '1' COMMENT '乐观锁',
-  `gmt_create` datetime NOT NULL COMMENT '创建时间',
-  `gmt_modified` datetime NOT NULL COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
-
--- ----------------------------
--- Records of user_column_article
--- ----------------------------
-
--- ----------------------------
--- Table structure for `user_column_author`
--- ----------------------------
-DROP TABLE IF EXISTS `user_column_author`;
-CREATE TABLE `user_column_author` (
-  `id` char(19) NOT NULL COMMENT '主键id',
-  `column_id` char(19) NOT NULL COMMENT '用户专栏id',
-  `user_id` char(19) NOT NULL COMMENT '用户id',
-  `nickname` varchar(50) NOT NULL COMMENT '昵称',
-  `avatar` varchar(255) NOT NULL COMMENT '用户头像',
-  `version` bigint(20) NOT NULL DEFAULT '1' COMMENT '乐观锁',
-  `gmt_create` datetime NOT NULL COMMENT '创建时间',
-  `gmt_modified` datetime NOT NULL COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
-
--- ----------------------------
--- Records of user_column_author
--- ----------------------------
 
 -- ----------------------------
 -- Table structure for `user_head_portrait`

@@ -3,7 +3,7 @@ package com.kuang.springcloud.entity;
 import lombok.Data;
 
 @Data
-public class RightRedis {
+public class RightRedis implements Comparable<RightRedis>{
     private String id;
     private String vipLevel;
     private Integer price;
@@ -13,4 +13,17 @@ public class RightRedis {
     private Integer money;
     private Integer articleNumber;
     private Integer timeLength;
+
+    @Override
+    public int compareTo(RightRedis o) {
+        if(price > (int) o.getPrice()){
+            return 1;
+        }
+
+        if(price < (int) o.getPrice()){
+            return -1;
+        }
+
+        return 0;
+    }
 }

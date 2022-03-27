@@ -32,6 +32,16 @@ public class BbsClientFactory implements FallbackFactory<BbsClient> {
             public R findUserCommentNumber(String userId) {
                 return R.error();
             }
+
+            @Override
+            public R findUserColumnNumber(String userId) {
+                return R.error();
+            }
+
+            @Override
+            public R findOtherUserColumnNumber(String userId) {
+                return R.error();
+            }
         };
     }
 }

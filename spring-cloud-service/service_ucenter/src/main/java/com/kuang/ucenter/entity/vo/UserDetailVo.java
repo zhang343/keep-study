@@ -13,18 +13,29 @@ public class UserDetailVo {
     private Boolean sex;
     private Integer experience;
     private String sign;
-    private Integer attentionNumber;
-    private Integer fansNumber;
-    private Integer allArticleNumber;
-    private Integer columnNumber;
-    private Integer studyNumber;
-    private Integer dynamicNumber;
+
+
     //vip等级
     private String vipLevel;
+    private Integer attentionNumber;
+    private Integer fansNumber;
     //已经发布到江湖还可以看到的文章
     private Integer bbsArticleNumber;
+    private Integer studyNumber;
     //所有的评论数量
     private Integer commentNumber;
+
+
+
+
+    private Integer allArticleNumber;
+    private Integer columnNumber;
+    private Integer dynamicNumber;
+
+
+
+
+
     //账号
     private String account;
     //k币

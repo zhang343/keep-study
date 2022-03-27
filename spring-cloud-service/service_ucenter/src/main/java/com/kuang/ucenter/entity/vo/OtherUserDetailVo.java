@@ -29,16 +29,19 @@ public class OtherUserDetailVo {
     private Integer attentionNumber;
     //用户粉丝
     private Integer fansNumber;
-    //说说数量
-    private Integer dynamicNumber;
     //已经发布到江湖还可以看到的文章
     private Integer bbsArticleNumber;
-    //专栏数量
-    private Integer columnNumber;
     //学习数量
     private Integer studyNumber;
     //所有的评论数量
     private Integer commentNumber;
+
+
+
+    //说说数量
+    private Integer dynamicNumber;
+    //专栏数量
+    private Integer columnNumber;
 
 
     //账号
