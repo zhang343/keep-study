@@ -5,13 +5,15 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kuang.bbs.client.VipClient;
 import com.kuang.bbs.entity.Column;
 import com.kuang.bbs.entity.ColumnAuthor;
-import com.kuang.bbs.entity.vo.ColumnArticleVo;
+import com.kuang.bbs.entity.ColunmArticle;
 import com.kuang.bbs.entity.vo.ColumnAuthorVo;
 import com.kuang.bbs.entity.vo.ColumnDetailVo;
 import com.kuang.bbs.entity.vo.ColumnVo;
+import com.kuang.bbs.entity.vo.UpdateColumnVo;
+import com.kuang.bbs.mapper.ArticleMapper;
 import com.kuang.bbs.mapper.ColumnAuthorMapper;
 import com.kuang.bbs.mapper.ColumnMapper;
-import com.kuang.bbs.service.ColumnAuthorService;
+import com.kuang.bbs.mapper.ColunmArticleMapper;
 import com.kuang.bbs.service.ColumnService;
 import com.kuang.bbs.utils.ColumnUtils;
 import com.kuang.springcloud.entity.RightRedis;
@@ -42,7 +44,10 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
     private ColumnAuthorMapper columnAuthorMapper;
 
     @Resource
-    private ColumnAuthorService columnAuthorService;
+    private ArticleMapper articleMapper;
+
+    @Resource
+    private ColunmArticleMapper colunmArticleMapper;
 
     //创建专栏
     @Transactional
@@ -183,8 +188,66 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
         ColumnDetailVo columnDetailVo = new ColumnDetailVo();
         BeanUtils.copyProperties(column , columnDetailVo);
         columnDetailVo.setColumnId(column.getId());
-        List<ColumnAuthorVo> columnAuthorVoList = columnAuthorService.findColumnAuthorList(columnId);
+        List<ColumnAuthorVo> columnAuthorVoList = columnAuthorMapper.findColumnAuthorList(columnId);
         columnDetailVo.setAuthorList(columnAuthorVoList);
         return columnDetailVo;
     }
+
+    //删除专栏，删除专栏也会将下面的文章给删除
+    /*
+    1：这里我们先是删除专栏
+    2：然后删除专栏作者数据
+    3：查询出专栏里面有多少文章
+    4：删除第三步查询出来的文章
+    5：删除专栏文章列表
+     */
+    @Transactional
+    @Override
+    public void deleteColumn(String userId, String columnId) {
+        //删除专栏
+        QueryWrapper<Column> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id" , userId);
+        wrapper.eq("id" , columnId);
+        int delete = baseMapper.delete(wrapper);
+        if(delete != 1){
+            throw new XiaoXiaException(ResultCode.ERROR , "删除失败");
+        }
+
+        //删除专栏作者，不考虑事务
+        QueryWrapper<ColumnAuthor> authorQueryWrapper = new QueryWrapper<>();
+        authorQueryWrapper.eq("column_id" , columnId);
+        columnAuthorMapper.delete(authorQueryWrapper);
+
+        //查询出专栏里面有多少文章
+        List<String> articleIdList = colunmArticleMapper.findArticleIdListByColunmId(columnId);
+        if(articleIdList == null || articleIdList.size() == 0){
+            return;
+        }
+
+        //下面对具体文章数据的删除
+        int i = articleMapper.deleteBatchIds(articleIdList);
+        if(i != articleIdList.size()){
+            throw new XiaoXiaException(ResultCode.ERROR , "删除失败");
+        }
+
+        //删除专栏文章
+        QueryWrapper<ColunmArticle> colunmArticleQueryWrapper = new QueryWrapper<>();
+        colunmArticleQueryWrapper.eq("column_id" , columnId);
+        colunmArticleMapper.delete(colunmArticleQueryWrapper);
+    }
+
+    //修改专栏数据
+    @Override
+    public void updateColumn(UpdateColumnVo updateColumnVo, String columnId, String userId) {
+        Column column = new Column();
+        BeanUtils.copyProperties(updateColumnVo , column);
+        QueryWrapper<Column> wrapper = new QueryWrapper<>();
+        wrapper.eq("id" , columnId);
+        wrapper.eq("user_id" , userId);
+        int update = baseMapper.update(column, wrapper);
+        if(update != 1){
+            throw new XiaoXiaException(ResultCode.ERROR , "修改专栏数据失败");
+        }
+    }
+
 }

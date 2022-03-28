@@ -12,6 +12,4 @@ import java.util.List;
  */
 public interface ColumnAuthorService extends IService<ColumnAuthor> {
 
-    //查询专栏作者
-    List<ColumnAuthorVo> findColumnAuthorList(String columnId);
 }

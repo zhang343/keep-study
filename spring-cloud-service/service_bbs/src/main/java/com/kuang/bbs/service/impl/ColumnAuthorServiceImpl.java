@@ -16,9 +16,4 @@ import java.util.List;
 @Service
 public class ColumnAuthorServiceImpl extends ServiceImpl<ColumnAuthorMapper, ColumnAuthor> implements ColumnAuthorService {
 
-    //查询专栏作者
-    @Override
-    public List<ColumnAuthorVo> findColumnAuthorList(String columnId) {
-        return baseMapper.findColumnAuthorList(columnId);
-    }
 }

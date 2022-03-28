@@ -5,6 +5,7 @@ import com.kuang.bbs.entity.Column;
 import com.kuang.bbs.entity.vo.ColumnArticleVo;
 import com.kuang.bbs.entity.vo.ColumnDetailVo;
 import com.kuang.bbs.entity.vo.ColumnVo;
+import com.kuang.bbs.entity.vo.UpdateColumnVo;
 import com.kuang.bbs.service.ColumnService;
 import com.kuang.bbs.service.ColunmArticleService;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
@@ -92,6 +93,28 @@ public class ColumnController {
         }
 
         return R.ok().data("columnDetail" , columnDetailVo).data("columnArticleList" , columnArticleVoList);
+    }
+
+    //删除专栏，删除专栏也会将下面的文章给删除
+    @PostMapping("deleteColumn")
+    public R deleteColumn(HttpServletRequest request , String columnId){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        if(userId == null || StringUtils.isEmpty(columnId)){
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
+        }
+        columnService.deleteColumn(userId , columnId);
+        return R.ok();
+    }
+
+    //修改专栏数据
+    @PostMapping("updateColumn")
+    public R updateColumn(UpdateColumnVo updateColumnVo , String columnId , HttpServletRequest request){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        if(userId == null || StringUtils.isEmpty(columnId)){
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
+        }
+        columnService.updateColumn(updateColumnVo , columnId , userId);
+        return R.ok();
     }
 
 }

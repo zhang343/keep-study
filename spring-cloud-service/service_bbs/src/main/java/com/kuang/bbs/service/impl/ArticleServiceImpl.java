@@ -314,6 +314,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     //用户删除文章
+    /*
+    1：如果是在江湖发布的文章，那么直接删除
+    2：如果是在专栏发布的文章同步到了江湖，则将其改为专栏内的文章，未同步到江湖
+     */
     @Override
     public void deleteArticle(String articleId, String userId) {
         log.info("用户删除文章,用户id:" + userId + ",文章id:" + articleId);

@@ -10,4 +10,10 @@
         where colunmarticle.column_id = #{columnId}
         order by article.sort asc
     </select>
+
+    <select id="findArticleIdListByColunmId" resultType="java.lang.String" >
+        select bbs_colunm_article.article_id
+        from bbs_colunm_article
+        where bbs_colunm_article.column_id = #{columnId}
+    </select>
 </mapper>

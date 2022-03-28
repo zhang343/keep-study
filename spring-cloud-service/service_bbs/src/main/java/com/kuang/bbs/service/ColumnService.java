@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.kuang.bbs.entity.vo.ColumnArticleVo;
 import com.kuang.bbs.entity.vo.ColumnDetailVo;
 import com.kuang.bbs.entity.vo.ColumnVo;
+import com.kuang.bbs.entity.vo.UpdateColumnVo;
 
 import java.util.List;
 import java.util.concurrent.Future;
@@ -36,4 +37,9 @@ public interface ColumnService extends IService<Column> {
     //查询专栏具体数据
     ColumnDetailVo findColumnDetail(String columnId);
 
+    //删除专栏，删除专栏也会将下面的文章给删除
+    void deleteColumn(String userId, String columnId);
+
+    //修改专栏数据
+    void updateColumn(UpdateColumnVo updateColumnVo, String columnId, String userId);
 }
