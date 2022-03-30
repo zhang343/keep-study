@@ -17,11 +17,7 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.concurrent.Future;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- * 首页处理类
- */
+
 @RestController
 @RequestMapping("/bbs/index")
 @Slf4j
@@ -36,7 +32,6 @@ public class IndexController {
     //查询系统前三名课程还有系统用户、评论、文章数量
     @GetMapping("getPayCourseAndUACNumber")
     public R getPayCourseAndUACNumber(){
-        log.info("查询系统前三名课程还有系统用户、评论、文章数量");
         Integer articleNumber = articleService.findArticleNumber();
         Integer commentNumber = commentService.findCommentNumber();
         return R.ok()
@@ -53,14 +48,12 @@ public class IndexController {
                                   String categoryId ,
                                   Boolean isExcellentArticle ,
                                   String articleNameOrLabelName){
-        log.info("开始条件分页查询文章");
         Future<List<IndexArticleVo>> listFuture = articleService.pageArticleCondition(current, limit, categoryId, isExcellentArticle, articleNameOrLabelName);
         Long total = articleService.findArticleNumber(categoryId, isExcellentArticle, articleNameOrLabelName);
         List<IndexArticleVo> articleVoList = null;
         try {
             articleVoList = listFuture.get();
         } catch(Exception e) {
-            log.error("根据条件查询系统文章失败");
             throw new XiaoXiaException(ResultCode.ERROR , "查询文章失败");
         }
         return R.ok().data("total" , total).data("articleList" , articleVoList);

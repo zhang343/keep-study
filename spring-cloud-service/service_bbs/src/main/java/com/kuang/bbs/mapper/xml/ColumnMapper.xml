@@ -14,4 +14,11 @@
         where user_id = #{userId} and is_release = 1
         order by gmt_create desc
     </select>
+
+    <update id="updateColumnViews" parameterType="java.util.List" >
+        <foreach collection="columnUpdateList" item="column" index="index" open="" close="" separator=";">
+            update bbs_column set views = #{column.views}
+            where id = #{column.id}
+        </foreach>
+    </update>
 </mapper>

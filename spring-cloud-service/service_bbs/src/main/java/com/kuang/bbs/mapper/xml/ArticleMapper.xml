@@ -17,14 +17,6 @@
         </if>
     </select>
 
-    <select id="findTopArticle" resultType="com.kuang.bbs.entity.vo.IndexArticleVo" >
-        select article.id , article.is_top , article.title , article.description , article.user_id ,
-               article.avatar , article.nickname , article.views , article.is_excellent_article , article.gmt_create
-               category.category_name
-        from bbs_article as article join bbs_category as category on article.category_id = category.id
-        where article.is_top = 1;
-    </select>
-
 
     <select id="pageArticleCondition" resultType="com.kuang.bbs.entity.vo.IndexArticleVo" >
         select distinct (article.id) , article.id , article.is_top , article.title , article.description , article.user_id ,
@@ -42,15 +34,8 @@
         <if test="articleNameOrLabelName!=null and articleNameOrLabelName!=''">
             and (article.title like '%' #{articleNameOrLabelName} '%' or label.label_name like '%' #{articleNameOrLabelName} '%')
         </if>
-        order by article.gmt_create desc
+        order by article.views desc , article.gmt_create desc
         limit #{current} , #{limit}
-    </select>
-
-    <select id="findArticleViewsList" resultType="com.kuang.bbs.entity.Article" >
-        select id , views from bbs_article where id in
-        <foreach collection="articleIdList" item="articleId" open="(" separator="," close=")">
-            #{articleId}
-        </foreach>
     </select>
 
     <update id="updateArticleViews" parameterType="java.util.List" >

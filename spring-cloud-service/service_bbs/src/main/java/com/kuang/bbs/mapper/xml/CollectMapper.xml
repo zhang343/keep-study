@@ -4,9 +4,9 @@
 
 
     <select id="findUserCollectArticle" resultType="com.kuang.bbs.entity.vo.CollectArticleVo" >
-        select distinct (collect.id) , collect.id , collect.article_id , collect.gmt_create ,
-                        article.title , article.description , article.views , article.is_excellent_article ,
-                        category.category_name
+        select collect.id , collect.article_id , collect.gmt_create ,
+               article.title , article.description , article.views , article.is_excellent_article ,
+               category.category_name
         from bbs_collect as collect
              join bbs_article as article
         on collect.article_id = article.id

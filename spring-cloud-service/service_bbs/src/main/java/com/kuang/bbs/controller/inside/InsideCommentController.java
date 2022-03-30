@@ -20,7 +20,7 @@ public class InsideCommentController {
     //查询用户所有评论数量
     @GetMapping("findUserCommentNumber")
     public R findUserCommentNumber(String userId){
-        Integer commentNumber = commentService.findUserCommentNumber(userId);
+        Integer commentNumber = commentService.findUserAllCommentNumber(userId);
         return R.ok().data("commentNumber" , commentNumber);
     }
 }

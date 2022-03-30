@@ -3,25 +3,22 @@ package com.kuang.bbs.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kuang.bbs.client.VipClient;
-import com.kuang.bbs.entity.Column;
-import com.kuang.bbs.entity.ColumnAuthor;
-import com.kuang.bbs.entity.ColunmArticle;
+import com.kuang.bbs.entity.*;
 import com.kuang.bbs.entity.vo.ColumnAuthorVo;
 import com.kuang.bbs.entity.vo.ColumnDetailVo;
 import com.kuang.bbs.entity.vo.ColumnVo;
 import com.kuang.bbs.entity.vo.UpdateColumnVo;
-import com.kuang.bbs.mapper.ArticleMapper;
-import com.kuang.bbs.mapper.ColumnAuthorMapper;
-import com.kuang.bbs.mapper.ColumnMapper;
-import com.kuang.bbs.mapper.ColunmArticleMapper;
+import com.kuang.bbs.mapper.*;
 import com.kuang.bbs.service.ColumnService;
 import com.kuang.bbs.utils.ColumnUtils;
 import com.kuang.springcloud.entity.RightRedis;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.R;
+import com.kuang.springcloud.utils.RedisUtils;
 import com.kuang.springcloud.utils.ResultCode;
 import com.kuang.springcloud.utils.VipUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,11 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
-/**
- * @author Xiaozhang
- * @since 2022-03-24
- */
+
 @Service
 public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> implements ColumnService {
 
@@ -49,11 +44,18 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
     @Resource
     private ColunmArticleMapper colunmArticleMapper;
 
+    @Resource
+    private CommentMapper commentMapper;
+
+    @Resource
+    private LabelMapper labelMapper;
+
     //创建专栏
     @Transactional
     @Override
     public Column addUserColumn(String userId, String nickname , String avatar , String title) {
         //校验是否可以增加专栏
+        //取出用户权益
         RightRedis userRightRedis = VipUtils.getUserRightRedis(userId);
         if(userRightRedis == null){
             R rightRedisByUserId = vipClient.findRightRedisByUserId(userId);
@@ -63,9 +65,10 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
             userRightRedis = (RightRedis) rightRedisByUserId.getData().get("rightRedis");
         }
 
-        QueryWrapper<Column> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_id" , userId);
-        Integer integer = baseMapper.selectCount(wrapper);
+        //查询用户目前多少个专栏
+        Integer integer = findUserColumnNumber(userId);
+
+        //判断如果增加了一个专栏是否会超出限定，超出直接抛出异常
         if(integer + 1 > userRightRedis.getColumnNumber()){
             throw new XiaoXiaException(ResultCode.ERROR , "专栏数量过多，不能创建");
         }
@@ -122,6 +125,7 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
     }
 
     //校验用户是否可以访问
+    @Async
     @Override
     public Future<Boolean> checkUserAbility(String userId, String columnId) {
         Column column = baseMapper.selectById(columnId);
@@ -130,21 +134,23 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
             return new AsyncResult<>(false);
         }
 
+        //根据是否是专栏所有者来进行判断
         //如果访问者就是创建者,直接返回
         if(column.getUserId().equals(userId)){
             return new AsyncResult<>(true);
         }else {
             //下面访问者不是创建者
-            //专栏是否被外部可见
+            //专栏是否被外部可见，专栏不可被外部可见则直接false
             if(!column.getIsRelease()){
                 return new AsyncResult<>(false);
             }
+
             //是否每个人都可见
             if(column.getVsibility() == ColumnUtils.EVERYONE){
                 return new AsyncResult<>(true);
             }
 
-            //如果仅仅自己可见
+            //如果仅仅自己可见，此时这里是查询者非创建者，返回false
             if(column.getVsibility() == ColumnUtils.OWN){
                 return new AsyncResult<>(false);
             }
@@ -197,14 +203,15 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
     /*
     1：这里我们先是删除专栏
     2：然后删除专栏作者数据
-    3：查询出专栏里面有多少文章
+    3：查询出专栏里面有多少文章,返回的是文章idList集合
     4：删除第三步查询出来的文章
-    5：删除专栏文章列表
+    5：删除文章标签、评论
+    6：删除专栏文章列表
      */
     @Transactional
     @Override
     public void deleteColumn(String userId, String columnId) {
-        //删除专栏
+        //删除专栏，同时也验证了该专栏是否为该删除者拥有
         QueryWrapper<Column> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id" , userId);
         wrapper.eq("id" , columnId);
@@ -220,6 +227,7 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
 
         //查询出专栏里面有多少文章
         List<String> articleIdList = colunmArticleMapper.findArticleIdListByColunmId(columnId);
+        //如果为空，说明专栏里面没有文章
         if(articleIdList == null || articleIdList.size() == 0){
             return;
         }
@@ -229,6 +237,16 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
         if(i != articleIdList.size()){
             throw new XiaoXiaException(ResultCode.ERROR , "删除失败");
         }
+
+        //删除标签,不考虑事务
+        QueryWrapper<Label> labelQueryWrapper = new QueryWrapper<>();
+        wrapper.in("article_id" , articleIdList);
+        labelMapper.delete(labelQueryWrapper);
+        //删除评论，不考虑事务
+        QueryWrapper<Comment> commentQueryWrapper = new QueryWrapper<>();
+        commentQueryWrapper.in("article_id" , articleIdList);
+        commentMapper.delete(commentQueryWrapper);
+
 
         //删除专栏文章
         QueryWrapper<ColunmArticle> colunmArticleQueryWrapper = new QueryWrapper<>();
@@ -248,6 +266,34 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
         if(update != 1){
             throw new XiaoXiaException(ResultCode.ERROR , "修改专栏数据失败");
         }
+    }
+
+    //设置专栏浏览量
+    @Override
+    public void setColunmViews(String columnId, String ip) {
+        //设置以专栏为key的set
+        RedisUtils.setSet(columnId , ip);
+        //设置以专栏为key的键的存活时间
+        RedisUtils.expire(columnId , RedisUtils.COLUMNVIEWTIME , TimeUnit.MINUTES);
+        //将缓存当前访问过哪些专栏
+        RedisUtils.setSet(RedisUtils.COLUMN , columnId);
+        //设置存活时间
+        RedisUtils.expire(RedisUtils.COLUMN , RedisUtils.COLUMNVIEWTIME , TimeUnit.MINUTES);
+    }
+
+    //查询出专栏浏览量
+    @Override
+    public List<Column> findColumnViewsList(List<String> columnIdList) {
+        QueryWrapper<Column> wrapper = new QueryWrapper<>();
+        wrapper.select("id" , "views");
+        wrapper.in("id" , columnIdList);
+        return baseMapper.selectList(wrapper);
+    }
+
+    //更新专栏浏览量
+    @Override
+    public void updateColumnViews(List<Column> columnUpdateList) {
+        baseMapper.updateColumnViews(columnUpdateList);
     }
 
 }

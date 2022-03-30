@@ -6,10 +6,6 @@ import com.kuang.bbs.entity.vo.CollectArticleVo;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-03-23
- */
 public interface CollectService extends IService<Collect> {
 
     //查看用户是否收藏了该文章

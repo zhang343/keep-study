@@ -12,10 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-03-23
- */
 @Service
 public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> implements CollectService {
 
@@ -33,14 +29,14 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
     public void addUserCollectArticle(String userId, String articleId) {
         boolean userIsCollection = findUserIsCollection(articleId, userId);
         if(userIsCollection){
-            throw new XiaoXiaException(ResultCode.ERROR , "你已经收藏了该文章");
+            throw new XiaoXiaException(ResultCode.ERROR , "你已经收藏了该文章，请不要重复收藏");
         }
         Collect collect = new Collect();
         collect.setUserId(userId);
         collect.setArticleId(articleId);
         int insert = baseMapper.insert(collect);
         if(insert != 1){
-            throw new XiaoXiaException(ResultCode.ERROR , "增加收藏失败");
+            throw new XiaoXiaException(ResultCode.ERROR , "收藏文章失败");
         }
     }
 
@@ -52,7 +48,7 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
         wrapper.eq("article_id" , articleId);
         int delete = baseMapper.delete(wrapper);
         if(delete != 1){
-            throw new XiaoXiaException(ResultCode.ERROR , "删除收藏失败");
+            throw new XiaoXiaException(ResultCode.ERROR , "删除收藏文章失败");
         }
     }
 

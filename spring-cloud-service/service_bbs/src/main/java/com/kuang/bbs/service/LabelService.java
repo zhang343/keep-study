@@ -13,7 +13,7 @@ import java.util.concurrent.Future;
 public interface LabelService extends IService<Label> {
 
     //查找文章标签
-    Future<List<String>> findArticleLabel(String articleId);
+    List<String> findArticleLabel(String articleId);
 
     //增加文章标签
     void addArticleLabel(String articleId , List<String> labelList);

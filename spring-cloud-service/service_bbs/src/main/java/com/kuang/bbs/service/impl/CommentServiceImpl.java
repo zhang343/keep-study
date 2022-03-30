@@ -26,14 +26,9 @@ import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.Future;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
 @Service
 @Slf4j
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements CommentService {
-
 
     @Resource
     private ArticleMapper articleMapper;
@@ -45,20 +40,18 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Cacheable(value = "commentNumber")
     @Override
     public Integer findCommentNumber() {
-        log.info("查询系统评论数量");
         return baseMapper.selectCount(null);
     }
 
     //用户删除评论
     @Override
     public void deleteComment(String commentId, String userId) {
-        log.info("用户删除评论,评论id:" + commentId + ",用户id:" + userId);
+        //删除指定评论
         QueryWrapper<Comment> wrapper = new QueryWrapper<>();
         wrapper.eq("id" , commentId);
         wrapper.eq("user_id" , userId);
         int delete = baseMapper.delete(wrapper);
         if(delete != 1){
-            log.error("用户删除评论失败,评论id:" + commentId + ",用户id:" + userId);
             throw new XiaoXiaException(ResultCode.ERROR , "删除评论失败");
         }
         //删除子评论，不考虑事务
@@ -70,11 +63,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     //增加评论
     @Override
     public void addComment(Comment comment) {
-        String articleId = comment.getArticleId();
-        log.info("增加评论,文章id:" + articleId);
         int insert = baseMapper.insert(comment);
         if(insert != 1){
-            log.info("增加评论失败，文章id：" + articleId);
             throw new XiaoXiaException(ResultCode.ERROR , "增加评论失败");
         }
         //向rabbitmq发送消息
@@ -85,22 +75,27 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Async
     @Override
     public Future<List<OneCommentVo>> findArticleComment(String articleId , Long current , Long limit) {
-        log.info("开始进行查找文章评论,分页查找,文章id：" + articleId);
+
         //计算分页
         current = (current - 1) * limit;
+
+        //查询一级评论和二级评论
         List<OneCommentVo> oneCommentVoList = baseMapper.findOneCommentVoByArticleId(articleId , current , limit);
+        //如果评论为空，则直接返回
         if(oneCommentVoList == null || oneCommentVoList.size() == 0){
             return new AsyncResult<>(oneCommentVoList);
         }
 
+        //设置vip标识，这里设置一级评论
         VipUtils.setVipLevel(oneCommentVoList , oneCommentVoList.get(0));
 
         List<TwoCommentVo> twoCommentVos = new ArrayList<>();
-        //取出所有评论用户的id
+        //取出所有二级评论
         for(OneCommentVo oneCommentVo : oneCommentVoList) {
             twoCommentVos.addAll(oneCommentVo.getChildList());
         }
 
+        //设置二级评论vip标识
         if(twoCommentVos.size() != 0){
             VipUtils.setVipLevel(twoCommentVos , twoCommentVos.get(0));
         }
@@ -111,54 +106,59 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     //查找指定文章一级评论数量
     @Override
     public Integer findArticleCommentNumber(String articleId) {
-        log.info("查找指定文章一级评论数量,文章id:" + articleId);
         QueryWrapper<Comment> wrapper = new QueryWrapper<>();
         wrapper.eq("article_id" , articleId);
+        //如果是一级评论，那么father_id为空字符串
         wrapper.eq("father_id" , "");
         return baseMapper.selectCount(wrapper);
     }
 
-    //用户发表评论之后，向rabbitmq发送消息
+    //用户发表评论之后，通知消息的我的消息
     @Async
     @Override
     public void sendReplyNews(Comment comment) {
-        log.info("用户发表评论之后，向rabbitmq发送消息");
+
+        //取出评论者id
         String userId = comment.getUserId();
-        Article article = articleMapper.selectById(comment.getArticleId());
+        //取出评论的文章id
+        String articleId = comment.getArticleId();
+        //查询出文章
+        Article article = articleMapper.selectById(articleId);
+        //如果文章不存在，直接返回
         if(article == null){
             return;
         }
+
         String title = article.getTitle();
         String replyUserId = null;
+        //如果是一级评论，说明回复的是文章所有者
         if(StringUtils.isEmpty(comment.getFatherId())){
-            //说明找文章
             replyUserId = article.getUserId();
         }else {
-            //说明找评论
+            //如果不是一级评论
             replyUserId = comment.getReplyUserId();
         }
+
         //如果评论者和他回复的评论或者文章所有者一样，不发送消息
         if(replyUserId.equals(userId)){
             return;
         }
-        log.info("开始向rabbitmq发送数据,存储回复记录,用户id:" + userId);
+
+        //进行数据封装
         InfoReplyMeVo infoReplyMeVo = new InfoReplyMeVo();
         infoReplyMeVo.setContent(comment.getContent());
         infoReplyMeVo.setReplyUserId(userId);
         infoReplyMeVo.setReplyUserAvatar(comment.getUserAvatar());
         infoReplyMeVo.setReplyUserNickname(comment.getUserNickname());
-        infoReplyMeVo.setArticleId(comment.getArticleId());
+        infoReplyMeVo.setArticleId(articleId);
         infoReplyMeVo.setUserId(replyUserId);
         infoReplyMeVo.setTitle(title);
-        try {
-            msgProducer.sendReplyMeMsg(JSON.toJSONString(infoReplyMeVo));
-        }catch(Exception e){
-            log.warn("开始向rabbitmq发送数据失败,存储回复记录,用户id:" + userId);
-        }
+
+        //向rabbitmq发送消息
+        msgProducer.sendReplyMeMsg(JSON.toJSONString(infoReplyMeVo));
     }
 
-    //删除文章评论
-    @Async
+    //删除文章评论,不考虑事务
     @Override
     public void deleteCommentByArticleId(String articleId) {
         QueryWrapper<Comment> wrapper = new QueryWrapper<>();
@@ -166,7 +166,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         baseMapper.delete(wrapper);
     }
 
-    //查询文章所有评论数量
+    //查询文章评论数量
     @Override
     public Integer findArticleAllCommentNumber(String articleId) {
         QueryWrapper<Comment> wrapper = new QueryWrapper<>();
@@ -174,9 +174,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         return baseMapper.selectCount(wrapper);
     }
 
-    //查询用户所有评论数量
+    //查询用户评论数量
     @Override
-    public Integer findUserCommentNumber(String userId) {
+    public Integer findUserAllCommentNumber(String userId) {
         QueryWrapper<Comment> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id" , userId);
         return baseMapper.selectCount(wrapper);

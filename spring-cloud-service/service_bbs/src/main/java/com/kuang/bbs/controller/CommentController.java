@@ -20,10 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.concurrent.Future;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 @RestController
 @RequestMapping("/bbs/comment")
 @Slf4j
@@ -36,11 +33,10 @@ public class CommentController {
     //删除评论接口
     @PostMapping("delete")
     public R delete(String commentId , HttpServletRequest request){
+        //校验数据
         String userId = JwtUtils.getMemberIdByJwtToken(request);
-        log.info("用户删除评论,评论id:" + commentId + ",用户id:" + userId);
         if(StringUtils.isEmpty(commentId) || userId == null){
-            log.warn("有人进行非法操作删除评论");
-            throw new XiaoXiaException(ResultCode.ERROR , "删除评论失败");
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
         }
         commentService.deleteComment(commentId , userId);
         return R.ok();
@@ -53,7 +49,6 @@ public class CommentController {
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         //下面属于数据验证
         if(userId == null || StringUtils.isEmpty(userOneCommentVo.getUserAvatar()) || StringUtils.isEmpty(userOneCommentVo.getUserNickname()) || StringUtils.isEmpty(userOneCommentVo.getArticleId()) || StringUtils.isEmpty(userOneCommentVo.getContent())){
-            log.warn("有人非法增加评论");
             throw new XiaoXiaException(ResultCode.ERROR , "增加评论失败");
         }
         Comment comment = new Comment();
@@ -69,7 +64,6 @@ public class CommentController {
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         //下面属于数据验证
         if(userId == null || StringUtils.isEmpty(userTwoCommentVo.getUserAvatar()) || StringUtils.isEmpty(userTwoCommentVo.getUserNickname()) || StringUtils.isEmpty(userTwoCommentVo.getArticleId()) || StringUtils.isEmpty(userTwoCommentVo.getContent()) || StringUtils.isEmpty(userTwoCommentVo.getFatherId()) || StringUtils.isEmpty(userTwoCommentVo.getReplyUserId()) || StringUtils.isEmpty(userTwoCommentVo.getReplyUserNickname())){
-            log.warn("有人非法增加评论");
             throw new XiaoXiaException(ResultCode.ERROR , "增加评论失败");
         }
         Comment comment = new Comment();
@@ -84,14 +78,12 @@ public class CommentController {
     public R findArticleComment(@RequestParam(value = "current", required = false, defaultValue = "1") Long current ,
                                 @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
                                 String articleId){
-        log.info("开始进行查找文章评论,分页查找,文章id：" + articleId);
         Future<List<OneCommentVo>> articleComment = commentService.findArticleComment(articleId, current, limit);
         Integer total = commentService.findArticleCommentNumber(articleId);
         List<OneCommentVo> oneCommentVoList = null;
         try {
             oneCommentVoList = articleComment.get();
         }catch(Exception e){
-            log.error("查找评论失败");
             throw new XiaoXiaException(ResultCode.ERROR , "查找评论失败");
         }
 

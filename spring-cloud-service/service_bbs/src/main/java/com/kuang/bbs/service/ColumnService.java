@@ -10,10 +10,7 @@ import com.kuang.bbs.entity.vo.UpdateColumnVo;
 import java.util.List;
 import java.util.concurrent.Future;
 
-/**
- * @author Xiaozhang
- * @since 2022-03-24
- */
+
 public interface ColumnService extends IService<Column> {
 
     //创建专栏
@@ -42,4 +39,13 @@ public interface ColumnService extends IService<Column> {
 
     //修改专栏数据
     void updateColumn(UpdateColumnVo updateColumnVo, String columnId, String userId);
+
+    //设置专栏浏览量
+    void setColunmViews(String columnId, String ip);
+
+    //查询出专栏浏览量
+    List<Column> findColumnViewsList(List<String> columnIdList);
+
+    //更新专栏浏览量
+    void updateColumnViews(List<Column> columnUpdateList);
 }

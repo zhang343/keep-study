@@ -34,6 +34,14 @@ public class RedisUtils implements InitializingBean {
 
     public static final int ARTICLEVIEWTIME = 7;
 
+    public static final String COLUMNVIEWLOCK = "columnViewLock";
+
+    public static final String COLUMNVIEW = "columnView";
+
+    public static final String COLUMN = "column";
+
+    public static final int COLUMNVIEWTIME = 7;
+
     public static final String COURSEVIEWLOCK = "courseViewLock";
 
     public static final String COURSEVIEW = "courseView";
@@ -102,6 +110,29 @@ public class RedisUtils implements InitializingBean {
         return redisTemplate.delete(COURSEVIEWLOCK);
     }
 
+
+    /**
+     *分布式锁，用来保证定时任务不重复执行
+     * @param timeout 键值对缓存的时间，单位是秒
+     * @return 设置成功返回true，否则返回false
+     */
+    public static boolean tryColumnLock(long timeout) {
+        //底层原理就是Redis的setnx方法
+        boolean isSuccess = redisTemplate.opsForValue().setIfAbsent(COLUMNVIEWLOCK, COLUMNVIEW);
+        if (isSuccess) {
+            //设置分布式锁的过期时间
+            redisTemplate.expire(COLUMNVIEWLOCK, timeout, TimeUnit.SECONDS);
+        }
+        return isSuccess;
+    }
+
+    /**
+     * 分布式锁，用来保证定时任务不重复执行
+     * @return 释放成功返回true，否则返回false
+     */
+    public static boolean unColumnLock() {
+        return redisTemplate.delete(COLUMNVIEWLOCK);
+    }
 
     /**
      * 设置有效时间

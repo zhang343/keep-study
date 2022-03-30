@@ -2,8 +2,10 @@ package com.kuang.bbs.utils;
 
 import com.kuang.springcloud.entity.RightRedis;
 import com.kuang.springcloud.utils.RedisUtils;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,6 +21,7 @@ public class ColumnUtils {
     //终身会员
     public static final long LOFELONGVIPMEMBER = 4;
 
+    public static final List<Long> vsibility = new ArrayList<>(Arrays.asList(EVERYONE , OWN , VIPMEMBER , YEARVIPMEMBER , LOFELONGVIPMEMBER));
 
     //对权益进行相应的排序
     private static List<RightRedis> getAllSortRight(){

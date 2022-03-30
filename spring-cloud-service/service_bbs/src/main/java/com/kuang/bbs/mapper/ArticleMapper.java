@@ -20,18 +20,12 @@ public interface ArticleMapper extends BaseMapper<Article> {
                            @Param("isExcellentArticle") Boolean isExcellentArticle ,
                            @Param("articleNameOrLabelName") String articleNameOrLabelName);
 
-    //查找置顶文章
-    IndexArticleVo findTopArticle();
-
     //条件分页查询文章
     List<IndexArticleVo> pageArticleCondition(@Param("current") Long current,
                                               @Param("limit") Long limit,
                                               @Param("categoryId") String categoryId,
                                               @Param("isExcellentArticle") Boolean isExcellentArticle,
                                               @Param("articleNameOrLabelName") String articleNameOrLabelName);
-
-    //查询出文章浏览量
-    List<Article> findArticleViewsList(@Param("articleIdList") List<String> articleIdList);
 
     //更新文章浏览量
     void updateArticleViews(@Param("articleUpdateList") List<Article> articleUpdateList);

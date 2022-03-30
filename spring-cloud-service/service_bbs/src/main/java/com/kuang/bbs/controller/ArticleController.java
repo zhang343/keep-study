@@ -18,16 +18,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- * 文章处理类
- */
+
 @RestController
 @RequestMapping("/bbs/article")
 @Slf4j
@@ -52,7 +46,8 @@ public class ArticleController {
     //举报文章接口
     @PostMapping("report")
     public R report(String articleId , String content){
-        log.info("举报文章,文章id:" + articleId + ",举报内容:" + content);
+        //进行数据校验，保证articleId和content不为空
+        //校验成功，开启异步执行举报
         if(!StringUtils.isEmpty(articleId) && !StringUtils.isEmpty(content)){
             reportService.report(articleId , content);
         }
@@ -60,55 +55,61 @@ public class ArticleController {
     }
 
 
-    //查询文章详细数据
+    //查询文章的详细数据，这里面会根据用户是否是文章创建者来进行相应的处理
     @GetMapping("detail")
     public R detail(String articleId , HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
-        log.info("查询文章详细数据,文章id:" + articleId + ",用户id:" + userId);
+        //校验数据，保证文章id不为空
         if(StringUtils.isEmpty(articleId)){
-            log.warn("有人非法查找文章,文章id:" + articleId);
-            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法查找文章");
+            throw new XiaoXiaException(ResultCode.ERROR , "该文章不存在，请不要查找");
         }
 
+        //查询文章详细数据
         ArticleVo articleVo = articleService.findArticleDetail(articleId , userId);
-        Future<List<String>> articleLabel = labelService.findArticleLabel(articleId);
+        //查询文章标签
+        List<String> articleLabel = labelService.findArticleLabel(articleId);
+        //查询文章评论数量
         Integer commentNumber = commentService.findArticleAllCommentNumber(articleId);
-
-        boolean isCollection = collectService.findUserIsCollection(articleId , userId);
-
-        //等待0.2秒取出结果
-        List<String> labelList = null;
-        try {
-            labelList = articleLabel.get(200 , TimeUnit.MILLISECONDS);
-        }catch(Exception e){
-            log.warn("查询文章标签异常,文章id:" + articleId);
-            labelList = new ArrayList<>();
+        //查询用户是否收藏了该文章
+        boolean isCollection = false;
+        if(userId != null){
+            isCollection = collectService.findUserIsCollection(articleId , userId);
         }
+
 
         //设置文章浏览量缓存
         articleService.setArticleViews(articleId , request.getRemoteAddr());
-        return R.ok().data("commentNumber" , commentNumber).data("isCollection" , isCollection).data("labelList" , labelList).data("article" , articleVo);
+
+
+        return R.ok().data("commentNumber" , commentNumber).
+                data("isCollection" , isCollection).
+                data("labelList" , articleLabel).
+                data("article" , articleVo);
     }
+
 
 
     //用户发布文章,指江湖文章的发布
     @PostMapping("create")
-    public R create(ArticleUpdateAndCreateVo articleUpdateAndCreateVo , String avatar , String nickname , List<String> labelList , HttpServletRequest request){
+    public R create(ArticleUpdateAndCreateVo articleUpdateAndCreateVo ,
+                    String avatar , String nickname , String[] labelList ,
+                    HttpServletRequest request){
+
         String userId = JwtUtils.getMemberIdByJwtToken(request);
-        log.info("用户发布文章,用户id:" + userId);
         if(userId == null){
-            log.warn("用户非法发布文章,用户id:" + null);
-            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
+            throw new XiaoXiaException(ResultCode.ERROR , "请先登录");
         }
         Article article = articleService.addArticle(articleUpdateAndCreateVo, avatar , nickname , userId);
         //删除用户缓存
         RedisUtils.delKey(userId);
         String articleId = article.getId();
         //插入文章标签
-        labelService.addArticleLabel(articleId , labelList);
-        //如果文章发布，向好友动态发送消息
-        if(article.getIsRelease() != null && article.getIsRelease()){
-            articleService.sendFrientFeed(articleId , userId);
+        labelService.addArticleLabel(articleId , Arrays.asList(labelList));
+
+        //发送到好友动态
+        Boolean isRelease = articleUpdateAndCreateVo.getIsRelease();
+        if(isRelease){
+            articleService.sendFrientFeed(article , userId);
         }
         return R.ok();
     }
@@ -117,38 +118,31 @@ public class ArticleController {
     //文章数据的查询,配合文章数据的修改
     @GetMapping("find")
     public R find(String articleId , HttpServletRequest request){
+        //校验数据
         String userId = JwtUtils.getMemberIdByJwtToken(request);
-        log.info("文章数据的查询,配合文章数据的修改,用户id:" + userId + ",文章id:" + articleId);
         if(userId == null || StringUtils.isEmpty(articleId)){
-            log.warn("有人非法文章数据的查询,配合文章数据的修改,用户id:" + userId + ",文章id:" + articleId);
-            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法查询");
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确查询");
         }
-        Future<List<String>> articleLabel = labelService.findArticleLabel(articleId);
+
         ArticleUpdateAndCreateVo article = articleService.findArticleByArticleIdAndUserId(articleId , userId);
-        //等待0.2秒取出结果
-        List<String> labelList = null;
-        try {
-            labelList = articleLabel.get(200 , TimeUnit.MILLISECONDS);
-        }catch(Exception e){
-            log.warn("查询文章标签异常,文章id:" + articleId);
-            labelList = new ArrayList<>();
-        }
+        List<String> labelList = labelService.findArticleLabel(articleId);
         return R.ok().data("labelList" , labelList).data("article" , article);
     }
 
     //用户修改文章
     @PostMapping("update")
-    public R update(ArticleUpdateAndCreateVo articleUpdateAndCreateVo , List<String> labelList  , HttpServletRequest request){
+    public R update(ArticleUpdateAndCreateVo articleUpdateAndCreateVo ,
+                    String[] labelList  , HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         String articleId = articleUpdateAndCreateVo.getId();
-        log.info("用户修改文章,用户id:" + userId + ",文章id:" + articleId);
+
+        //校验文章数据
         if(userId == null || StringUtils.isEmpty(articleId)){
-            log.warn("用户非法修改文章,用户id:" + userId + ",文章id:" + articleId);
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
         }
         articleService.updateArticle(articleUpdateAndCreateVo, userId);
         //插入文章标签
-        labelService.addArticleLabel(articleId , labelList);
+        labelService.addArticleLabel(articleId , Arrays.asList(labelList));
         return R.ok();
     }
 
@@ -156,9 +150,8 @@ public class ArticleController {
     @PostMapping("delete")
     public R delete(String articleId , HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
-        log.info("用户删除文章,用户id:" + userId + ",文章id:" + articleId);
+        //校验数据
         if(userId == null || StringUtils.isEmpty(articleId)){
-            log.warn("用户非法删除文章,用户id:" + userId + ",文章id:" + articleId);
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
         }
         articleService.deleteArticle(articleId , userId);
@@ -171,12 +164,13 @@ public class ArticleController {
     public R findUserArticle(@RequestParam(value = "current", required = false, defaultValue = "1") Long current ,
                              @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
                              HttpServletRequest request){
+        //校验数据
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         if(userId == null){
             throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
         }
         Integer total = articleService.findUserAllArticleNumber(userId);
-        List<UserArticleVo> userArticleVoList = articleService.findUserArticle(userId , current , limit);
+        List<UserArticleVo> userArticleVoList = articleService.findUserAllArticle(userId , current , limit);
         return R.ok().data("total" , total).data("userBbsArticleList" , userArticleVoList);
     }
 
@@ -185,6 +179,7 @@ public class ArticleController {
     public R findOtherUserArticle(@RequestParam(value = "current", required = false, defaultValue = "1") Long current ,
                                   @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
                                   String userId){
+        //校验数据
         if(StringUtils.isEmpty(userId)){
             throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
         }

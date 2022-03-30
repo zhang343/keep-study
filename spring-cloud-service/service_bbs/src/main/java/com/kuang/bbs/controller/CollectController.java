@@ -14,10 +14,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-03-23
- */
 @RestController
 @RequestMapping("/bbs/collect")
 public class CollectController {
@@ -29,6 +25,7 @@ public class CollectController {
     @PostMapping("addUserCollectArticle")
     public R addUserCollectArticle(HttpServletRequest request ,
                                    String articleId){
+        //校验数据
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         if(userId == null || StringUtils.isEmpty(articleId)){
             throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
@@ -41,6 +38,7 @@ public class CollectController {
     @PostMapping("deleteUserCollectArticle")
     public R deleteUserCollectArticle(HttpServletRequest request ,
                                       String articleId){
+        //校验数据
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         if(userId == null || StringUtils.isEmpty(articleId)){
             throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
@@ -55,9 +53,10 @@ public class CollectController {
     public R findUserCollectArticle(@RequestParam(value = "current", required = false, defaultValue = "1") Long current ,
                                     @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
                                     HttpServletRequest request){
+        //校验数据
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         if(userId == null){
-            throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
+            throw new XiaoXiaException(ResultCode.ERROR , "请先登录");
         }
         Integer total = collectService.findUserCollectArticleNumber(userId);
         List<CollectArticleVo> collectArticleVoList = collectService.findUserCollectArticle(userId , current , limit);
