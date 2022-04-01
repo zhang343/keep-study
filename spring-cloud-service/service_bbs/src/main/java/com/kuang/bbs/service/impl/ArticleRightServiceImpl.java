@@ -69,4 +69,15 @@ public class ArticleRightServiceImpl extends ServiceImpl<ArticleRightMapper, Art
             ucenterClient.add(10);
         }
     }
+
+    //插入文章权益，用户模块创建用户会用到
+    @Override
+    public void addArticleRight(String userId) {
+        ArticleRight articleRight = new ArticleRight();
+        articleRight.setUserId(userId);
+        int insert = baseMapper.insert(articleRight);
+        if(insert != 1){
+            throw new XiaoXiaException(ResultCode.ERROR , "创建失败");
+        }
+    }
 }

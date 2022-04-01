@@ -414,6 +414,12 @@ public class RedisUtils implements InitializingBean {
         return redisTemplate.opsForList().range(key, start, end);
     }
 
+
+    public static String increment(final String key){
+        Long increment = redisTemplate.opsForValue().increment(key);
+        return String.valueOf(increment);
+    }
+
     public void afterPropertiesSet() throws Exception {
         RedisUtils.redisTemplate = privateRedisTemplate;
     }

@@ -42,6 +42,11 @@ public class BbsClientFactory implements FallbackFactory<BbsClient> {
             public R findOtherUserColumnNumber(String userId) {
                 return R.error();
             }
+
+            @Override
+            public R addArticleRight(String userId) {
+                return R.error();
+            }
         };
     }
 }

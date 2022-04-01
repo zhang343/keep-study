@@ -17,7 +17,7 @@ public interface UserInfoService extends IService<UserInfo> {
     UserInfo getOpenIdMember(String openid);
 
     //创建一个用户
-    void insertMember(UserInfo member);
+    UserInfo insertMember(String openid , String nickname , String headimgurl);
 
     //给用户增加k币
     void addKCoin(Integer kCoinNumber, String userId);

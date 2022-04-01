@@ -3,6 +3,7 @@ package com.kuang.ucenter.client;
 import com.kuang.springcloud.utils.R;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -29,9 +30,13 @@ public interface BbsClient {
 
     //查看用户专栏数量
     @GetMapping("/inside/column/findUserColumnNumber")
-    R findUserColumnNumber(String userId);
+    R findUserColumnNumber(@RequestParam("userId") String userId);
 
     //查看其他用户专栏数量
     @GetMapping("/inside/column/findOtherUserColumnNumber")
-    R findOtherUserColumnNumber(String userId);
+    R findOtherUserColumnNumber(@RequestParam("userId") String userId);
+
+    //插入文章权益，用户模块创建用户会用到
+    @PostMapping("/inside/aright/addArticleRight")
+    R addArticleRight(@RequestParam("userId") String userId);
 }

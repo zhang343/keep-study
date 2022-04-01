@@ -14,7 +14,7 @@ import java.util.Date;
  * token生成器
  */
 public class JwtUtils {
-    //token过期时间,这里过期时间是一天
+    //token过期时间,这里过期时间是一天天
     public static final long EXPIRE = 1000 * 60 * 60 * 24;
     //秘钥，这里的密钥是一个UUID
     public static final String APP_SECRET = "187ade78070f496386f1f778f018f075";

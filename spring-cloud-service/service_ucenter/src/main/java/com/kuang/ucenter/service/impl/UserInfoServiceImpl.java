@@ -8,12 +8,16 @@ import com.kuang.springcloud.utils.*;
 import com.kuang.ucenter.client.BbsClient;
 import com.kuang.ucenter.client.CourseClient;
 import com.kuang.ucenter.client.VipClient;
+import com.kuang.ucenter.entity.UserHomepage;
 import com.kuang.ucenter.entity.UserInfo;
 import com.kuang.ucenter.entity.vo.*;
+import com.kuang.ucenter.mapper.UserHomepageMapper;
 import com.kuang.ucenter.mapper.UserInfoMapper;
 import com.kuang.ucenter.service.UserAttentionService;
+import com.kuang.ucenter.service.UserHomepageService;
 import com.kuang.ucenter.service.UserInfoService;
 import com.kuang.ucenter.service.UserTalkService;
+import com.kuang.ucenter.utils.AccountUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
@@ -26,13 +30,11 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-05
- */
+
 @Service
 @Slf4j
 public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> implements UserInfoService {
@@ -52,24 +54,45 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Resource
     private UserTalkService talkService;
 
+    @Resource
+    private UserHomepageMapper userHomepageMapper;
+
     //根据微信id查询用户
     @Override
     public UserInfo getOpenIdMember(String openid) {
-        log.info("根据openid查询用户：" + openid);
         QueryWrapper<UserInfo> wrapper = new QueryWrapper<>();
         wrapper.eq("openid" , openid);
         return baseMapper.selectOne(wrapper);
     }
 
     //创建一个用户
+    @Transactional
     @Override
-    public void insertMember(UserInfo member) {
-        log.info("创建一个用户，该用户openid：" + member.getOpenid());
-        int insert = baseMapper.insert(member);
+    public UserInfo insertMember(String openid , String nickname , String headimgurl) {
+        //插入用户
+        UserInfo userInfo = new UserInfo();
+        userInfo.setOpenid(openid);
+        userInfo.setNickname(nickname);
+        userInfo.setAvatar(headimgurl);
+        userInfo.setAccount(AccountUtils.getAccount());
+        int insert = baseMapper.insert(userInfo);
         if(insert != 1){
-            log.info("创建一个用户失败，该用户openid：" + member.getOpenid());
-            throw new XiaoXiaException(ResultCode.ERROR , "创建用户失败");
+            throw new XiaoXiaException(ResultCode.ERROR , "登录失败");
         }
+        //插入用户主页内容
+        UserHomepage userHomepage = new UserHomepage();
+        userHomepage.setId(userInfo.getId());
+        userHomepage.setContent("");
+        int insert1 = userHomepageMapper.insert(userHomepage);
+        if(insert1 != 1){
+            throw new XiaoXiaException(ResultCode.ERROR , "登录失败");
+        }
+        //插入文章权益
+        R r = bbsClient.addArticleRight(userInfo.getId());
+        if(!r.getSuccess()){
+            throw new XiaoXiaException(ResultCode.ERROR , "登录失败");
+        }
+        return userInfo;
     }
 
     //查询系统用户数量

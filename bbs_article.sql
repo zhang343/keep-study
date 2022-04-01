@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50536
 File Encoding         : 65001
 
-Date: 2022-04-01 12:13:41
+Date: 2022-04-01 17:10:48
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -73,6 +73,8 @@ CREATE TABLE `bbs_article_right` (
 -- ----------------------------
 INSERT INTO `bbs_article_right` VALUES ('1497847715374063618', '1489885385067622401', '40', '4', '5', '2022-02-27 16:14:58', '2022-03-28 15:28:53');
 INSERT INTO `bbs_article_right` VALUES ('1497847715483115521', '1496388556204023809', '0', '0', '1', '2022-02-27 16:14:58', '2022-02-27 16:14:58');
+INSERT INTO `bbs_article_right` VALUES ('1509774813873397761', '1509774811381956610', '0', '0', '1', '2022-04-01 14:09:00', '2022-04-01 14:09:00');
+INSERT INTO `bbs_article_right` VALUES ('1509818166606299137', '1509818161615179778', '0', '0', '1', '2022-04-01 17:01:16', '2022-04-01 17:01:16');
 
 -- ----------------------------
 -- Table structure for `bbs_category`
@@ -763,6 +765,8 @@ CREATE TABLE `user_homepage` (
 -- Records of user_homepage
 -- ----------------------------
 INSERT INTO `user_homepage` VALUES ('1489885385067622401', '你的斑驳，与众不同', '2', '2022-03-07 12:51:21', '2022-03-22 16:02:53');
+INSERT INTO `user_homepage` VALUES ('1509774811381956610', 'TA很懒,什么都没写...', '1', '2022-04-01 14:08:59', '2022-04-01 14:08:59');
+INSERT INTO `user_homepage` VALUES ('1509818161615179778', '', '1', '2022-04-01 17:01:15', '2022-04-01 17:01:15');
 
 -- ----------------------------
 -- Table structure for `user_info`
@@ -771,17 +775,17 @@ DROP TABLE IF EXISTS `user_info`;
 CREATE TABLE `user_info` (
   `id` char(19) NOT NULL COMMENT '用户id',
   `openid` varchar(128) CHARACTER SET utf8 NOT NULL COMMENT '微信openid',
-  `account` char(11) CHARACTER SET utf8 DEFAULT NULL COMMENT '用户账号',
-  `password` varchar(255) CHARACTER SET utf8 DEFAULT NULL COMMENT '用户密码',
+  `account` char(8) CHARACTER SET utf8 DEFAULT NULL COMMENT '用户账号',
+  `password` varchar(255) CHARACTER SET utf8 DEFAULT 'e10adc3949ba59abbe56e057f20f883e' COMMENT '用户密码',
   `nickname` varchar(50) CHARACTER SET utf8 NOT NULL COMMENT '用户昵称',
   `avatar` varchar(255) CHARACTER SET utf8 NOT NULL COMMENT '用户头像',
   `sex` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '性别 0 女，1 男',
   `experience` int(6) NOT NULL DEFAULT '0' COMMENT '用户等级经验',
   `sign` varchar(100) CHARACTER SET utf8 NOT NULL DEFAULT 'TA很懒,什么都没写...' COMMENT '用户签名',
-  `bg_img` varchar(255) CHARACTER SET utf8 NOT NULL COMMENT '用户背景图片',
+  `bg_img` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/e1c0c724897d42eeb0c826f2e3757507.jpg' COMMENT '用户背景图片',
   `money` int(6) NOT NULL DEFAULT '0' COMMENT '用户k币数量',
   `address` varchar(50) CHARACTER SET utf8 NOT NULL DEFAULT '中国' COMMENT '用户地址',
-  `email` varchar(30) CHARACTER SET utf8 DEFAULT NULL COMMENT '用户邮箱',
+  `email` varchar(30) CHARACTER SET utf8 DEFAULT '' COMMENT '用户邮箱',
   `is_disabled` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否禁用 0（false）未禁用，  1（true）禁用',
   `version` bigint(20) NOT NULL DEFAULT '1' COMMENT '乐观锁',
   `gmt_create` datetime NOT NULL COMMENT '创建时间',
@@ -793,8 +797,10 @@ CREATE TABLE `user_info` (
 -- ----------------------------
 -- Records of user_info
 -- ----------------------------
-INSERT INTO `user_info` VALUES ('1489885385067622401', 'o3_SC5zIKO9GhTCthrP55dkZJfjw', '18154046678', 'e10adc3949ba59abbe56e057f20f883e', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '0', '200', 'TA很懒,什么都没写...', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/d27cfbc9edb0472e95a36bf58f19e462.jpg', '20970', '中国', '2980244187@qq.com', '0', '41', '2022-02-05 16:55:31', '2022-03-28 15:28:53', '0');
-INSERT INTO `user_info` VALUES ('1496388556204023809', 'o3_SC5-_lDImPRD6qzi9Y56o-RDE', '00000002', 'e10adc3949ba59abbe56e057f20f883e', '流逝', 'https://thirdwx.qlogo.cn/mmopen/vi_32/iaPp7ClZOGcpaPLXQeNSMPW3EWuiaJCxibjgic6gsWibBo8eibIRd89Jg0g5xjTe3ulc8crzoGLia3lQeKTGUxeAxsGMQ/132', '0', '0', 'TA很懒,什么都没写...', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/e1c0c724897d42eeb0c826f2e3757507.jpg', '96820', '中国', '', '0', '3', '2022-02-23 15:36:48', '2022-03-19 14:51:54', '0');
+INSERT INTO `user_info` VALUES ('1489885385067622401', 'o3_SC5zIKO9GhTCthrP55dkZJfjw', '23406771', 'e10adc3949ba59abbe56e057f20f883e', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '0', '200', 'TA很懒,什么都没写...', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/d27cfbc9edb0472e95a36bf58f19e462.jpg', '20970', '中国', '2980244187@qq.com', '0', '41', '2022-02-05 16:55:31', '2022-03-28 15:28:53', '0');
+INSERT INTO `user_info` VALUES ('1496388556204023809', 'o3_SC5-_lDImPRD6qzi9Y56o-RDE', '23406772', 'e10adc3949ba59abbe56e057f20f883e', '流逝', 'https://thirdwx.qlogo.cn/mmopen/vi_32/iaPp7ClZOGcpaPLXQeNSMPW3EWuiaJCxibjgic6gsWibBo8eibIRd89Jg0g5xjTe3ulc8crzoGLia3lQeKTGUxeAxsGMQ/132', '0', '0', 'TA很懒,什么都没写...', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/e1c0c724897d42eeb0c826f2e3757507.jpg', '96820', '中国', '', '0', '3', '2022-02-23 15:36:48', '2022-03-19 14:51:54', '0');
+INSERT INTO `user_info` VALUES ('1509774811381956610', 'o3_SC5w0acZkFZtGHWWZvRZTuJVw', '23406773', 'e10adc3949ba59abbe56e057f20f883e', '山河', 'https://thirdwx.qlogo.cn/mmopen/vi_32/PiajxSqBRaEJuos3FaicAWd9mCibrYkWUgCWfmdvNzZ3Sl9AnTucicDSwmfL2t2lYx8R1XLCeKy4y8icAibGn4YXdHfA/132', '0', '0', 'TA很懒,什么都没写...', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/e1c0c724897d42eeb0c826f2e3757507.jpg', '0', '中国', null, '0', '1', '2022-04-01 14:08:59', '2022-04-01 14:08:59', '0');
+INSERT INTO `user_info` VALUES ('1509818161615179778', 'o3_SC53giDguPZZMgvAwDQSVAPNk', '23406774', 'e10adc3949ba59abbe56e057f20f883e', '杨泽宇', 'https://thirdwx.qlogo.cn/mmopen/vi_32/sQxI3ZHMXLAL1S3zyef0SwDvkeLRrxK94L2jLxFxaLIytk7bB5v92RBVTicgia6K0RichKM4GoDD3Mo1TSlQicG81g/132', '0', '0', 'TA很懒,什么都没写...', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/e1c0c724897d42eeb0c826f2e3757507.jpg', '0', '中国', '', '0', '1', '2022-04-01 17:01:15', '2022-04-01 17:01:15', '0');
 
 -- ----------------------------
 -- Table structure for `user_talk`

@@ -1,4 +1,4 @@
-package com.kuang.vod.controller;
+package com.kuang.vod.controller.inside;
 
 
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;

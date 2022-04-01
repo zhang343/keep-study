@@ -22,13 +22,13 @@ public class CacheArticleServiceImpl implements CacheArticleService {
             labelList = new ArrayList<>(labelSet);
             articleCacheVo.setLabelList(labelList);
         }
-        RedisUtils.setValueTimeout(userId , articleCacheVo , 30 * 60);
+        RedisUtils.setValueTimeout(userId + "article" , articleCacheVo , 30 * 60);
     }
 
     //查询文章缓存
     @Override
     public ArticleCacheVo findArticleCache(String userId) {
-        Object value = RedisUtils.getValue(userId);
+        Object value = RedisUtils.getValue(userId + "article");
         if(value == null){
             return null;
         }

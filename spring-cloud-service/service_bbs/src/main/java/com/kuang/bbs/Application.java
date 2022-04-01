@@ -25,9 +25,9 @@ public class Application implements CommandLineRunner {
         springApplication.run(args);
     }
 
+
     //做程序启动之后工作
     @Override
     public void run(String... args) throws Exception {
-
     }
 }

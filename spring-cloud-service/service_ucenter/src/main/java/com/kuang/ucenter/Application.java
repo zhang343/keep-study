@@ -6,11 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- * @author XiaoZhang
- * @date 2022/2/5 9:37
- * 启动类
- */
+
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
@@ -28,6 +24,5 @@ public class Application implements CommandLineRunner {
     //做程序启动之后工作
     @Override
     public void run(String... args) throws Exception {
-
     }
 }

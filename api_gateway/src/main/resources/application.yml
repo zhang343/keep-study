@@ -15,49 +15,49 @@ spring:
           #负载均衡调用service-bbs服务
           uri: lb://service-bbs
           predicates:
-            - Path=/bbs/**
+            - Path=/bbs/**,/admin/bbs/**
 
         - id: service-course
           #负载均衡调用service-course服务
           uri: lb://service-course
           predicates:
-            - Path=/cms/**
+            - Path=/cms/**,/admin/cms/**
 
         - id: service-download
           #负载均衡调用service-download服务
           uri: lb://service-download
           predicates:
-            - Path=/dtm/**
+            - Path=/dtm/**,/admin/dtm/**
 
         - id: service-message
           #负载均衡调用service-message服务
           uri: lb://service-message
           predicates:
-            - Path=/message/**
+            - Path=/message/**,/admin/message/**
 
         - id: service-oss
           #负载均衡调用service-oss服务
           uri: lb://service-oss
           predicates:
-            - Path=/oss/**
+            - Path=/oss/**,/admin/oss/**
 
         - id: service-ucenter
           #负载均衡调用service-ucenter服务
           uri: lb://service-ucenter
           predicates:
-            - Path=/user/**
+            - Path=/user/**,/admin/user/**
 
         - id: service-vip
           #负载均衡调用service-vip服务
           uri: lb://service-vip
           predicates:
-            - Path=/vm/**
+            - Path=/vm/**,/admin/vm/**
 
         - id: service-vod
           #负载均衡调用service-vod服务
           uri: lb://service-vod
           predicates:
-            - Path=/vod/**
+            - Path=/vod/**,/admin/vod/**
 
 
     nacos:

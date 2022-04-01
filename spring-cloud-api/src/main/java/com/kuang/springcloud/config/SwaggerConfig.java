@@ -11,11 +11,7 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-/**
- * @author XiaoXia
- * @date 2021/12/30 0:58
- * 前端接口文档
- */
+
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
@@ -33,6 +29,8 @@ public class SwaggerConfig {
                 .paths(Predicates.not(PathSelectors.regex("/error")))
                 .paths(Predicates.not(PathSelectors.regex("/actuator/.*")))
                 .paths(Predicates.not(PathSelectors.regex("/actuator")))
+                .paths(Predicates.not(PathSelectors.regex("/inside/.*")))
+                .paths(Predicates.not(PathSelectors.regex("/KCoin/.*")))
                 .build();
     }
 
