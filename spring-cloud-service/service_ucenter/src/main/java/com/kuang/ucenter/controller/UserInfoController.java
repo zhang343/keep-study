@@ -5,10 +5,7 @@ import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.JwtUtils;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
-import com.kuang.ucenter.entity.vo.MyUserInfoVo;
-import com.kuang.ucenter.entity.vo.UserDateVo;
-import com.kuang.ucenter.entity.vo.UserDetailVo;
-import com.kuang.ucenter.entity.vo.UserSetDataVo;
+import com.kuang.ucenter.entity.vo.*;
 import com.kuang.ucenter.service.UserInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
@@ -36,7 +33,6 @@ public class UserInfoController {
     //用户账号密码登录
     @PostMapping("login")
     public R login(String loginAct , String loginPwd){
-        log.info("用户登录,账号:" + loginAct + ",密码:" + loginPwd);
         if(StringUtils.isEmpty(loginAct) || StringUtils.isEmpty(loginPwd)){
             throw new XiaoXiaException(ResultCode.ERROR , "登录失败");
         }
@@ -79,6 +75,18 @@ public class UserInfoController {
         }
         UserDetailVo userDetailVo = userInfoService.findUserHomePage(userId);
         return R.ok().data("userDetail" , userDetailVo);
+    }
+
+    //查询右下边框内容
+    @GetMapping("findLowerRightBox")
+    public R findLowerRightBox(HttpServletRequest request){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        if(userId == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "请先登录");
+        }
+
+        UserLowerRightBox userLowerRightBox = userInfoService.findLowerRightBox(userId);
+        return R.ok().data("userLowerRightBox" , userLowerRightBox);
     }
 
 

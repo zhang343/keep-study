@@ -31,7 +31,6 @@ public class RightsServiceImpl extends ServiceImpl<RightsMapper, Rights> impleme
     @Cacheable(value = "vipRightList")
     @Override
     public List<RightsVo> findVipRight() {
-        log.info("查询出vip权益,非普通会员权益,即价格不为0");
         return baseMapper.findVipRight();
     }
 
@@ -39,7 +38,6 @@ public class RightsServiceImpl extends ServiceImpl<RightsMapper, Rights> impleme
     //查询出指定用户权益
     @Override
     public RightRedis findRightByUserId(String userId) {
-        log.info("查询指定用户权益,用户id:" + userId);
         return VipUtils.getUserRightRedis(userId,
                 cacheService.CacheAllMembersRedisTreeMap(),
                 cacheService.CacheAllRightRedisTreeMap(),

@@ -18,10 +18,7 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 @RestController
 @RequestMapping("/message/course")
 @Slf4j
@@ -36,13 +33,14 @@ public class InfoCourseController {
                      @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
                      HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
-        log.info("查询课程通知消息,用户id:" + userId);
         if(userId == null){
-            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法查询");
+            throw new XiaoXiaException(ResultCode.ERROR , "请先登录");
         }
         //查询出课程id
         List<String> courseIdList = courseService.findUserNewsId(current, limit, userId);
+        //远程调用获取具体的详细课程列表
         Future<Object> messageCourseVos = courseService.findMessageCourseVos(courseIdList);
+        //获取用户消息数量
         Integer total = courseService.findUserNewsNumber(userId);
         courseService.setCourseRead(courseIdList , userId);
 

@@ -2,7 +2,6 @@ package com.kuang.course.controller;
 
 
 import com.kuang.course.client.VodClient;
-import com.kuang.course.service.CmsCourseService;
 import com.kuang.course.service.CmsStudyService;
 import com.kuang.course.service.CmsVideoService;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
@@ -20,11 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-08
- * 小节处理类
- */
+
 @RestController
 @RequestMapping("/cms/video")
 @Slf4j
@@ -42,13 +37,14 @@ public class CmsVideoController {
     //查找用户是否可以播放指定视频，并将视频播放凭证返回
     @GetMapping("getPlayAuth")
     public R findUserAbility(String id , String videoSourceId , HttpServletRequest request){
+        //校验数据
         String userId = JwtUtils.getMemberIdByJwtToken(request);
-        log.info("查询用户是否可以播放课程下面的视频不,视频id:" + id + ",用户id:" + userId);
         if(StringUtils.isEmpty(id) || StringUtils.isEmpty(videoSourceId) || userId == null){
-            log.warn("有人进行非法查询是否可以播放指定视频,");
-            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
         }
+        //判断是否可以播放视频
         Future<String> userAbility = videoService.findUserAbility(id, videoSourceId , userId);
+        //获取播放凭证
         R playAuthR = vodClient.getPlayAuth(videoSourceId);
         if(!playAuthR.getSuccess()){
             throw new XiaoXiaException(ResultCode.ERROR , "播放视频失败");

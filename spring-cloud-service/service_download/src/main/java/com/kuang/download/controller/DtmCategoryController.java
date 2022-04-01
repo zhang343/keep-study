@@ -12,10 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-05
- */
+
 @RestController
 @RequestMapping("/dtm/category")
 @Slf4j
@@ -27,7 +24,6 @@ public class DtmCategoryController {
     //查出所有分类
     @GetMapping("findAllCategory")
     public R findAllCategory(){
-        log.info("查询所有文件分类");
         List<DtmCategoryVo> dtmCategoryList = dtmCategoryService.findAll();
         return R.ok().data("categoryList" , dtmCategoryList);
     }

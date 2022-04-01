@@ -111,7 +111,7 @@ public class ArticleController {
         if(isRelease){
             articleService.sendFrientFeed(article , userId);
         }
-        return R.ok();
+        return R.ok().data("articleId" , articleId);
     }
 
 

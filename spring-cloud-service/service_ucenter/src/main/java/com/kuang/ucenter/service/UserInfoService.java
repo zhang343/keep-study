@@ -31,9 +31,6 @@ public interface UserInfoService extends IService<UserInfo> {
     //用户登录之后查询小方框内容
     MyUserInfoVo findUserSmallBoxContent(String userId);
 
-    //查询用户主页的内容,这里查自己
-    UserDetailVo findUserHomePage(String userId);
-
     //用户签到
     int userSignIn(String userId);
 
@@ -61,6 +58,13 @@ public interface UserInfoService extends IService<UserInfo> {
     //根据条件查找用户
     List<UserSearchVo> findUserByAccountOrNickname(String accountOrNickname , Long current , Long limit);
 
+    //查询用户主页的内容,这里查自己
+    UserDetailVo findUserHomePage(String userId);
+
+
     //查询其他用户主页内容
     OtherUserDetailVo findOtherUserHomePage(String userId);
+
+    //查询右下边框内容
+    UserLowerRightBox findLowerRightBox(String userId);
 }

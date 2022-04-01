@@ -36,9 +36,8 @@ public class InfoIndexController {
     @GetMapping("findAllNumber")
     public R findAllNumber(HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
-        log.info("查询用户各种未读消息数量,用户id:" + userId);
         if(userId == null){
-            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法查询");
+            throw new XiaoXiaException(ResultCode.ERROR , "请先登录");
         }
         //这里要查5个表，速度较慢，前三个表异步查询，后两张表不异步，等待前面异步查询
         MessageVo messageVo = new MessageVo();

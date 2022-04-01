@@ -33,14 +33,12 @@ public class OssServiceImpl implements OssService {
     //上传图片接口
     @Override
     public String uploadPicture(MultipartFile picture) {
-        log.info("上传图片前相关阿里云数据准备");
         String endpoint = ConstantPropertiesUtils.PUBLIC_END_POINT;
         String accessKeyId = ConstantPropertiesUtils.ACCESS_KEY_ID;
         String accessKeySecret = ConstantPropertiesUtils.ACCESS_KEY_SECRET;
         String bucketName = ConstantPropertiesUtils.PUBLIC_BUCKET_NAME;
         String objectName = upload(picture, endpoint, accessKeyId, accessKeySecret, bucketName);
         String url = "https://" + bucketName + "." + endpoint + "/" + objectName;
-        log.info("图片上传成功,浏览器访问地址为:" + url);
         return url;
     }
 
@@ -50,7 +48,6 @@ public class OssServiceImpl implements OssService {
                           String accessKeyId ,
                           String accessKeySecret ,
                           String bucketName){
-        log.info("开始进行文件上传到阿里云");
         //创建上传文件到阿里云Oss对象
         OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
         String dir = new DateTime().toString("yyyy/MM/dd");
@@ -59,17 +56,13 @@ public class OssServiceImpl implements OssService {
         String suffix = FileUtils.getFileSuffix(originalFilename);
         String fileName = UUIDUtil.getUUID() + "." + suffix;
         String objectName = dir + "/" + fileName;
-        log.info("上传文件存储在Oss里面的地址:" + objectName);
         InputStream inputStream = null;
         try {
-            log.info("尝试获取文件数据流:" + fileName);
             inputStream = file.getInputStream();
         } catch(IOException e) {
-            log.error("获取文件数据流失败:" + fileName);
             throw new XiaoXiaException(ResultCode.ERROR, "上传文件失败");
         }
         //上传文件
-        log.info("上传文件并关闭Oss对象");
         ossClient.putObject(bucketName, objectName, inputStream);
         //关闭Oss对象
         ossClient.shutdown();
@@ -80,20 +73,17 @@ public class OssServiceImpl implements OssService {
     @Override
     public String uploadFile(MultipartFile file) {
         //设置上传参数
-        log.info("上传图片前相关阿里云数据准备");
         String endpoint = ConstantPropertiesUtils.PRIVATE_END_POINT;
         String accessKeyId = ConstantPropertiesUtils.ACCESS_KEY_ID;
         String accessKeySecret = ConstantPropertiesUtils.ACCESS_KEY_SECRET;
         String bucketName = ConstantPropertiesUtils.PRIVATE_BUCKET_NAME;
         String objectName = upload(file, endpoint, accessKeyId, accessKeySecret, bucketName);
-        log.info("上传文件到阿里云成功,文件存储地址:" + objectName);
         return objectName;
     }
 
     //下载文件
     @Override
     public void downloadFile(String fileSourceId , String name , HttpServletResponse response) {
-        log.info("开始下载文件,文件名(阿里云):"  + fileSourceId);
         String endpoint = ConstantPropertiesUtils.PRIVATE_END_POINT;
         String accessKeyId = ConstantPropertiesUtils.ACCESS_KEY_ID;
         String accessKeySecret = ConstantPropertiesUtils.ACCESS_KEY_SECRET;
@@ -107,32 +97,26 @@ public class OssServiceImpl implements OssService {
         String suffix = FileUtils.getFileSuffix(fileSourceId);
         name = name + "." + suffix;
         try {
-            log.info("对文件名进行重编码,utf-8 --> ISO8859-1");
             name = new String(name.getBytes(StandardCharsets.UTF_8) , "ISO8859-1");
         } catch(UnsupportedEncodingException e) {
-            log.warn("对文件名进行重编码,utf-8 --> ISO8859-1失败,使用uuid生成名字");
             name = UUIDUtil.getUUID() + "." + suffix;
         }
         response.setHeader("content-disposition" , "attachment;filename=" + name);
 
         OutputStream outputStream = null;
         try {
-            log.info("获取response输出流OutputStream");
             outputStream = response.getOutputStream();
         } catch(IOException e) {
-            log.error("获取response输出流OutputStream失败");
             throw new XiaoXiaException(ResultCode.ERROR , "下载文件失败");
         }
 
         byte[] bytes = new byte[1024];
         int len = -1;
         try {
-            log.info("进行文件数据读出和写入");
             while((len = inputStream.read(bytes)) != -1){
                 outputStream.write(bytes , 0 , len);
             }
         }catch(IOException e){
-            log.error("进行文件数据读出和写入出现错误");
             throw new XiaoXiaException(ResultCode.ERROR , "下载文件失败");
         }
 
@@ -146,7 +130,6 @@ public class OssServiceImpl implements OssService {
                 log.warn("文件读入流关闭失败");
             }
         }
-        log.info("关闭Oss对象");
         ossClient.shutdown();
     }
 

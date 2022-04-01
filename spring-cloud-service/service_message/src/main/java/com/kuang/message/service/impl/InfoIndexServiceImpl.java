@@ -30,7 +30,6 @@ public class InfoIndexServiceImpl implements InfoIndexService {
     @Async
     @Override
     public Future<MessageVo> findMFR(MessageVo messageVo, String userId) {
-        log.info("查询我的消息、好友动态、回复我的");
         Integer myNewsNumber = myNewsService.findUserUnreadNumber(userId);
         Integer friendFeedNumber = friendFeedService.findUserUnreadNumber(userId);
         Integer replyNumber = replyMeService.findUserUnreadNumber(userId);

@@ -16,10 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-03-23
- */
+
 @RestController
 @RequestMapping("/cms/study")
 public class CmsStudyController {
@@ -32,6 +29,7 @@ public class CmsStudyController {
     public R findUserStudy(@RequestParam(value = "current", required = false, defaultValue = "1") Long current ,
                            @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
                            String userId){
+        //校验数据
         if(StringUtils.isEmpty(userId)){
             throw new XiaoXiaException(ResultCode.ERROR , "请正确查询");
         }

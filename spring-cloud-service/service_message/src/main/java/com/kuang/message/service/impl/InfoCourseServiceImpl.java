@@ -52,19 +52,13 @@ public class InfoCourseServiceImpl extends ServiceImpl<InfoCourseMapper, InfoCou
     @Override
     public List<String> findUserNewsId(Long current, Long limit, String userId) {
         current = (current - 1) * limit;
-        List<InfoCourse> infoCourseList = baseMapper.findUserCourseList(current , limit , userId);
-        List<String> courseIdList = new ArrayList<>();
-        for(InfoCourse infoCourse : infoCourseList){
-            courseIdList.add(infoCourse.getCourseId());
-        }
-        return courseIdList;
+        return baseMapper.findUserCourseList(current , limit , userId);
     }
 
     //让课程通知已读
     @Async
     @Override
     public void setCourseRead(List<String> courseIdList, String userId) {
-        log.info("课程通知消息已读");
         if(courseIdList.size() != 0){
             baseMapper.setCourseRead(courseIdList , userId);
         }

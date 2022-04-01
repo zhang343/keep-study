@@ -10,10 +10,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-08
- */
+
 public interface CmsCourseService extends IService<CmsCourse> {
 
     //通过二级分类id查找课程
@@ -36,4 +33,7 @@ public interface CmsCourseService extends IService<CmsCourse> {
 
     //查找课程播放量
     List<CmsCourse> findCourseViewsList(List<String> courseIdList);
+
+    //用户购买课程成功，发送消息到rabbitmq
+    void sendMyNews(String userId, String courseId, String title);
 }

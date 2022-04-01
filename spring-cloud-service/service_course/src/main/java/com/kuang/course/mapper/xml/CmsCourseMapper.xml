@@ -10,7 +10,8 @@
     <select id="findCourseVo" resultType="com.kuang.course.entity.vo.CourseVo" >
         select course.id , course.title , course.description , course.price , course.total_length , course.views ,
                details.overview , details.teacher , details.suitable_people , details.course_arrange , details.course_feedback
-        from cms_course as course left outer join cms_details as details on course.id = details.course_id where course.id = #{courseId}
+        from cms_course as course left outer join cms_details as details on course.id = details.course_id
+        where course.id = #{courseId}
     </select>
 
     <select id="findCourseOrderByPrice" resultType="com.kuang.springcloud.entity.BbsCourseVo" >
@@ -24,13 +25,6 @@
             where id = #{course.id}
         </foreach>
     </update>
-
-    <select id="findCourseViewsList" resultType="com.kuang.course.entity.CmsCourse" >
-        select id , views from cms_course where id in
-        <foreach collection="courseIdList" item="courseId" open="(" close=")" separator="," >
-            #{courseId}
-        </foreach>
-    </select>
 
     <select id="findMessageCourseVo" resultType="com.kuang.springcloud.entity.MessageCourseVo" >
         select course.id as courseId, course.cover , course.title , course.description ,

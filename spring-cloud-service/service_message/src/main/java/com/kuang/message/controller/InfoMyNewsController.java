@@ -20,10 +20,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 @RestController
 @RequestMapping("/message/mynews")
 @Slf4j
@@ -38,7 +35,6 @@ public class InfoMyNewsController {
                      @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
                      HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
-        log.info("查询用户我的消息,用户id:" + userId);
         if(userId == null){
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法查询");
         }
@@ -52,7 +48,6 @@ public class InfoMyNewsController {
     @PostMapping("delete")
     public R delete(String id , HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
-        log.info("删除用户我的消息,用户id:" + userId);
         if(userId == null || StringUtils.isEmpty(id)){
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法查询");
         }

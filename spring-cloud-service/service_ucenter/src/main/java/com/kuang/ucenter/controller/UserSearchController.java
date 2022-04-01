@@ -33,7 +33,7 @@ public class UserSearchController {
                                          @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
                                          String accountOrNickname){
         if(StringUtils.isEmpty(accountOrNickname)) {
-            throw new XiaoXiaException(ResultCode.ERROR, "请输入");
+            throw new XiaoXiaException(ResultCode.ERROR, "请正确操作");
         }
         Integer total = userInfoService.findUserByAccountOrNicknameNumber(accountOrNickname);
         List<UserSearchVo> userSearchVoList = userInfoService.findUserByAccountOrNickname(accountOrNickname , current , limit);

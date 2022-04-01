@@ -52,33 +52,33 @@ public class InfoFriendFeedServiceImpl extends ServiceImpl<InfoFriendFeedMapper,
     //查询好友动态消息
     @Override
     public List<FriendFeedVo> findUserNews(Long current, Long limit, String userId) {
+        //查出数据
         current = (current - 1) * limit;
         List<FriendFeedVo> userNews = baseMapper.findUserNews(current, limit, userId);
         if(userNews == null || userNews.size() == 0){
             return userNews;
         }
 
-        List<String> userIdList = new ArrayList<>();
+        //设置vip标识
+        VipUtils.setVipLevel(userNews , userNews.get(0) , "setVipLevel" , "getAttationUserId");
+
+
+        //获取文章idList
         List<String> articleIdList = new ArrayList<>();
         for(FriendFeedVo friendFeedVo : userNews){
-            userIdList.add(friendFeedVo.getAttationUserId());
             articleIdList.add(friendFeedVo.getArticleId());
         }
-
-        Map<String , String> userVipLevel = VipUtils.getUserVipLevel(userIdList);
-        if(userVipLevel == null){
-            userVipLevel = new HashMap<>();
-        }
+        //远程调用获取文章浏览量和设置文章浏览量
         R articleViewsR = bbsClient.findArticleViews(articleIdList);
-        Map<String , Object> views = articleViewsR.getData();
-        for(FriendFeedVo friendFeedVo : userNews){
-            friendFeedVo.setVipLevel(userVipLevel.get(friendFeedVo.getAttationUserId()));
-            Object o = views.get(friendFeedVo.getArticleId());
-            if(o != null){
-                friendFeedVo.setViews((Integer) o);
+        if(articleViewsR.getSuccess()){
+            Map<String , Object> views = articleViewsR.getData();
+            for(FriendFeedVo friendFeedVo : userNews){
+                Object o = views.get(friendFeedVo.getArticleId());
+                if(o != null){
+                    friendFeedVo.setViews((Integer) o);
+                }
             }
         }
-
         return userNews;
     }
 
@@ -86,7 +86,6 @@ public class InfoFriendFeedServiceImpl extends ServiceImpl<InfoFriendFeedMapper,
     @Async
     @Override
     public void setFriendFeedRead(List<FriendFeedVo> friendFeedVos) {
-        log.info("好友动态消息已读");
         List<String> idList = new ArrayList<>();
         for(FriendFeedVo friendFeedVo : friendFeedVos){
             idList.add(friendFeedVo.getId());

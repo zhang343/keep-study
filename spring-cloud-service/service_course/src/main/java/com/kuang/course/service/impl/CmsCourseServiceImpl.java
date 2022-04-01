@@ -1,5 +1,6 @@
 package com.kuang.course.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kuang.course.client.UcenterClient;
@@ -14,6 +15,7 @@ import com.kuang.course.service.CmsBillService;
 import com.kuang.course.service.CmsCourseService;
 import com.kuang.course.service.CmsVideoService;
 import com.kuang.springcloud.entity.BbsCourseVo;
+import com.kuang.springcloud.entity.InfoMyNewsVo;
 import com.kuang.springcloud.entity.MessageCourseVo;
 import com.kuang.springcloud.entity.RightRedis;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
@@ -31,10 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-08
- */
 @Service
 @Slf4j
 public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse> implements CmsCourseService {
@@ -61,18 +59,15 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
     @Cacheable(value = "indexCourseVoList")
     @Override
     public List<IndexCourseVo> findCourseByTcId(String tcId) {
-        log.info("通过二级分类id查找下属课程,二级分类id:" + tcId);
         return baseMapper.findCourseByTcId(tcId);
     }
 
     //查找课程详细信息
     @Override
     public CourseVo findCourseVo(String courseId) {
-        log.info("通过课程id查找课程详细信息,课程id:" + courseId);
         CourseVo courseVo = baseMapper.findCourseVo(courseId);
         if(courseVo == null){
-            log.warn("有人进行非法操作，查询不存在课程,课程id:" + courseId);
-            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
+            throw new XiaoXiaException(ResultCode.ERROR , "该课程不存在");
         }
         //查询课程对应小节数量
         Integer videoNumber = videoService.findVideoNumberByCourseId(courseId);
@@ -84,21 +79,15 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
     @Transactional
     @Override
     public String buyCourse(String courseId, String userId) {
-        log.info("用户购买课程,课程id:" + courseId + ",用户id:" + userId);
-        //查询是否有这个课程
-        QueryWrapper<CmsCourse> wrapper = new QueryWrapper<>();
-        wrapper.select("price" , "title");
-        wrapper.eq("id" , courseId);
-        CmsCourse course = baseMapper.selectOne(wrapper);
+        //查询是否有这个课程和该课程的信息
+        CmsCourse course = baseMapper.selectById(courseId);
         if(course == null || course.getPrice() == 0){
-            throw new XiaoXiaException(ResultCode.ERROR , "购买课程失败");
+            throw new XiaoXiaException(ResultCode.ERROR , "该课程不存在或该课程价格为0");
         }
         //查询这个课程是否已经被用户购买
         boolean flag = billService.findBillByCourseIdAndUserId(courseId, userId);
-        //判断课程是否存在，如果存在，看价格是否为0，再看这个课程是否已经被用户购买
         if(flag){
-            log.warn("有人进行非法购买课程操作,课程id:" + courseId);
-            throw new XiaoXiaException(ResultCode.ERROR , "购买课程失败");
+            throw new XiaoXiaException(ResultCode.ERROR , "请勿重复购买课程");
         }
         //在账单中插入一条数据，表示用户购买
         CmsBill bill = new CmsBill();
@@ -106,11 +95,9 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
         bill.setUserId(userId);
         int insert = billMapper.insert(bill);
         if(insert != 1){
-            log.error("用户购买课程失败,课程id:" + courseId + ",用户id:" + userId);
             throw new XiaoXiaException(ResultCode.ERROR , "课程购买失败");
         }
-        //远程调用获取用户对应课程打折数量
-        log.info("开始进行远程调用,查出用户对应vip等级的打折数,用户id:" + userId);
+        //用户对应课程打折数量
         RightRedis userRightRedis = VipUtils.getUserRightRedis(userId);
         if(userRightRedis == null){
             R rightRedisByUserId = vipClient.findRightRedisByUserId(userId);
@@ -128,11 +115,9 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
             log.info("开始远程调用service-ucenter下面的接口/KCoin/reduce,减去用户k币:" + price);
             R ucenterR = ucenterClient.reduce(price);
             if(!ucenterR.getSuccess()){
-                log.error("远程调用service-ucenter下面的接口/KCoin/reduce失败,未减去用户k币");
                 throw new XiaoXiaException(ResultCode.ERROR , "你的k币不足");
             }
         }
-
         return course.getTitle();
     }
 
@@ -162,7 +147,22 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
     //查找课程播放量
     @Override
     public List<CmsCourse> findCourseViewsList(List<String> courseIdList) {
-        return baseMapper.findCourseViewsList(courseIdList);
+        QueryWrapper<CmsCourse> wrapper = new QueryWrapper<>();
+        wrapper.select("id" , "views");
+        wrapper.in("id" , courseIdList);
+        return baseMapper.selectList(wrapper);
+    }
+
+    //用户购买课程成功，发送消息到rabbitmq
+    @Async
+    @Override
+    public void sendMyNews(String userId, String courseId, String title) {
+        InfoMyNewsVo infoMyNewsVo = new InfoMyNewsVo();
+        infoMyNewsVo.setUserId(userId);
+        infoMyNewsVo.setIsCourse(true);
+        infoMyNewsVo.setCourseTitle(title);
+        infoMyNewsVo.setCourseId(courseId);
+        msgProducer.sendMyNews(JSON.toJSONString(infoMyNewsVo));
     }
 
     //更新课程浏览量

@@ -17,10 +17,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-08
- */
+
 @RestController
 @RequestMapping("/cms/bill")
 @Slf4j
@@ -34,6 +31,7 @@ public class CmsBillController {
     public R findUserBuyCourse(@RequestParam(value = "current", required = false, defaultValue = "1") Long current ,
                                @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
                                HttpServletRequest request){
+        //校验数据
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         if(userId == null){
             throw new XiaoXiaException(ResultCode.ERROR , "请先登录");

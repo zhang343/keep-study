@@ -126,6 +126,11 @@ public class VipUtils {
 
     //此处要求对象存在两个方法setVipLevel和getUserId，两个参数类型一样
     public static void setVipLevel(Collection<?> objectList , Object o) {
+        setVipLevel(objectList , o , "setVipLevel" , "getUserId");
+    }
+
+
+    public static void setVipLevel(Collection<?> objectList , Object o , String set , String get){
         TreeMap<String, MembersRedis> membersRedisTreeMap = getAllMembersTreeMap();
         TreeMap<String , RightRedis> rightRedisTreeMap = getAllRightTreeMap();
         RightRedis notVipRight = getNotVipRight();
@@ -133,12 +138,11 @@ public class VipUtils {
             return;
         }
 
-
         Method setVipLevel = null;
         Method getUserId = null;
         try {
-            setVipLevel = o.getClass().getDeclaredMethod("setVipLevel", String.class);
-            getUserId = o.getClass().getDeclaredMethod("getUserId");
+            setVipLevel = o.getClass().getDeclaredMethod(set, String.class);
+            getUserId = o.getClass().getDeclaredMethod(get);
         } catch(NoSuchMethodException e) {
             e.printStackTrace();
         }
@@ -147,10 +151,6 @@ public class VipUtils {
             return;
         }
 
-
-
-
-
         for(Object object : objectList){
             String userId = null;
             try {
@@ -158,11 +158,9 @@ public class VipUtils {
             } catch(Exception e) {
                 e.printStackTrace();
             }
-
             if(userId == null){
                 continue;
             }
-
             MembersRedis membersRedis = membersRedisTreeMap.get(userId);
             if(membersRedis == null){
                 try {
@@ -172,7 +170,6 @@ public class VipUtils {
                 }
                 continue;
             }
-
             String rightsId = membersRedis.getRightsId();
             RightRedis rightRedis = rightRedisTreeMap.get(rightsId);
             try {
@@ -181,6 +178,6 @@ public class VipUtils {
                 e.printStackTrace();
             }
         }
-
     }
+
 }

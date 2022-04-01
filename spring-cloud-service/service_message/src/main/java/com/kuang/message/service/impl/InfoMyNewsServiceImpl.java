@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 @Service
 @Slf4j
 public class InfoMyNewsServiceImpl extends ServiceImpl<InfoMyNewsMapper, InfoMyNews> implements InfoMyNewsService {
@@ -44,7 +41,6 @@ public class InfoMyNewsServiceImpl extends ServiceImpl<InfoMyNewsMapper, InfoMyN
     //查询用户我的消息
     @Override
     public List<MyNewsVo> findUserNews(Long current, Long limit, String userId) {
-        log.info("查询用户我的消息");
         current = (current - 1) * limit;
         return baseMapper.findUserNews(current , limit , userId);
     }
@@ -66,13 +62,12 @@ public class InfoMyNewsServiceImpl extends ServiceImpl<InfoMyNewsMapper, InfoMyN
     //删除用户我的消息
     @Override
     public void delete(String id, String userId) {
-        log.info("删除用户我的消息,用户id:" + userId);
         QueryWrapper<InfoMyNews> wrapper = new QueryWrapper<>();
         wrapper.eq("id" , id);
         wrapper.eq("user_id" , userId);
         int delete = baseMapper.delete(wrapper);
         if(delete != 1){
-            throw new XiaoXiaException(ResultCode.ERROR , "删除用户消息失败");
+            throw new XiaoXiaException(ResultCode.ERROR , "删除消息失败");
         }
     }
 }

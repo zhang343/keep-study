@@ -19,10 +19,6 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
 @RestController
 @RequestMapping("/message/friendsFeed")
 @Slf4j
@@ -36,10 +32,10 @@ public class InfoFriendFeedController {
     public R findAll(@RequestParam(value = "current", required = false, defaultValue = "1") Long current ,
                      @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
                      HttpServletRequest request){
+        //数据校验
         String userId = JwtUtils.getMemberIdByJwtToken(request);
-        log.info("查询好友动态消息,用户id:" + userId);
         if(userId == null){
-            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法查询");
+            throw new XiaoXiaException(ResultCode.ERROR , "请先登录");
         }
         List<FriendFeedVo> friendFeedVos = friendFeedService.findUserNews(current, limit, userId);
         Integer total = friendFeedService.findUserNewsNumber(userId);

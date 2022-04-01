@@ -15,11 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-08
- * 课程章节处理类
- */
+
 @RestController
 @RequestMapping("/cms/chapter")
 @Slf4j
@@ -31,9 +27,8 @@ public class CmsChapterController {
     //查询课程下面的章节和小节
     @GetMapping("findChapterAndVideo")
     public R findChapterAndVideo(String courseId){
-        log.info("开始查询课程章节和小节,课程id:" + courseId);
+        //校验数据
         if(StringUtils.isEmpty(courseId)){
-            log.warn("有人非法进行非法操作查询课程下面的章节和小节,课程id:" + courseId);
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
         }
         //查询章节和小节

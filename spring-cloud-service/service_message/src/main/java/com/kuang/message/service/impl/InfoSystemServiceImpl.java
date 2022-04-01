@@ -44,7 +44,6 @@ public class InfoSystemServiceImpl extends ServiceImpl<InfoSystemMapper, InfoSys
     //查看用户消息
     @Override
     public List<SystemVo> findUserNews(Long current, Long limit, String userId) {
-        log.info("查看用户消息");
         current = (current - 1) * limit;
         return baseMapper.findUserNews(current , limit , userId);
     }

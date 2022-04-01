@@ -15,10 +15,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-05
- */
+
 @RestController
 @RequestMapping("/user/talk")
 public class UserTalkController {
@@ -31,7 +28,7 @@ public class UserTalkController {
     public R publishTalk(HttpServletRequest request , String content){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         if(userId == null || StringUtils.isEmpty(content)){
-            throw new XiaoXiaException(ResultCode.ERROR , "请先登录");
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
         }
         UserTalkVo userTalkVo = talkService.publishTalk(userId , content);
         return R.ok().data("talk" , userTalkVo);

@@ -7,8 +7,6 @@ import lombok.Data;
 public class CopyVo {
     //vip等级
     private String vipLevel;
-    private Integer attentionNumber;
-    private Integer fansNumber;
     //已经发布到江湖还可以看到的文章
     private Integer bbsArticleNumber;
     private Integer studyNumber;

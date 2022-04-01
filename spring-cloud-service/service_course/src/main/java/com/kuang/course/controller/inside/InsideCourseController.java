@@ -30,10 +30,6 @@ public class InsideCourseController {
     //查询用户购买课程数量
     @GetMapping("findUserBillNumber")
     public R findUserBillNumber(String userId){
-        log.info("查询用户购买课程数量,用户id:" + userId);
-        if(StringUtils.isEmpty(userId)){
-            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
-        }
         Integer buyCourseNumber = billService.findUserBillNumber(userId);
         return R.ok().data("buyCourseNumber" , buyCourseNumber);
     }

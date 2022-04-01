@@ -12,11 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-08
- * 分类处理类
- */
+
 @RestController
 @RequestMapping("/cms/category")
 @Slf4j
@@ -28,7 +24,6 @@ public class CmsCategoryController {
     //查询所有一级分类
     @GetMapping("findAllFirstLevel")
     public R findAllFirstLevel(){
-        log.info("查询所有一级分类");
         List<OneCategoryVo> oneCategoryList = cmsOneCategoryService.findAllFirstLevel();
         return R.ok().data("categoryFirstList" , oneCategoryList);
     }

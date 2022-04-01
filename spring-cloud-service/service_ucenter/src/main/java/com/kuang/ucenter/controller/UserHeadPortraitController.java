@@ -11,10 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-03-07
- */
+
 @RestController
 @RequestMapping("/user/avatar")
 @Slf4j

@@ -33,9 +33,7 @@ public class MembersController {
     @PostMapping("addMember")
     public R addMember(String id , HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
-        log.info("用户充值vip,充值的vip的id:" + id);
         if(StringUtils.isEmpty(id) || userId == null){
-            log.warn("有用户非法充值vip操作,vip的id：" + id + ",用户id:" + userId);
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
         }
         membersService.addMember(id , userId);

@@ -11,10 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-03-23
- */
+
 @Service
 public class CmsStudyServiceImpl extends ServiceImpl<CmsStudyMapper, CmsStudy> implements CmsStudyService {
 
@@ -26,11 +23,13 @@ public class CmsStudyServiceImpl extends ServiceImpl<CmsStudyMapper, CmsStudy> i
         boolean userStudy = findUserStudy(userId, courseId);
         CmsStudy study = new CmsStudy();
         if(userStudy){
+            //更新播放时间
             QueryWrapper<CmsStudy> wrapper = new QueryWrapper<>();
             wrapper.eq("user_id" , userId);
             wrapper.eq("course_id" , courseId);
             baseMapper.update(study , wrapper);
         }else {
+            //插入数据
             study.setUserId(userId);
             study.setCourseId(courseId);
             baseMapper.insert(study);

@@ -14,6 +14,5 @@ public interface DtmFileService extends IService<DtmFile> {
 
     //通过分类id和文件名查找文件
     List<DtmFileVo> findFileCondition(String categoryId, String fileName);
-    //通过文件id查找文件名和(这里指阿里云存储)源文件名和价格
-    DtmFile findFileNameAndPriceById(String id);
+
 }

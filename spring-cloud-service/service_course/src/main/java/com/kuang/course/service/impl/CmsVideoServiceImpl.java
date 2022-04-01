@@ -8,9 +8,7 @@ import com.kuang.course.mapper.CmsCourseMapper;
 import com.kuang.course.mapper.CmsVideoMapper;
 import com.kuang.course.service.CmsBillService;
 import com.kuang.course.service.CmsVideoService;
-import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.RedisUtils;
-import com.kuang.springcloud.utils.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -20,10 +18,7 @@ import javax.annotation.Resource;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-08
- */
+
 @Service
 @Slf4j
 public class CmsVideoServiceImpl extends ServiceImpl<CmsVideoMapper, CmsVideo> implements CmsVideoService {
@@ -38,7 +33,6 @@ public class CmsVideoServiceImpl extends ServiceImpl<CmsVideoMapper, CmsVideo> i
     //通过课程id查找该课程下面小节数量
     @Override
     public Integer findVideoNumberByCourseId(String courseId) {
-        log.info("通过课程id查找对应小节数量，课程id：" + courseId);
         QueryWrapper<CmsVideo> wrapper = new QueryWrapper<>();
         wrapper.eq("course_id" , courseId);
         return baseMapper.selectCount(wrapper);
@@ -48,16 +42,14 @@ public class CmsVideoServiceImpl extends ServiceImpl<CmsVideoMapper, CmsVideo> i
     @Async
     @Override
     public Future<String> findUserAbility(String id , String videoSourceId , String userId) {
-        log.info("查询用户是否可以播放课程下面的视频不,视频id:" + id + ",用户id:" + userId);
         CmsVideo cmsVideo = baseMapper.selectById(id);
         if(cmsVideo == null || !videoSourceId.equals(cmsVideo.getVideoSourceId())){
-            log.warn("该视频不存在,请不要非法操作,视频id:" + id);
-            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
+            return new AsyncResult<>(null);
         }
         String courseId = cmsVideo.getCourseId();
         CmsCourse course = courseMapper.selectById(courseId);
         if(course == null){
-            throw new XiaoXiaException(ResultCode.ERROR , "该课程不存在");
+            return new AsyncResult<>(null);
         }
         int price = course.getPrice();
         //价格为0直接返回true,不为0再查账单

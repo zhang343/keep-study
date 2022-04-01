@@ -28,7 +28,6 @@ public class RightsController {
     //查询出vip权益,非普通会员权益
     @GetMapping("findVipRight")
     public R findVipRight(){
-        log.info("查询出vip权益,非普通会员权益");
         List<RightsVo> rightsList = rightsService.findVipRight();
         return R.ok().data("vipList" , rightsList);
     }

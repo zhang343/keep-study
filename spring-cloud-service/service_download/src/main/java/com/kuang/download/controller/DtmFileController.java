@@ -31,7 +31,6 @@ public class DtmFileController {
     //通过分类id和文件名查找文件
     @GetMapping("findFileCondition")
     public R findFileCondition(String categoryId , String fileName){
-        log.info("开始查找文件,categoryId:" + categoryId + ",fileName:" + fileName);
         List<DtmFileVo> dtmFileList = dtmFileService.findFileCondition(categoryId , fileName);
         return R.ok().data("fileList" , dtmFileList);
     }

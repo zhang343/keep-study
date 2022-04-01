@@ -11,7 +11,7 @@
                 dc.id = #{categoryId}
             </if>
             <if test="fileName!=null and fileName!=''">
-                and name like '%' #{fileName} '%'
+                and df.name like '%' #{fileName} '%'
             </if>
         </where>
     </select>

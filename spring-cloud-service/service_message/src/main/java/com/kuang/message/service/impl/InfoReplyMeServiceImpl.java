@@ -62,18 +62,7 @@ public class InfoReplyMeServiceImpl extends ServiceImpl<InfoReplyMeMapper, InfoR
         if(userNews == null || userNews.size() == 0){
             return userNews;
         }
-
-        List<String> userIdList = new ArrayList<>();
-        for(ReplyMeVo replyMeVo : userNews){
-            userIdList.add(replyMeVo.getReplyUserId());
-        }
-
-        Map<String , String>  userVipLevel = VipUtils.getUserVipLevel(userIdList);
-        if(userVipLevel != null){
-            for(ReplyMeVo replyMeVo : userNews){
-                replyMeVo.setVipLevel(userVipLevel.get(replyMeVo.getReplyUserId()));
-            }
-        }
+        VipUtils.setVipLevel(userNews , userNews.get(0) , "setVipLevel" , "getReplyUserId");
         return userNews;
     }
 
@@ -107,10 +96,12 @@ public class InfoReplyMeServiceImpl extends ServiceImpl<InfoReplyMeMapper, InfoR
     @Async
     @Override
     public void addreply(String id, String content, String userId) {
-        InfoReplyMe infoReplyMe = baseMapper.selectById(id);
-        if(infoReplyMe == null || !infoReplyMe.getUserId().equals(userId)){
-            return;
-        }
+        QueryWrapper<InfoReplyMe> wrapper = new QueryWrapper<>();
+        wrapper.eq("id" , id);
+        wrapper.eq("user_id" , userId);
+        InfoReplyMe infoReplyMe = baseMapper.selectOne(wrapper);
+
+
         InfoReplyMe infoReplyMe1 = new InfoReplyMe();
         infoReplyMe1.setUserId(infoReplyMe.getReplyUserId());
         infoReplyMe1.setArticleId(infoReplyMe.getArticleId());

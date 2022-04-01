@@ -13,11 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-06
- * 用户k币处理类
- */
+
 @RestController
 @RequestMapping("/KCoin")
 @Slf4j

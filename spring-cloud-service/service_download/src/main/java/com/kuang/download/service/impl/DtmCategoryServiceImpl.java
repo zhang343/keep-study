@@ -33,7 +33,6 @@ public class DtmCategoryServiceImpl extends ServiceImpl<DtmCategoryMapper, DtmCa
     @Cacheable(value = "dtmCategoryList")
     @Override
     public List<DtmCategoryVo> findAll() {
-        log.info("查询所有文件分类,这里查找id和category_name");
         return baseMapper.findAll();
     }
 

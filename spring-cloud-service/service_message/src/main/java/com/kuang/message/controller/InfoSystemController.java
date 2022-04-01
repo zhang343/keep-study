@@ -17,10 +17,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 @RestController
 @RequestMapping("/message/system")
 @Slf4j
@@ -35,7 +32,6 @@ public class InfoSystemController {
                      @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
                      HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
-        log.info("查询用户系统消息,用户id:" + userId);
         if(userId == null){
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法查询");
         }

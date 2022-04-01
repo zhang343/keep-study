@@ -14,10 +14,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-05
- */
+
 @RestController
 @RequestMapping("/user/bgimg")
 @Slf4j

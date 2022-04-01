@@ -1,7 +1,6 @@
 package com.kuang.message.controller;
 
 
-import com.kuang.message.entity.vo.MyNewsVo;
 import com.kuang.message.entity.vo.ReplyMeVo;
 import com.kuang.message.service.InfoReplyMeService;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
@@ -12,21 +11,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 @RestController
 @RequestMapping("/message/reply")
 @Slf4j
@@ -42,7 +34,6 @@ public class InfoReplyMeController {
                      @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit ,
                      HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
-        log.info("查询回复我的消息,用户id:" + userId);
         if(userId == null){
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法查询");
         }
@@ -56,7 +47,6 @@ public class InfoReplyMeController {
     @PostMapping("delete")
     public R delete(String id , HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
-        log.info("用户删除回复消息,用户id:" + userId + ",消息id:" + id);
         if(userId == null || StringUtils.isEmpty(id)){
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
         }
@@ -68,7 +58,6 @@ public class InfoReplyMeController {
     @PostMapping("addreply")
     public R addreply(String id , String content , HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
-        log.info("回复用户消息,用户id:" + userId + ",消息id:" + id);
         if(userId == null || StringUtils.isEmpty(id) || StringUtils.isEmpty(content)){
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
         }

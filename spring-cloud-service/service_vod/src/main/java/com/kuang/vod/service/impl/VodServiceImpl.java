@@ -101,7 +101,6 @@ public class VodServiceImpl implements VodService {
     //根据视频id获取视频凭证
     @Override
     public String getPlayAuth(String videoSourceId) {
-        log.info("开始获取视频播放凭证，视频id为：" + videoSourceId);
         //创建初始化对象
         DefaultAcsClient client =
                 InitVodCilent.initVodClient(ConstantVodUtils.ACCESS_KEY_ID, ConstantVodUtils.ACCESS_KEY_SECRET);
@@ -112,10 +111,8 @@ public class VodServiceImpl implements VodService {
         //调用方法得到凭证
         GetVideoPlayAuthResponse response = null;
         try {
-            log.info("获取视频播放凭证，视频id为：" + videoSourceId);
             response = client.getAcsResponse(request);
         } catch(ClientException e) {
-            log.error("获取视频播放凭证失败，视频id为：" + videoSourceId);
             throw new XiaoXiaException(ResultCode.ERROR , "获取视频播放凭证失败");
         }
         return response.getPlayAuth();

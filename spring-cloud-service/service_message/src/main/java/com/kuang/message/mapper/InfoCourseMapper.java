@@ -14,7 +14,7 @@ import java.util.List;
 public interface InfoCourseMapper extends BaseMapper<InfoCourse> {
 
     //查找课程通知
-    List<InfoCourse> findUserCourseList(@Param("current") Long current,
+    List<String> findUserCourseList(@Param("current") Long current,
                                         @Param("limit") Long limit,
                                         @Param("userId") String userId);
 

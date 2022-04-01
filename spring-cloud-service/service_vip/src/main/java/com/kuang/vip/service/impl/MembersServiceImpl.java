@@ -44,13 +44,9 @@ public class MembersServiceImpl extends ServiceImpl<MembersMapper, Members> impl
     @Transactional
     @Override
     public void addMember(String vipId , String userId) {
-        log.info("开始充值vip,vip的id为:" + vipId);
         //检查该vip是否存在
-        QueryWrapper<Rights> wrapper = new QueryWrapper<>();
-        wrapper.eq("id" , vipId);
-        Rights rights = rightsMapper.selectOne(wrapper);
+        Rights rights = rightsMapper.selectById(vipId);
         if(rights == null || rights.getPrice() == 0){
-            log.warn("有人非法充值不存在的vip或者该vip是非vip,vip的id:" + vipId);
             throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
         }
         //检查该用户是否存在
@@ -58,7 +54,6 @@ public class MembersServiceImpl extends ServiceImpl<MembersMapper, Members> impl
         membersWrapper.eq("user_id" , userId);
         Integer integer = baseMapper.selectCount(membersWrapper);
         if(integer != 0){
-            log.warn("用户已经vip,还要充值,非法,用户id:" + userId);
             throw new XiaoXiaException(ResultCode.ERROR , "你已经是vip的,不要充值");
         }
         Members members = new Members();
@@ -69,7 +64,6 @@ public class MembersServiceImpl extends ServiceImpl<MembersMapper, Members> impl
         members.setExpirationTime(expirationTime);
         int insert = baseMapper.insert(members);
         if(insert != 1){
-            log.error("数据插入vip_members库失败,请检查数据库");
             throw new XiaoXiaException(ResultCode.ERROR , "充值vip失败");
         }
         int price = rights.getPrice();
@@ -80,7 +74,6 @@ public class MembersServiceImpl extends ServiceImpl<MembersMapper, Members> impl
         }
         //清空redis缓存
         RedisUtils.delKey(RedisUtils.ALLVIPMEMBERTREEMAP);
-        cacheService.CacheAllMembersRedisTreeMap();
     }
 
 

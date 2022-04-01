@@ -10,10 +10,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-08
- */
+
 public interface CmsCourseMapper extends BaseMapper<CmsCourse> {
 
     //通过二级分类查找课程id
@@ -30,7 +27,4 @@ public interface CmsCourseMapper extends BaseMapper<CmsCourse> {
 
     //为消息模块服务，查询课程
     List<MessageCourseVo> findMessageCourseVo(@Param("courseIdList") List<String> courseIdList);
-
-    //查找课程播放量
-    List<CmsCourse> findCourseViewsList(@Param("courseIdList") List<String> courseIdList);
 }

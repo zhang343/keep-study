@@ -16,10 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-05
- */
+
 @RestController
 @RequestMapping("/user/introduce")
 @Slf4j

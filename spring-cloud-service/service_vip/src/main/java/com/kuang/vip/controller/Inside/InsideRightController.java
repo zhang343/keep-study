@@ -25,7 +25,6 @@ public class InsideRightController {
     //查询用户权益
     @GetMapping("findRightRedisByUserId")
     public R findRightRedisByUserId(String userId){
-        log.info("查出成员对应课程打折数量,用户id：" + userId);
         if(StringUtils.isEmpty(userId)){
             throw new XiaoXiaException(ResultCode.ERROR , "请正确查找");
         }

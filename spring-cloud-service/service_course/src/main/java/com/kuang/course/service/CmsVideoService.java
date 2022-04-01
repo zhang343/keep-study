@@ -5,10 +5,7 @@ import com.kuang.course.entity.CmsVideo;
 
 import java.util.concurrent.Future;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-08
- */
+
 public interface CmsVideoService extends IService<CmsVideo> {
 
     //通过课程id查找该课程下面小节数量

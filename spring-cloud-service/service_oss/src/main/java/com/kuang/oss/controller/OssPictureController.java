@@ -27,7 +27,6 @@ public class OssPictureController {
     //上传单个图片接口
     @PostMapping("uploadPicture")
     public R uploadOssFile(MultipartFile picture){
-        log.info("进行图片上传,上传地点为阿里云Oss,外网可以访问");
         String url = ossService.uploadPicture(picture);
         return R.ok().data("url" , url);
     }

@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50536
 File Encoding         : 65001
 
-Date: 2022-03-27 15:10:56
+Date: 2022-04-01 12:13:41
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -45,10 +45,13 @@ CREATE TABLE `bbs_article` (
 -- ----------------------------
 -- Records of bbs_article
 -- ----------------------------
-INSERT INTO `bbs_article` VALUES ('1496359576990121985', '1492434355002302466', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '我的大学历程', '描述我的大学生活', '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈', '0', '0', '1', '0', '8', '0', '0', '0', '1', '2022-02-23 13:41:38', '2022-03-15 17:51:07');
+INSERT INTO `bbs_article` VALUES ('1496359576990121985', '1492434355002302466', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '我的大学历程', '描述我的大学生活', '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈', '0', '0', '1', '0', '8', '0', '1', '0', '1', '2022-02-23 13:41:38', '2022-03-15 17:51:07');
 INSERT INTO `bbs_article` VALUES ('1497831076091961345', '1492434355253960706', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '网站遵守规范', '本网站遵守规范', '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈', '0', '0', '1', '0', '2', '0', '0', '1', '1', '2022-02-27 15:08:51', '2022-02-27 15:08:51');
-INSERT INTO `bbs_article` VALUES ('1499243244901490690', '1492434355291709441', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', 'Feign远程调用时创建请求头注入token', 'Feign远程调用时创建请求头注入token', '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈', '1', '1', '0', '1', '12', '0', '0', '0', '1', '2022-03-03 12:40:18', '2022-03-23 17:47:08');
+INSERT INTO `bbs_article` VALUES ('1499243244901490690', '1492434355291709441', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', 'Feign远程调用时创建请求头注入token', 'Feign远程调用时创建请求头注入token', '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈', '1', '0', '1', '0', '12', '0', '0', '0', '1', '2022-03-03 12:40:18', '2022-03-23 17:47:08');
 INSERT INTO `bbs_article` VALUES ('1505114107760623617', '1492434355333652482', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', 'redis解决分布式下面定时任务的重复执行', 'redis解决分布式下面定时任务的重复执行', '哈哈哈哈哈哈哈哈哈哈', '0', '0', '1', '0', '0', '0', '0', '0', '1', '2022-03-19 17:29:01', '2022-03-19 17:48:38');
+INSERT INTO `bbs_article` VALUES ('1508337868081262593', '1492434355333652482', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '在多数据源或者多模块下进行事务控制', '微服务使用seata进行事务控制', '哈哈哈哈哈哈哈哈哈哈哈', '0', '1', '0', '0', '0', '0', '0', '0', '1', '2022-03-28 14:59:05', '2022-03-29 15:34:16');
+INSERT INTO `bbs_article` VALUES ('1508343665469173762', '1492434355333652482', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '微服务模块注册中心--nacos', '微服务模块注册中心--nacos', '哈哈哈哈哈哈哈哈哈哈哈', '1', '1', '0', '1', '0', '0', '0', '0', '1', '2022-03-28 15:22:08', '2022-03-28 15:58:42');
+INSERT INTO `bbs_article` VALUES ('1508345364929851393', '1492434355333652482', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '流量防卫兵Sentinel', '流量防卫兵Sentinel', '哈哈哈哈哈哈哈哈哈哈哈', '0', '1', '0', '1', '0', '0', '0', '0', '1', '2022-03-28 15:28:53', '2022-03-28 15:28:53');
 
 -- ----------------------------
 -- Table structure for `bbs_article_right`
@@ -68,7 +71,7 @@ CREATE TABLE `bbs_article_right` (
 -- ----------------------------
 -- Records of bbs_article_right
 -- ----------------------------
-INSERT INTO `bbs_article_right` VALUES ('1497847715374063618', '1489885385067622401', '0', '0', '1', '2022-02-27 16:14:58', '2022-03-21 16:26:13');
+INSERT INTO `bbs_article_right` VALUES ('1497847715374063618', '1489885385067622401', '40', '4', '5', '2022-02-27 16:14:58', '2022-03-28 15:28:53');
 INSERT INTO `bbs_article_right` VALUES ('1497847715483115521', '1496388556204023809', '0', '0', '1', '2022-02-27 16:14:58', '2022-02-27 16:14:58');
 
 -- ----------------------------
@@ -132,7 +135,7 @@ CREATE TABLE `bbs_column` (
   `views` bigint(10) NOT NULL DEFAULT '0' COMMENT '浏览数',
   `vsibility` bigint(10) NOT NULL DEFAULT '0' COMMENT '可见度',
   `is_release` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0 不发布 1 发布，这里指专栏是否可被别人看见',
-  `description` varchar(100) DEFAULT '' COMMENT '专栏描述',
+  `description` varchar(255) DEFAULT '' COMMENT '专栏描述',
   `color` varchar(255) NOT NULL DEFAULT 'background-image: linear-gradient(to right, rgb(130, 178, 242) 0%, rgb(51, 51, 51) 100%);' COMMENT '专栏渐变色',
   `version` bigint(20) NOT NULL DEFAULT '1' COMMENT '乐观锁',
   `gmt_create` datetime NOT NULL COMMENT '创建时间',
@@ -143,12 +146,11 @@ CREATE TABLE `bbs_column` (
 -- ----------------------------
 -- Records of bbs_column
 -- ----------------------------
-INSERT INTO `bbs_column` VALUES ('1507246515616329729', '1489885385067622401', 'Spring Cloud Alibaba专栏', '0', '0', '1', '', 'background-image: linear-gradient(to right, rgb(130, 178, 242) 0%, rgb(51, 51, 51) 100%);', '1', '2022-03-25 14:42:27', '2022-03-25 14:42:27');
-INSERT INTO `bbs_column` VALUES ('1507256310268231681', '1489885385067622401', 'Spring Cloud专栏', '0', '0', '1', '', 'background-image: linear-gradient(to right, rgb(130, 178, 242) 0%, rgb(51, 51, 51) 100%);', '1', '2022-03-25 15:21:22', '2022-03-25 15:21:22');
 INSERT INTO `bbs_column` VALUES ('1507256364869681154', '1489885385067622401', 'Spring Security专栏', '0', '0', '1', '', 'background-image: linear-gradient(to right, rgb(130, 178, 242) 0%, rgb(51, 51, 51) 100%);', '1', '2022-03-25 15:21:35', '2022-03-25 15:21:35');
 INSERT INTO `bbs_column` VALUES ('1507256416908410882', '1489885385067622401', '数据结构专栏', '0', '0', '0', '', 'background-image: linear-gradient(to right, rgb(130, 178, 242) 0%, rgb(51, 51, 51) 100%);', '1', '2022-03-25 15:21:47', '2022-03-25 15:21:47');
-INSERT INTO `bbs_column` VALUES ('1507256517731090434', '1489885385067622401', 'Spring Boot专栏', '0', '0', '1', '', 'background-image: linear-gradient(to right, rgb(130, 178, 242) 0%, rgb(51, 51, 51) 100%);', '1', '2022-03-25 15:22:11', '2022-03-25 15:22:11');
-INSERT INTO `bbs_column` VALUES ('1507947208253677570', '1489885385067622401', 'redis分布式锁', '0', '0', '1', '', 'background-image: linear-gradient(to right, rgb(130, 178, 242) 0%, rgb(51, 51, 51) 100%);', '1', '2022-03-27 13:06:45', '2022-03-27 13:06:45');
+INSERT INTO `bbs_column` VALUES ('1507947208253677570', '1489885385067622401', 'redis分布式锁', '0', '0', '1', '本专栏将会介绍在分布式情况下，定时任务的重复执行，redis的分布式锁的原理，和redis的分布式锁怎么解决定时任务的重复执行', 'background-image: linear-gradient(to right, rgb(130, 178, 242) 0%, rgb(51, 51, 51) 100%);', '1', '2022-03-27 13:06:45', '2022-03-28 11:10:09');
+INSERT INTO `bbs_column` VALUES ('1508007277796356097', '1489885385067622401', 'Spring Cloud专栏', '0', '0', '1', '', 'background-image: linear-gradient(to right, rgb(130, 178, 242) 0%, rgb(51, 51, 51) 100%);', '1', '2022-03-27 17:05:27', '2022-03-27 17:05:27');
+INSERT INTO `bbs_column` VALUES ('1508008133925105665', '1489885385067622401', 'Spring Cloud Alibaba专栏', '1', '0', '1', '', 'background-image: linear-gradient(to right, rgb(130, 178, 242) 0%, rgb(51, 51, 51) 100%);', '1', '2022-03-27 17:08:51', '2022-03-27 17:08:51');
 
 -- ----------------------------
 -- Table structure for `bbs_column_author`
@@ -169,12 +171,11 @@ CREATE TABLE `bbs_column_author` (
 -- ----------------------------
 -- Records of bbs_column_author
 -- ----------------------------
-INSERT INTO `bbs_column_author` VALUES ('1507246515654078465', '1507246515616329729', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '1', '2022-03-25 14:42:27', '2022-03-25 14:42:27');
-INSERT INTO `bbs_column_author` VALUES ('1507256310297591810', '1507256310268231681', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '1', '2022-03-25 15:21:22', '2022-03-25 15:21:22');
 INSERT INTO `bbs_column_author` VALUES ('1507256364878069761', '1507256364869681154', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '1', '2022-03-25 15:21:35', '2022-03-25 15:21:35');
 INSERT INTO `bbs_column_author` VALUES ('1507256416920993794', '1507256416908410882', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '1', '2022-03-25 15:21:47', '2022-03-25 15:21:47');
-INSERT INTO `bbs_column_author` VALUES ('1507256517735284737', '1507256517731090434', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '1', '2022-03-25 15:22:11', '2022-03-25 15:22:11');
 INSERT INTO `bbs_column_author` VALUES ('1507947208274649089', '1507947208253677570', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '1', '2022-03-27 13:06:45', '2022-03-27 13:06:45');
+INSERT INTO `bbs_column_author` VALUES ('1508007277800550402', '1508007277796356097', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '1', '2022-03-27 17:05:27', '2022-03-27 17:05:27');
+INSERT INTO `bbs_column_author` VALUES ('1508008133937688577', '1508008133925105665', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '1', '2022-03-27 17:08:51', '2022-03-27 17:08:51');
 
 -- ----------------------------
 -- Table structure for `bbs_colunm_article`
@@ -193,7 +194,9 @@ CREATE TABLE `bbs_colunm_article` (
 -- ----------------------------
 -- Records of bbs_colunm_article
 -- ----------------------------
-INSERT INTO `bbs_colunm_article` VALUES ('1507977357951025154', '1507246515616329729', '1499243244901490690', '1', '2022-03-27 15:06:33', '2022-03-27 15:06:33');
+INSERT INTO `bbs_colunm_article` VALUES ('1508337868089651202', '1508008133925105665', '1508337868081262593', '1', '2022-03-28 14:59:05', '2022-03-28 14:59:05');
+INSERT INTO `bbs_colunm_article` VALUES ('1508343665607585793', '1508008133925105665', '1508343665469173762', '1', '2022-03-28 15:22:08', '2022-03-28 15:22:08');
+INSERT INTO `bbs_colunm_article` VALUES ('1508345364950822913', '1508008133925105665', '1508345364929851393', '1', '2022-03-28 15:28:53', '2022-03-28 15:28:53');
 
 -- ----------------------------
 -- Table structure for `bbs_comment`
@@ -253,6 +256,17 @@ INSERT INTO `bbs_label` VALUES ('1497111405650833410', '1496359576990121985', '�
 INSERT INTO `bbs_label` VALUES ('1497111405671804930', '1496359576990121985', 'Java', '1', '2022-02-25 15:29:08', '2022-02-25 15:29:08');
 INSERT INTO `bbs_label` VALUES ('1505119047165947905', '1505114107760623617', 'redis', '1', '2022-03-19 17:48:39', '2022-03-19 17:48:39');
 INSERT INTO `bbs_label` VALUES ('1505119047174336514', '1505114107760623617', '定时任务', '1', '2022-03-19 17:48:39', '2022-03-19 17:48:39');
+INSERT INTO `bbs_label` VALUES ('1508343667474051073', '1508343665469173762', '微服务', '1', '2022-03-28 15:22:08', '2022-03-28 15:22:08');
+INSERT INTO `bbs_label` VALUES ('1508343667486633986', '1508343665469173762', 'Spring Cloud Alibaba', '1', '2022-03-28 15:22:08', '2022-03-28 15:22:08');
+INSERT INTO `bbs_label` VALUES ('1508343667490828289', '1508343665469173762', 'nacos', '1', '2022-03-28 15:22:08', '2022-03-28 15:22:08');
+INSERT INTO `bbs_label` VALUES ('1508345365059874818', '1508345364929851393', '微服务', '1', '2022-03-28 15:28:53', '2022-03-28 15:28:53');
+INSERT INTO `bbs_label` VALUES ('1508345365080846337', '1508345364929851393', 'sentinel', '1', '2022-03-28 15:28:53', '2022-03-28 15:28:53');
+INSERT INTO `bbs_label` VALUES ('1508345365085040642', '1508345364929851393', 'Spring Cloud Alibaba', '1', '2022-03-28 15:28:53', '2022-03-28 15:28:53');
+INSERT INTO `bbs_label` VALUES ('1508709110810488833', '1508337868081262593', '微服务', '1', '2022-03-29 15:34:17', '2022-03-29 15:34:17');
+INSERT INTO `bbs_label` VALUES ('1508709110810488834', '1508337868081262593', 'Spring Cloud Alibaba', '1', '2022-03-29 15:34:17', '2022-03-29 15:34:17');
+INSERT INTO `bbs_label` VALUES ('1508709110823071746', '1508337868081262593', 'AT模式', '1', '2022-03-29 15:34:17', '2022-03-29 15:34:17');
+INSERT INTO `bbs_label` VALUES ('1508709110823071747', '1508337868081262593', '分布式事务', '1', '2022-03-29 15:34:17', '2022-03-29 15:34:17');
+INSERT INTO `bbs_label` VALUES ('1508709110827266050', '1508337868081262593', 'seata', '1', '2022-03-29 15:34:17', '2022-03-29 15:34:17');
 
 -- ----------------------------
 -- Table structure for `bbs_report`
@@ -591,7 +605,11 @@ CREATE TABLE `info_friend_feed` (
 -- Records of info_friend_feed
 -- ----------------------------
 INSERT INTO `info_friend_feed` VALUES ('1499249101668130817', '1496388556204023809', '1499243244901490690', 'Feign远程调用时创建请求头注入token', 'Feign远程调用时创建请求头注入token', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '踩坑记录', '1', '1', '2022-03-03 13:03:35', '2022-03-03 13:03:35');
-INSERT INTO `info_friend_feed` VALUES ('1505114109144748033', '1496388556204023809', '1505114107760623617', 'redis解决分布式下面定时任务的重复执行', 'redis解决分布式下面定时任务的重复执行', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '后台', '0', '1', '2022-03-19 17:29:01', '2022-03-19 17:29:01');
+INSERT INTO `info_friend_feed` VALUES ('1505114109144748033', '1496388556204023809', '1505114107760623617', 'redis解决分布式下面定时任务的重复执行', 'redis解决分布式下面定时任务的重复执行', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '后台', '1', '1', '2022-03-19 17:29:01', '2022-03-19 17:29:01');
+INSERT INTO `info_friend_feed` VALUES ('1508337872149762050', '1496388556204023809', '1508337868081262593', '微服务使用seata进行事务控制', '微服务使用seata进行事务控制', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '后台', '1', '1', '2022-03-28 14:59:06', '2022-03-28 14:59:06');
+INSERT INTO `info_friend_feed` VALUES ('1508343667637702657', '1496388556204023809', '1508343665469173762', '微服务模块注册中心--nacos', '微服务模块注册中心--nacos', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '后台', '1', '1', '2022-03-28 15:22:08', '2022-03-28 15:22:08');
+INSERT INTO `info_friend_feed` VALUES ('1508344130885996546', '1496388556204023809', '1508344130655236098', '微服务模块配置中心--nacos', '微服务模块配置中心--nacos', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '后台', '1', '1', '2022-03-28 15:23:59', '2022-03-28 15:23:59');
+INSERT INTO `info_friend_feed` VALUES ('1508345365131251713', '1496388556204023809', '1508345364929851393', '流量防卫兵Sentinel', '流量防卫兵Sentinel', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '后台', '1', '1', '2022-03-28 15:28:53', '2022-03-28 15:28:53');
 
 -- ----------------------------
 -- Table structure for `info_my_news`
@@ -614,7 +632,7 @@ CREATE TABLE `info_my_news` (
 -- ----------------------------
 -- Records of info_my_news
 -- ----------------------------
-INSERT INTO `info_my_news` VALUES ('1505076826500780034', '1496388556204023809', '尊敬的用户,课程预科阶段购买成功', '1', '课程购买通知', '1491337795770314754', '0', '1', '2022-03-19 15:00:53', '2022-03-19 15:00:53');
+INSERT INTO `info_my_news` VALUES ('1505076826500780034', '1496388556204023809', '尊敬的用户,课程预科阶段购买成功', '1', '课程购买通知', '1491337795770314754', '1', '1', '2022-03-19 15:00:53', '2022-03-19 15:00:53');
 
 -- ----------------------------
 -- Table structure for `info_reply_me`
@@ -640,9 +658,10 @@ CREATE TABLE `info_reply_me` (
 -- Records of info_reply_me
 -- ----------------------------
 INSERT INTO `info_reply_me` VALUES ('1496390831865716738', '1489885385067622401', '1496359576990121985', '我的大学历程', '1496388556204023809', '流逝', 'https://thirdwx.qlogo.cn/mmopen/vi_32/iaPp7ClZOGcpaPLXQeNSMPW3EWuiaJCxibjgic6gsWibBo8eibIRd89Jg0g5xjTe3ulc8crzoGLia3lQeKTGUxeAxsGMQ/132', '写的可以', '1', '1', '2022-02-23 15:45:50', '2022-02-23 15:45:50');
-INSERT INTO `info_reply_me` VALUES ('1501819756485820417', '1496388556204023809', '1496359576990121985', '我的大学历程', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '好的', '0', '1', '2022-03-10 15:18:27', '2022-03-10 15:18:27');
-INSERT INTO `info_reply_me` VALUES ('1505038933128429570', '1496388556204023809', '1496359576990121985', '我的大学历程', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '谢谢', '0', '1', '2022-03-19 12:30:18', '2022-03-19 12:30:18');
+INSERT INTO `info_reply_me` VALUES ('1501819756485820417', '1496388556204023809', '1496359576990121985', '我的大学历程', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '好的', '1', '1', '2022-03-10 15:18:27', '2022-03-10 15:18:27');
+INSERT INTO `info_reply_me` VALUES ('1505038933128429570', '1496388556204023809', '1496359576990121985', '我的大学历程', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '谢谢', '1', '1', '2022-03-19 12:30:18', '2022-03-19 12:30:18');
 INSERT INTO `info_reply_me` VALUES ('1505122762237169666', '1489885385067622401', '1505114107760623617', 'redis解决分布式下面定时任务的重复执行', '1496388556204023809', '流逝', 'https://thirdwx.qlogo.cn/mmopen/vi_32/iaPp7ClZOGcpaPLXQeNSMPW3EWuiaJCxibjgic6gsWibBo8eibIRd89Jg0g5xjTe3ulc8crzoGLia3lQeKTGUxeAxsGMQ/132', '真不错', '0', '1', '2022-03-19 18:03:25', '2022-03-19 18:03:25');
+INSERT INTO `info_reply_me` VALUES ('1508337171713576961', '1496388556204023809', '1505114107760623617', 'redis解决分布式下面定时任务的重复执行', '1489885385067622401', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '好', '1', '1', '2022-03-28 14:56:19', '2022-03-28 14:56:19');
 
 -- ----------------------------
 -- Table structure for `info_system`
@@ -774,7 +793,7 @@ CREATE TABLE `user_info` (
 -- ----------------------------
 -- Records of user_info
 -- ----------------------------
-INSERT INTO `user_info` VALUES ('1489885385067622401', 'o3_SC5zIKO9GhTCthrP55dkZJfjw', '18154046678', 'e10adc3949ba59abbe56e057f20f883e', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '0', '200', 'TA很懒,什么都没写...', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/d27cfbc9edb0472e95a36bf58f19e462.jpg', '20930', '中国', '2980244187@qq.com', '0', '37', '2022-02-05 16:55:31', '2022-03-22 16:32:39', '0');
+INSERT INTO `user_info` VALUES ('1489885385067622401', 'o3_SC5zIKO9GhTCthrP55dkZJfjw', '18154046678', 'e10adc3949ba59abbe56e057f20f883e', '天天搬砖', 'https://thirdwx.qlogo.cn/mmopen/vi_32/07VIZwpL6UkSTYaCUf2krXZs3FKtTIQnXNWjDhH8LRCPia62Dss7gTI4hFEGJ59w9eCUIjiaUzvR1vpa02lrmic1g/132', '0', '200', 'TA很懒,什么都没写...', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/d27cfbc9edb0472e95a36bf58f19e462.jpg', '20970', '中国', '2980244187@qq.com', '0', '41', '2022-02-05 16:55:31', '2022-03-28 15:28:53', '0');
 INSERT INTO `user_info` VALUES ('1496388556204023809', 'o3_SC5-_lDImPRD6qzi9Y56o-RDE', '00000002', 'e10adc3949ba59abbe56e057f20f883e', '流逝', 'https://thirdwx.qlogo.cn/mmopen/vi_32/iaPp7ClZOGcpaPLXQeNSMPW3EWuiaJCxibjgic6gsWibBo8eibIRd89Jg0g5xjTe3ulc8crzoGLia3lQeKTGUxeAxsGMQ/132', '0', '0', 'TA很懒,什么都没写...', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/e1c0c724897d42eeb0c826f2e3757507.jpg', '96820', '中国', '', '0', '3', '2022-02-23 15:36:48', '2022-03-19 14:51:54', '0');
 
 -- ----------------------------
@@ -842,7 +861,7 @@ CREATE TABLE `vip_rights` (
 -- ----------------------------
 -- Records of vip_rights
 -- ----------------------------
-INSERT INTO `vip_rights` VALUES ('1490591255682473986', 'nvip', '0', '1.00', '20', '30', '30', '2', '0', '1', '2022-02-07 15:40:23', '2022-02-07 15:40:23');
-INSERT INTO `vip_rights` VALUES ('1490597958297669634', 'mvip', '3000', '0.90', '20', '40', '50', '6', '30', '1', '2022-02-07 16:07:01', '2022-02-07 16:07:01');
-INSERT INTO `vip_rights` VALUES ('1490598394593280001', 'yvip', '30000', '0.80', '20', '40', '50', '10', '365', '1', '2022-02-07 16:08:45', '2022-02-07 16:08:45');
-INSERT INTO `vip_rights` VALUES ('1490598728350838786', 'lvip', '300000', '0.70', '20', '40', '50', '20', '36500', '1', '2022-02-07 16:10:05', '2022-02-07 16:10:05');
+INSERT INTO `vip_rights` VALUES ('1490591255682473986', '', '0', '1.00', '20', '30', '30', '2', '0', '1', '2022-02-07 15:40:23', '2022-02-07 15:40:23');
+INSERT INTO `vip_rights` VALUES ('1490597958297669634', 'vip', '3000', '0.90', '20', '40', '50', '6', '30', '1', '2022-02-07 16:07:01', '2022-02-07 16:07:01');
+INSERT INTO `vip_rights` VALUES ('1490598394593280001', 'svip', '30000', '0.80', '20', '40', '50', '10', '365', '1', '2022-02-07 16:08:45', '2022-02-07 16:08:45');
+INSERT INTO `vip_rights` VALUES ('1490598728350838786', 'zVip', '300000', '0.70', '20', '40', '50', '20', '36500', '1', '2022-02-07 16:10:05', '2022-02-07 16:10:05');
