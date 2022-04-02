@@ -67,4 +67,8 @@ public interface UserInfoService extends IService<UserInfo> {
 
     //查询右下边框内容
     UserLowerRightBox findLowerRightBox(String userId);
+
+
+    //发送我的注册消息
+    void setMyRegisterNews(String id);
 }

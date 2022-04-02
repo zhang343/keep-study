@@ -79,9 +79,8 @@ public class UserInfoController {
 
     //查询右下边框内容
     @GetMapping("findLowerRightBox")
-    public R findLowerRightBox(HttpServletRequest request){
-        String userId = JwtUtils.getMemberIdByJwtToken(request);
-        if(userId == null){
+    public R findLowerRightBox(String userId){
+        if(StringUtils.isEmpty(userId)){
             throw new XiaoXiaException(ResultCode.ERROR , "请先登录");
         }
 

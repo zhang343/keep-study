@@ -158,10 +158,11 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
     @Override
     public void sendMyNews(String userId, String courseId, String title) {
         InfoMyNewsVo infoMyNewsVo = new InfoMyNewsVo();
-        infoMyNewsVo.setUserId(userId);
+        infoMyNewsVo.setTitle("课程购买通知");
         infoMyNewsVo.setIsCourse(true);
-        infoMyNewsVo.setCourseTitle(title);
         infoMyNewsVo.setCourseId(courseId);
+        infoMyNewsVo.setUserId(userId);
+        infoMyNewsVo.setContent("尊敬的用户,课程" + title + "购买成功");
         msgProducer.sendMyNews(JSON.toJSONString(infoMyNewsVo));
     }
 

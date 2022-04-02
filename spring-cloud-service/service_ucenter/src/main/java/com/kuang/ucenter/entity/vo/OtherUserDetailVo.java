@@ -2,8 +2,6 @@ package com.kuang.ucenter.entity.vo;
 
 import lombok.Data;
 
-import java.util.Date;
-
 @Data
 public class OtherUserDetailVo {
 
@@ -21,8 +19,6 @@ public class OtherUserDetailVo {
     private Integer experience;
     //用户个性签名
     private String sign;
-
-
     //vip等级
     private String vipLevel;
     //用户关注数量
@@ -33,21 +29,8 @@ public class OtherUserDetailVo {
     private Integer bbsArticleNumber;
     //学习数量
     private Integer studyNumber;
-    //所有的评论数量
-    private Integer commentNumber;
-
-
-
     //说说数量
     private Integer dynamicNumber;
     //专栏数量
     private Integer columnNumber;
-
-
-    //账号
-    private String account;
-    //k币
-    private Integer money;
-    //注册时间
-    private Date gmtCreate;
 }

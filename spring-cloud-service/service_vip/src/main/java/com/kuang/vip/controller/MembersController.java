@@ -15,11 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-07
- * vip用户处理类
- */
+
 @RestController
 @RequestMapping("/vm/user")
 @Slf4j
@@ -39,7 +35,6 @@ public class MembersController {
         membersService.addMember(id , userId);
         return R.ok();
     }
-
 
 }
 

@@ -13,13 +13,9 @@ public class UserDetailVo {
     private Boolean sex;
     private Integer experience;
     private String sign;
-
-
     private Integer attentionNumber;
     private Integer fansNumber;
     private Integer dynamicNumber;
-
-
     private Integer allArticleNumber;
     private Integer columnNumber;
     private Integer studyNumber;

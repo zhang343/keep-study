@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.kuang.bbs.entity.Article;
 import com.kuang.bbs.entity.vo.IndexArticleVo;
 import com.kuang.bbs.entity.vo.OtherUserArticleVo;
-import com.kuang.bbs.entity.vo.UserArticleVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

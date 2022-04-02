@@ -3,6 +3,7 @@ package com.kuang.bbs.entity.vo;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class OtherUserArticleVo {
@@ -14,4 +15,5 @@ public class OtherUserArticleVo {
     private Long views;
     private Date gmtCreate;
     private Boolean isExcellentArticle;
+    private List<String> labelList;
 }

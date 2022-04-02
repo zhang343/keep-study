@@ -3,6 +3,7 @@ package com.kuang.ucenter.controller;
 
 import com.google.gson.Gson;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
+import com.kuang.springcloud.rabbitmq.MsgProducer;
 import com.kuang.springcloud.utils.JwtUtils;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
@@ -116,6 +117,8 @@ public class WxApiController {
             String headimgurl = (String)userInfoMap.get("headimgurl");//头像
 
             member = userInfoService.insertMember(openid , nickname , headimgurl);
+
+            userInfoService.setMyRegisterNews(member.getId());
         }
         String id = member.getId();
         String jwtToken = JwtUtils.getJwtToken(id);

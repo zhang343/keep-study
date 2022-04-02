@@ -428,6 +428,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             if(article.getIsColumnArticle() && article.getIsBbs()){
                 userArticleVo.setIsRelease(true);
             }
+            List<String> articleLabel = labelService.findArticleLabel(article.getId());
+            userArticleVo.setLabelList(articleLabel);
             userArticleVoList.add(userArticleVo);
         }
         return userArticleVoList;

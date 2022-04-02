@@ -30,13 +30,7 @@ public class MyNewsMsgReceiver {
             InfoMyNewsVo infoMyNewsVo = JSON.parseObject(content, InfoMyNewsVo.class);
             InfoMyNews infoMyNews = new InfoMyNews();
             BeanUtils.copyProperties(infoMyNewsVo , infoMyNews);
-            //检验是否为课程通知
-            if(infoMyNews.getIsCourse()){
-                infoMyNews.setTitle("课程购买通知");
-                String courseTitle = infoMyNewsVo.getCourseTitle();
-                infoMyNews.setContent("尊敬的用户,课程" + courseTitle + "购买成功");
-                infoMyNewsService.save(infoMyNews);
-            }
+            infoMyNewsService.save(infoMyNews);
         } catch(Exception e) {
             log.warn("开始在我的消息插入数据失败,我的消息:" + content);
         }

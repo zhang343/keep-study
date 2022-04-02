@@ -45,7 +45,22 @@
         </foreach>
     </update>
 
-    <select id="findOtherUserArticle" resultType="com.kuang.bbs.entity.vo.OtherUserArticleVo" >
+    <resultMap id="findOtherUserArticleList" type="com.kuang.bbs.entity.vo.OtherUserArticleVo" >
+        <id column="articleId" property="articleId" />
+        <result column="article.title" property="title" />
+        <result column="article.description" property="description" />
+        <result column="article.views" property="views" />
+        <result column="article.gmt_create" property="gmtCreate" />
+        <result column="article.is_excellent_article" property="isExcellentArticle" />
+        <result column="category.category_name" property="categoryName" />
+
+        <collection property="labelList" ofType="java.lang.String"
+                    select="com.kuang.bbs.mapper.LabelMapper.findArticleLabel"
+                    column="articleId"/>
+    </resultMap>
+
+
+    <select id="findOtherUserArticle" resultMap="findOtherUserArticleList" >
         select article.id as articleId , article.title , article.description ,
                article.views , article.gmt_create , article.is_excellent_article ,
                category.category_name

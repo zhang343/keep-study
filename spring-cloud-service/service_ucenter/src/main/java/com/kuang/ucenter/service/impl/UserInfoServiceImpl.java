@@ -1,9 +1,12 @@
 package com.kuang.ucenter.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.kuang.springcloud.entity.InfoMyNewsVo;
 import com.kuang.springcloud.entity.RightRedis;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
+import com.kuang.springcloud.rabbitmq.MsgProducer;
 import com.kuang.springcloud.utils.*;
 import com.kuang.ucenter.client.BbsClient;
 import com.kuang.ucenter.client.CourseClient;
@@ -14,7 +17,6 @@ import com.kuang.ucenter.entity.vo.*;
 import com.kuang.ucenter.mapper.UserHomepageMapper;
 import com.kuang.ucenter.mapper.UserInfoMapper;
 import com.kuang.ucenter.service.UserAttentionService;
-import com.kuang.ucenter.service.UserHomepageService;
 import com.kuang.ucenter.service.UserInfoService;
 import com.kuang.ucenter.service.UserTalkService;
 import com.kuang.ucenter.utils.AccountUtils;
@@ -30,7 +32,6 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -56,6 +57,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     @Resource
     private UserHomepageMapper userHomepageMapper;
+
+    @Resource
+    private MsgProducer msgProducer;
 
     //根据微信id查询用户
     @Override
@@ -446,6 +450,19 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         return userLowerRightBox;
     }
 
+    //发送我的注册消息
+    @Async
+    @Override
+    public void setMyRegisterNews(String id) {
+        InfoMyNewsVo infoMyNewsVo = new InfoMyNewsVo();
+        infoMyNewsVo.setUserId(id);
+        infoMyNewsVo.setIsCourse(false);
+        infoMyNewsVo.setCourseId("");
+        infoMyNewsVo.setTitle("用户注册通知");
+        infoMyNewsVo.setContent("尊敬的用户: 你已经在本网站注册了账号，请尽快完善本账号信息");
+        msgProducer.sendMyNews(JSON.toJSONString(infoMyNewsVo));
+    }
+
 
     @Async
     public Future<Map<String, Object>> findACS(String userId){
@@ -499,17 +516,10 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if(userStudyNumber.getSuccess()){
             studyNumber = (Integer) userStudyNumber.getData().get("studyNumber");
         }
-        //查看评论数量
-        Integer commentNumber = 0;
-        R userCommentNumber = bbsClient.findUserCommentNumber(userId);
-        if(userCommentNumber.getSuccess()){
-            commentNumber = (Integer) userCommentNumber.getData().get("commentNumber");
-        }
         CopyVo copyVo = new CopyVo();
         copyVo.setVipLevel(userVipLevel);
         copyVo.setBbsArticleNumber(bbsArticleNumber);
         copyVo.setStudyNumber(studyNumber);
-        copyVo.setCommentNumber(commentNumber);
         return new AsyncResult<>(copyVo);
     }
 

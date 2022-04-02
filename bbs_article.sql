@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50536
 File Encoding         : 65001
 
-Date: 2022-04-01 17:10:48
+Date: 2022-04-02 16:22:15
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -75,6 +75,7 @@ INSERT INTO `bbs_article_right` VALUES ('1497847715374063618', '1489885385067622
 INSERT INTO `bbs_article_right` VALUES ('1497847715483115521', '1496388556204023809', '0', '0', '1', '2022-02-27 16:14:58', '2022-02-27 16:14:58');
 INSERT INTO `bbs_article_right` VALUES ('1509774813873397761', '1509774811381956610', '0', '0', '1', '2022-04-01 14:09:00', '2022-04-01 14:09:00');
 INSERT INTO `bbs_article_right` VALUES ('1509818166606299137', '1509818161615179778', '0', '0', '1', '2022-04-01 17:01:16', '2022-04-01 17:01:16');
+INSERT INTO `bbs_article_right` VALUES ('1510094791210192898', '1510094786114146306', '0', '0', '1', '2022-04-02 11:20:29', '2022-04-02 11:20:29');
 
 -- ----------------------------
 -- Table structure for `bbs_category`
@@ -623,7 +624,7 @@ CREATE TABLE `info_my_news` (
   `content` varchar(255) NOT NULL COMMENT '消息内容',
   `is_course` tinyint(1) NOT NULL COMMENT '是不是课程通知，0不是，1是',
   `title` varchar(50) NOT NULL COMMENT '消息标题',
-  `course_id` char(19) NOT NULL COMMENT '主键id',
+  `course_id` char(19) NOT NULL DEFAULT '' COMMENT '主键id',
   `is_read` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否阅读 0 未阅读 1阅读',
   `version` bigint(20) NOT NULL DEFAULT '1' COMMENT '乐观锁',
   `gmt_create` datetime NOT NULL COMMENT '创建时间',
@@ -767,6 +768,7 @@ CREATE TABLE `user_homepage` (
 INSERT INTO `user_homepage` VALUES ('1489885385067622401', '你的斑驳，与众不同', '2', '2022-03-07 12:51:21', '2022-03-22 16:02:53');
 INSERT INTO `user_homepage` VALUES ('1509774811381956610', 'TA很懒,什么都没写...', '1', '2022-04-01 14:08:59', '2022-04-01 14:08:59');
 INSERT INTO `user_homepage` VALUES ('1509818161615179778', '', '1', '2022-04-01 17:01:15', '2022-04-01 17:01:15');
+INSERT INTO `user_homepage` VALUES ('1510094786114146306', '', '1', '2022-04-02 11:20:27', '2022-04-02 11:20:27');
 
 -- ----------------------------
 -- Table structure for `user_info`
@@ -801,6 +803,7 @@ INSERT INTO `user_info` VALUES ('1489885385067622401', 'o3_SC5zIKO9GhTCthrP55dkZ
 INSERT INTO `user_info` VALUES ('1496388556204023809', 'o3_SC5-_lDImPRD6qzi9Y56o-RDE', '23406772', 'e10adc3949ba59abbe56e057f20f883e', '流逝', 'https://thirdwx.qlogo.cn/mmopen/vi_32/iaPp7ClZOGcpaPLXQeNSMPW3EWuiaJCxibjgic6gsWibBo8eibIRd89Jg0g5xjTe3ulc8crzoGLia3lQeKTGUxeAxsGMQ/132', '0', '0', 'TA很懒,什么都没写...', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/e1c0c724897d42eeb0c826f2e3757507.jpg', '96820', '中国', '', '0', '3', '2022-02-23 15:36:48', '2022-03-19 14:51:54', '0');
 INSERT INTO `user_info` VALUES ('1509774811381956610', 'o3_SC5w0acZkFZtGHWWZvRZTuJVw', '23406773', 'e10adc3949ba59abbe56e057f20f883e', '山河', 'https://thirdwx.qlogo.cn/mmopen/vi_32/PiajxSqBRaEJuos3FaicAWd9mCibrYkWUgCWfmdvNzZ3Sl9AnTucicDSwmfL2t2lYx8R1XLCeKy4y8icAibGn4YXdHfA/132', '0', '0', 'TA很懒,什么都没写...', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/e1c0c724897d42eeb0c826f2e3757507.jpg', '0', '中国', null, '0', '1', '2022-04-01 14:08:59', '2022-04-01 14:08:59', '0');
 INSERT INTO `user_info` VALUES ('1509818161615179778', 'o3_SC53giDguPZZMgvAwDQSVAPNk', '23406774', 'e10adc3949ba59abbe56e057f20f883e', '杨泽宇', 'https://thirdwx.qlogo.cn/mmopen/vi_32/sQxI3ZHMXLAL1S3zyef0SwDvkeLRrxK94L2jLxFxaLIytk7bB5v92RBVTicgia6K0RichKM4GoDD3Mo1TSlQicG81g/132', '0', '0', 'TA很懒,什么都没写...', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/e1c0c724897d42eeb0c826f2e3757507.jpg', '0', '中国', '', '0', '1', '2022-04-01 17:01:15', '2022-04-01 17:01:15', '0');
+INSERT INTO `user_info` VALUES ('1510094786114146306', 'o3_SC5w5ZIpsRp55hTEGx_kRxlFk', '23406775', 'e10adc3949ba59abbe56e057f20f883e', 'LW', 'https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTL04hRoaiarae3GCdoUEVh8WicWiaWN5W9Mibd3Mzq10YiammZIC4f82k2zvQYNPEL0fdkluggyak5qeAA/132', '0', '0', 'TA很懒,什么都没写...', 'https://edu-2-0-2-1.oss-cn-hangzhou.aliyuncs.com/2022/03/11/e1c0c724897d42eeb0c826f2e3757507.jpg', '0', '中国', '', '0', '1', '2022-04-02 11:20:27', '2022-04-02 11:20:27', '0');
 
 -- ----------------------------
 -- Table structure for `user_talk`

@@ -41,4 +41,7 @@ public class OtherUserController {
         }
         return R.ok().data("isAttention" , isAttention).data("otherUserDetail" , otherUserDetailVo);
     }
+
+
+
 }

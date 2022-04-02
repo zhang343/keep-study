@@ -3,6 +3,7 @@ package com.kuang.bbs.entity.vo;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class UserArticleVo {
@@ -16,4 +17,5 @@ public class UserArticleVo {
     private Boolean isRelease;
     private Boolean isViolationArticle;
     private Boolean isExcellentArticle;
+    private List<String> labelList;
 }

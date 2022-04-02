@@ -10,6 +10,4 @@ public class CopyVo {
     //已经发布到江湖还可以看到的文章
     private Integer bbsArticleNumber;
     private Integer studyNumber;
-    //所有的评论数量
-    private Integer commentNumber;
 }

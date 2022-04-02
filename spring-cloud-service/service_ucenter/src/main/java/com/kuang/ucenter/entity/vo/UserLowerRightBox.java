@@ -7,13 +7,13 @@ import java.util.Date;
 @Data
 public class UserLowerRightBox {
 
+    private String vipLevel;
     private Integer articleRealeaseNumber;
     private Integer commentNumber;
-
-    private String vipLevel;
+    private Integer studyNumber;
     private String account;
+    private String nickname;
+    private Integer experience;
     private Integer money;
     private Date gmtCreate;
-
-    private Integer studyNumber;
 }

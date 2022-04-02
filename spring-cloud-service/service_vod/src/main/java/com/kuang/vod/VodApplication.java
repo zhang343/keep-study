@@ -1,17 +1,18 @@
-package com.kuang.ucenter;
+package com.kuang.vod;
+
 
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
 
-@SpringBootApplication
-public class Application implements CommandLineRunner {
-
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+public class VodApplication implements CommandLineRunner {
     public static void main(String[] args) {
-        SpringApplication springApplication = new SpringApplication(Application.class);
+        SpringApplication springApplication = new SpringApplication(VodApplication.class);
         springApplication.setBannerMode(Banner.Mode.CONSOLE);
         springApplication.setAllowBeanDefinitionOverriding(false);
         springApplication.setLazyInitialization(false);
