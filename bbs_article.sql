@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : localhost_3306
-Source Server Version : 50536
-Source Host           : localhost:3306
+Source Server         : 1.15.188.107_3306
+Source Server Version : 50718
+Source Host           : 1.15.188.107:3306
 Source Database       : keepstudy
 
 Target Server Type    : MYSQL
-Target Server Version : 50536
+Target Server Version : 50718
 File Encoding         : 65001
 
-Date: 2022-04-02 16:22:15
+Date: 2022-04-03 16:27:37
 */
 
 SET FOREIGN_KEY_CHECKS=0;

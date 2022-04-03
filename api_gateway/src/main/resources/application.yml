@@ -62,7 +62,7 @@ spring:
 
     nacos:
       discovery:
-        server-addr: 192.168.125.132:8848
+        server-addr: 1.15.188.107:8848
         namespace: 430293a0-4969-4c8f-8732-e12ba198d06a
         group: kuangstudy
       username: nacos

@@ -2,6 +2,7 @@ package com.kuang;
 
 import static org.junit.Assert.assertTrue;
 
+import com.kuang.springcloud.utils.UUIDUtil;
 import org.junit.Test;
 
 /**
@@ -15,6 +16,6 @@ public class AppTest
     @Test
     public void shouldAnswerWithTrue()
     {
-        assertTrue( true );
+        System.out.println(UUIDUtil.getUUID());
     }
 }
