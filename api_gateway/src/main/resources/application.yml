@@ -15,54 +15,54 @@ spring:
           #负载均衡调用service-bbs服务
           uri: lb://service-bbs
           predicates:
-            - Path=/bbs/**,/admin/bbs/**
+            - Path=/bbs/**
 
         - id: service-course
           #负载均衡调用service-course服务
           uri: lb://service-course
           predicates:
-            - Path=/cms/**,/admin/cms/**
+            - Path=/cms/**
 
         - id: service-download
           #负载均衡调用service-download服务
           uri: lb://service-download
           predicates:
-            - Path=/dtm/**,/admin/dtm/**
+            - Path=/dtm/**
 
         - id: service-message
           #负载均衡调用service-message服务
           uri: lb://service-message
           predicates:
-            - Path=/message/**,/admin/message/**
+            - Path=/message/**
 
         - id: service-oss
           #负载均衡调用service-oss服务
           uri: lb://service-oss
           predicates:
-            - Path=/oss/**,/admin/oss/**
+            - Path=/oss/**
 
         - id: service-ucenter
           #负载均衡调用service-ucenter服务
           uri: lb://service-ucenter
           predicates:
-            - Path=/user/**,/admin/user/**
+            - Path=/user/**
 
         - id: service-vip
           #负载均衡调用service-vip服务
           uri: lb://service-vip
           predicates:
-            - Path=/vm/**,/admin/vm/**
+            - Path=/vm/**
 
         - id: service-vod
           #负载均衡调用service-vod服务
           uri: lb://service-vod
           predicates:
-            - Path=/vod/**,/admin/vod/**
+            - Path=/vod/**
 
 
     nacos:
       discovery:
-        server-addr: 1.15.188.107:8848
+        server-addr: 127.0.0.1:8848
         namespace: 430293a0-4969-4c8f-8732-e12ba198d06a
         group: kuangstudy
       username: nacos

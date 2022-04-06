@@ -6,14 +6,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kuang.bbs.client.UcenterClient;
 import com.kuang.bbs.client.VipClient;
 import com.kuang.bbs.entity.Article;
-import com.kuang.bbs.entity.ArticleRight;
 import com.kuang.bbs.entity.Category;
 import com.kuang.bbs.entity.vo.*;
 import com.kuang.bbs.mapper.ArticleMapper;
-import com.kuang.bbs.mapper.ArticleRightMapper;
 import com.kuang.bbs.service.*;
 import com.kuang.springcloud.entity.InfoFriendFeedVo;
-import com.kuang.springcloud.entity.RightRedis;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.rabbitmq.MsgProducer;
 import com.kuang.springcloud.utils.R;
@@ -30,7 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -38,9 +38,6 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Slf4j
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> implements ArticleService {
-
-    @Resource
-    private VipClient vipClient;
 
     @Resource
     private UcenterClient ucenterClient;
@@ -120,7 +117,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             articleVo.setIsRelease(true);
         }
         //设置vip等级
-        String userVipLevel = VipUtils.getUserVipLevel(userId);
+        String userVipLevel = VipUtils.getUserVipLevel(articleUserId);
         articleVo.setVipLevel(userVipLevel);
         return articleVo;
     }
