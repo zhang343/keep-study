@@ -32,7 +32,7 @@ public class RedisUtils implements InitializingBean {
 
     public static final String ARTICLLE = "article";
 
-    public static final int ARTICLEVIEWTIME = 7;
+    public static final int ARTICLEVIEWTIME = 1500;
 
     public static final String COLUMNVIEWLOCK = "columnViewLock";
 
@@ -40,7 +40,7 @@ public class RedisUtils implements InitializingBean {
 
     public static final String COLUMN = "column";
 
-    public static final int COLUMNVIEWTIME = 7;
+    public static final int COLUMNVIEWTIME = 1500;
 
     public static final String COURSEVIEWLOCK = "courseViewLock";
 
@@ -48,7 +48,7 @@ public class RedisUtils implements InitializingBean {
 
     public static final String COURSE = "course";
 
-    public static final int COURSEVIEWTIME = 7;
+    public static final int COURSEVIEWTIME = 1500;
 
 
 

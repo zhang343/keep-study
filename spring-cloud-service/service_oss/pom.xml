@@ -25,6 +25,13 @@
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.ckfinder</groupId>
+      <artifactId>json-lib</artifactId>
+      <version>1.0.2</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/src/main/resources/jar/jave-1.0.2.jar</systemPath>
+    </dependency>
   </dependencies>
 
 

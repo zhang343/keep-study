@@ -3,7 +3,7 @@ package com.kuang.oss.service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
+import java.util.concurrent.Future;
 
 /**
  * @author XiaoZhang
@@ -18,4 +18,7 @@ public interface OssService {
     String uploadFile(MultipartFile file);
     //下载文件
     void downloadFile(String fileSourceId , String name , HttpServletResponse response);
+
+    //计算文件大小
+    Future<String> getFileLength(MultipartFile file);
 }

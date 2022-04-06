@@ -12,6 +12,7 @@
     <module>service_ucenter</module>
     <module>service_vip</module>
     <module>service_message</module>
+    <module>service_acl</module>
   </modules>
 
 

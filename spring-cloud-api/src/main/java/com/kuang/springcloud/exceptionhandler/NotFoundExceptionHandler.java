@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 
+
 @Controller
 public class NotFoundExceptionHandler implements ErrorController {
 
@@ -23,3 +24,5 @@ public class NotFoundExceptionHandler implements ErrorController {
     }
 
 }
+
+

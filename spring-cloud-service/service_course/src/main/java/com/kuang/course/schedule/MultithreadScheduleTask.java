@@ -30,7 +30,7 @@ public class MultithreadScheduleTask {
 
     //每五分钟执行一次
     @Async
-    @Scheduled(cron = "0 0/5 * * * ? ")
+    @Scheduled(cron = "0 0 0 * * ? ")
     public void setCourseViews(){
         String treadName = Thread.currentThread().getName();
         log.info("开始执行定时任务,将缓存到redis中的课程播放量同步到数据库中,当前线程名" + treadName +"当前时间:" + LocalTime.now());

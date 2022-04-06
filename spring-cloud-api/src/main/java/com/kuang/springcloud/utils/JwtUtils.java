@@ -38,6 +38,26 @@ public class JwtUtils {
         return jwtToken;
     }
 
+    //讲用户信息转变为token
+    public static String getJwtToken(String id , String role){
+        String jwtToken = Jwts.builder()
+                //设置头部头部信息
+                .setHeaderParam("alg", "HS256")
+                .setHeaderParam("typ", "JWT")
+                //设置载荷
+                .setIssuer("XiaoXia")
+                .setSubject("kuang-user")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRE))
+                //下面我们设置自定义信息
+                .claim("id", id)
+                .claim("role" , role)
+                //设置签名哈希
+                .signWith(SignatureAlgorithm.HS256, APP_SECRET)
+                .compact();
+        return jwtToken;
+    }
+
 
     //核查token是否有效
     public static boolean checkToken(String jwtToken) {
@@ -69,4 +89,29 @@ public class JwtUtils {
         }
         return id;
     }
+
+    //取出id，如果token无效则返回null
+    public static String getMemberIdByJwtToken(String token) {
+        boolean flag = checkToken(token);
+        String id = null;
+        if(flag){
+            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(token);
+            Claims claims = claimsJws.getBody();
+            id = (String) claims.get("id");
+        }
+        return id;
+    }
+
+    //取出role，如果token无效则返回null
+    public static String getMemberRoleByJwtToken(String token) {
+        boolean flag = checkToken(token);
+        String role = null;
+        if(flag){
+            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(token);
+            Claims claims = claimsJws.getBody();
+            role = (String) claims.get("role");
+        }
+        return role;
+    }
+
 }

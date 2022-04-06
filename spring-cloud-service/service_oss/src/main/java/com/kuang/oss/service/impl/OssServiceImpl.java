@@ -11,15 +11,18 @@ import com.kuang.springcloud.utils.ResultCode;
 import com.kuang.springcloud.utils.UUIDUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Future;
 
 /**
  * @author XiaoZhang
@@ -131,6 +134,41 @@ public class OssServiceImpl implements OssService {
             }
         }
         ossClient.shutdown();
+    }
+
+    //计算文件大小
+    @Async
+    @Override
+    public Future<String> getFileLength(MultipartFile file) {
+        //转储临时文件
+        File dfile = null;
+        try {
+            dfile = File.createTempFile("prefix", "_" + file.getOriginalFilename());
+            file.transferTo(dfile);
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+
+        FileChannel fc = null;
+        String size = "";
+        try {
+            FileInputStream fis = new FileInputStream(dfile);
+            fc = fis.getChannel();
+            BigDecimal fileSize = new BigDecimal(fc.size());
+            size = fileSize.divide(new BigDecimal(1048576), 2, RoundingMode.HALF_UP) + "";
+        } catch (Exception e) {
+            throw new RuntimeException();
+        } finally {
+            if (null != fc){
+                try{
+                    fc.close();
+                }catch(IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+        dfile.delete();
+        return new AsyncResult<>(size);
     }
 
 }

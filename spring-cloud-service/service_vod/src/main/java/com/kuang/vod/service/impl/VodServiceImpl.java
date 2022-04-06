@@ -13,6 +13,8 @@ import com.kuang.springcloud.utils.ResultCode;
 import com.kuang.vod.service.VodService;
 import com.kuang.vod.utils.ConstantVodUtils;
 import com.kuang.vod.utils.InitVodCilent;
+import it.sauronsoftware.jave.Encoder;
+import it.sauronsoftware.jave.MultimediaInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.scheduling.annotation.Async;
@@ -20,6 +22,7 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -116,5 +119,31 @@ public class VodServiceImpl implements VodService {
             throw new XiaoXiaException(ResultCode.ERROR , "获取视频播放凭证失败");
         }
         return response.getPlayAuth();
+    }
+
+    //获取视频时长
+    @Async
+    @Override
+    public Future<Long> getVideoTime(MultipartFile video) {
+        //转储临时文件
+        File dfile = null;
+        try {
+            dfile = File.createTempFile("prefix", "_" + video.getOriginalFilename());
+            video.transferTo(dfile);
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+        // 获取视频时长
+        Encoder encoder = new Encoder();
+        MultimediaInfo multimediaInfo = null;
+        try {
+            multimediaInfo = encoder.getInfo(dfile);
+        }catch(Exception e){
+            throw new RuntimeException();
+        }
+        long ls = multimediaInfo.getDuration() / 1000;
+        //删除临时文件
+        dfile.delete();
+        return new AsyncResult<>(ls);
     }
 }

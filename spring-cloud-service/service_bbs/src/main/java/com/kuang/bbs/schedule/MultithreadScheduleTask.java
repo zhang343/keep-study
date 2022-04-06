@@ -37,9 +37,9 @@ public class MultithreadScheduleTask {
     @Resource
     private ColumnService columnService;
 
-    //每五分钟执行一次
+    //每天凌晨执行
     @Async
-    @Scheduled(cron = "0 0/5 * * * ? ")
+    @Scheduled(cron = "0 0 0 * * ? ")
     public void setArticleViews(){
         String treadName = Thread.currentThread().getName();
         log.info("开始执行定时任务,将缓存到redis中的文章浏览量同步到数据库中,当前线程名" + treadName +"当前时间:" + LocalTime.now());
@@ -86,7 +86,7 @@ public class MultithreadScheduleTask {
 
     //每五分钟执行一次
     @Async
-    @Scheduled(cron = "0 0/5 * * * ? ")
+    @Scheduled(cron = "0 0 0 * * ? ")
     public void setColumnViews(){
         String treadName = Thread.currentThread().getName();
         log.info("开始执行定时任务,将缓存到redis中的专栏浏览量同步到数据库中,当前线程名" + treadName +"当前时间:" + LocalTime.now());

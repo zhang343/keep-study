@@ -59,6 +59,12 @@ spring:
           predicates:
             - Path=/vod/**
 
+        - id: service-acl
+          #负载均衡调用service-vod服务
+          uri: lb://service-acl
+          predicates:
+            - Path=/acl/**
+
 
     nacos:
       discovery:
