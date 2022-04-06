@@ -29,5 +29,5 @@ public interface ColunmArticleService extends IService<ColunmArticle> {
     Future<Boolean> checkUserColumnArticle(String userId, String columnId, String articleId);
 
     //修改专栏文章
-    void updateCloumArticle(UpdateColumnArticleVo updateColumnArticleVo);
+    void updateCloumArticle(UpdateColumnArticleVo updateColumnArticleVo , String userId, String columnId, String articleId);
 }

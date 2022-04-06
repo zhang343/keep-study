@@ -217,6 +217,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     //用户修改江湖文章
+    @Transactional
     @Override
     public void updateArticle(ArticleUpdateAndCreateVo articleUpdateAndCreateVo , String userId) {
         String articleId = articleUpdateAndCreateVo.getId();
@@ -252,6 +253,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         int i = baseMapper.updateById(updateArticle);
         if(i != 1){
             throw new XiaoXiaException(ResultCode.ERROR , "修改文章失败");
+        }
+
+        //如果用户是草稿，现在修改为发布，则进行文章权益调整，发布到好友动态
+        if(updateArticle.getIsRelease() != null && updateArticle.getIsRelease() && !article.getIsRelease()){
+            articleRightService.updateArticleRight(userId);
+            sendFrientFeed(updateArticle , userId);
         }
     }
 

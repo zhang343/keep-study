@@ -174,13 +174,34 @@ public class ColunmArticleServiceImpl extends ServiceImpl<ColunmArticleMapper, C
     }
 
     //修改专栏文章
+    @Transactional
     @Override
-    public void updateCloumArticle(UpdateColumnArticleVo updateColumnArticleVo) {
-        Article article = new Article();
-        BeanUtils.copyProperties(updateColumnArticleVo , article);
-        article.setId(updateColumnArticleVo.getArticleId());
-        int i = articleMapper.updateById(article);
+    public void updateCloumArticle(UpdateColumnArticleVo updateColumnArticleVo , String userId, String columnId, String articleId) {
+        Future<Boolean> booleanFuture = checkUserColumnArticle(userId, columnId, articleId);
+
+        Article article = articleMapper.selectById(articleId);
+        if(!article.getIsBbs() && updateColumnArticleVo.getIsBbs() != null && updateColumnArticleVo.getIsBbs()){
+            if(article.getIsViolationArticle()){
+                throw new XiaoXiaException(ResultCode.ERROR , "修改失败");
+            }
+            //修改用户当日文章权益
+            articleRightService.updateArticleRight(userId);
+        }
+        Article updateArticle = new Article();
+        BeanUtils.copyProperties(updateColumnArticleVo , updateArticle);
+        updateArticle.setId(updateColumnArticleVo.getArticleId());
+        int i = articleMapper.updateById(updateArticle);
         if(i != 1){
+            throw new XiaoXiaException(ResultCode.ERROR , "修改失败");
+        }
+
+        boolean flag = false;
+        try {
+            flag = booleanFuture.get();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        if(!flag){
             throw new XiaoXiaException(ResultCode.ERROR , "修改失败");
         }
     }

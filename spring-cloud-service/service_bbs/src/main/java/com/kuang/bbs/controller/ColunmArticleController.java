@@ -198,19 +198,7 @@ public class ColunmArticleController {
             throw new XiaoXiaException(ResultCode.ERROR , "请正确访问");
         }
 
-        //检查是否可以修改
-        Future<Boolean> booleanFuture = colunmArticleService.checkUserColumnArticle(userId, columnId, articleId);
-        boolean flag = false;
-        try {
-            flag = booleanFuture.get();
-        }catch(Exception e){
-            log.warn("校验是否可以修改文章失败");
-        }
-        if(!flag){
-            throw new XiaoXiaException(ResultCode.ERROR , "您没有权限修改");
-        }
-
-        colunmArticleService.updateCloumArticle(updateColumnArticleVo);
+        colunmArticleService.updateCloumArticle(updateColumnArticleVo , userId , columnId , articleId);
         labelService.addArticleLabel(articleId , Arrays.asList(labelList));
 
         return R.ok();
