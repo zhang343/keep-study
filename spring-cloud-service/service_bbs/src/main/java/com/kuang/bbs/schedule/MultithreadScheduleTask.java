@@ -134,6 +134,8 @@ public class MultithreadScheduleTask {
     }
 
 
+
+
     //定时任务,更新用户每日文章权益，每天凌晨执行
     @Scheduled(cron = "0 0 0 * * ? ")
     public void updateUserArticleRight(){

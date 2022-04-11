@@ -17,6 +17,7 @@ import com.kuang.ucenter.entity.vo.*;
 import com.kuang.ucenter.mapper.UserHomepageMapper;
 import com.kuang.ucenter.mapper.UserInfoMapper;
 import com.kuang.ucenter.service.UserAttentionService;
+import com.kuang.ucenter.service.UserHeadPortraitService;
 import com.kuang.ucenter.service.UserInfoService;
 import com.kuang.ucenter.service.UserTalkService;
 import com.kuang.ucenter.utils.AccountUtils;
@@ -61,27 +62,38 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Resource
     private MsgProducer msgProducer;
 
-    //根据微信id查询用户
+    @Resource
+    private UserHeadPortraitService userHeadPortraitService;
+
+    //根据电话号码查询用户
     @Override
-    public UserInfo getOpenIdMember(String openid) {
+    public UserInfo getPhoneNumberMember(String phoneNumber) {
         QueryWrapper<UserInfo> wrapper = new QueryWrapper<>();
-        wrapper.eq("openid" , openid);
+        wrapper.eq("phone_number" , phoneNumber);
         return baseMapper.selectOne(wrapper);
     }
 
     //创建一个用户
     @Transactional
     @Override
-    public UserInfo insertMember(String openid , String nickname , String headimgurl) {
-        //插入用户
+    public UserInfo insertMember(String phoneNumber , String nickname , String code) {
+
+        Object value = RedisUtils.getValue(phoneNumber);
+        if(!code.equals(value)){
+            throw new XiaoXiaException(ResultCode.ERROR , "验证码错误");
+        }
+
+
         UserInfo userInfo = new UserInfo();
-        userInfo.setOpenid(openid);
+        userInfo.setPhoneNumber(phoneNumber);
         userInfo.setNickname(nickname);
-        userInfo.setAvatar(headimgurl);
+
+        String s = userHeadPortraitService.findAllAvatar().get(0);
+        userInfo.setAvatar(s);
         userInfo.setAccount(AccountUtils.getAccount());
         int insert = baseMapper.insert(userInfo);
         if(insert != 1){
-            throw new XiaoXiaException(ResultCode.ERROR , "登录失败");
+            throw new XiaoXiaException(ResultCode.ERROR , "注册失败");
         }
         //插入用户主页内容
         UserHomepage userHomepage = new UserHomepage();
@@ -89,13 +101,15 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         userHomepage.setContent("");
         int insert1 = userHomepageMapper.insert(userHomepage);
         if(insert1 != 1){
-            throw new XiaoXiaException(ResultCode.ERROR , "登录失败");
+            throw new XiaoXiaException(ResultCode.ERROR , "注册失败");
         }
         //插入文章权益
         R r = bbsClient.addArticleRight(userInfo.getId());
         if(!r.getSuccess()){
-            throw new XiaoXiaException(ResultCode.ERROR , "登录失败");
+            throw new XiaoXiaException(ResultCode.ERROR , "注册失败");
         }
+        RedisUtils.delKey(phoneNumber);
+        setMyRegisterNews(userInfo.getId());
         return userInfo;
     }
 
@@ -461,6 +475,21 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         infoMyNewsVo.setTitle("用户注册通知");
         infoMyNewsVo.setContent("尊敬的用户: 你已经在本网站注册了账号，请尽快完善本账号信息");
         msgProducer.sendMyNews(JSON.toJSONString(infoMyNewsVo));
+    }
+
+    //验证码登录
+    @Override
+    public String loginCode(String phoneNumber, String code) {
+        Object value = RedisUtils.getValue(phoneNumber);
+        if(!code.equals(value)){
+            throw new XiaoXiaException(ResultCode.ERROR , "验证码错误");
+        }
+        UserInfo phoneNumberMember = getPhoneNumberMember(phoneNumber);
+        if(phoneNumberMember == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "该手机号尚未注册，请注册");
+        }
+        RedisUtils.delKey(phoneNumber);
+        return phoneNumberMember.getId();
     }
 
 

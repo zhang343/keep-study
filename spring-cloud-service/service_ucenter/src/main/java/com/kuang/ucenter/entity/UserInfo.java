@@ -27,8 +27,8 @@ public class UserInfo implements Serializable {
     @TableId(value = "id", type = IdType.ID_WORKER_STR)
     private String id;
 
-    @ApiModelProperty(value = "微信openid")
-    private String openid;
+    @ApiModelProperty(value = "电话号码")
+    private String phoneNumber;
 
     @ApiModelProperty(value = "用户账号")
     private String account;

@@ -13,11 +13,11 @@ import java.util.concurrent.Future;
  */
 public interface UserInfoService extends IService<UserInfo> {
 
-    //根据微信id查询用户
-    UserInfo getOpenIdMember(String openid);
+    //根据电话号码查询用户
+    UserInfo getPhoneNumberMember(String phoneNumber);
 
     //创建一个用户
-    UserInfo insertMember(String openid , String nickname , String headimgurl);
+    UserInfo insertMember(String phoneNumber , String nickname , String code);
 
     //给用户增加k币
     void addKCoin(Integer kCoinNumber, String userId);
@@ -68,7 +68,9 @@ public interface UserInfoService extends IService<UserInfo> {
     //查询右下边框内容
     UserLowerRightBox findLowerRightBox(String userId);
 
-
     //发送我的注册消息
     void setMyRegisterNews(String id);
+
+    //验证码登录
+    String loginCode(String phoneNumber, String code);
 }

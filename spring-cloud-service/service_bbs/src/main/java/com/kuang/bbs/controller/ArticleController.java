@@ -63,9 +63,10 @@ public class ArticleController {
         if(StringUtils.isEmpty(articleId)){
             throw new XiaoXiaException(ResultCode.ERROR , "该文章不存在，请不要查找");
         }
-
         //查询文章详细数据
         ArticleVo articleVo = articleService.findArticleDetail(articleId , userId);
+        //设置文章浏览量缓存
+        articleService.setArticleViews(articleId , request.getRemoteAddr());
         //查询文章标签
         List<String> articleLabel = labelService.findArticleLabel(articleId);
         //查询文章评论数量
@@ -77,10 +78,8 @@ public class ArticleController {
         }
 
 
-        //设置文章浏览量缓存
-        articleService.setArticleViews(articleId , request.getRemoteAddr());
-
-
+        long setSize = RedisUtils.getSetSize(articleVo.getId());
+        articleVo.setViews(setSize + articleVo.getViews());
         return R.ok().data("commentNumber" , commentNumber).
                 data("isCollection" , isCollection).
                 data("labelList" , articleLabel).
@@ -101,7 +100,7 @@ public class ArticleController {
         }
         Article article = articleService.addArticle(articleUpdateAndCreateVo, avatar , nickname , userId);
         //删除用户缓存
-        RedisUtils.delKey(userId);
+        RedisUtils.delKey(userId + "article");
         String articleId = article.getId();
         //插入文章标签
         labelService.addArticleLabel(articleId , Arrays.asList(labelList));

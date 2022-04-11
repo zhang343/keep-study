@@ -47,12 +47,12 @@
 
     <resultMap id="findOtherUserArticleList" type="com.kuang.bbs.entity.vo.OtherUserArticleVo" >
         <id column="articleId" property="articleId" />
-        <result column="article.title" property="title" />
-        <result column="article.description" property="description" />
-        <result column="article.views" property="views" />
-        <result column="article.gmt_create" property="gmtCreate" />
-        <result column="article.is_excellent_article" property="isExcellentArticle" />
-        <result column="category.category_name" property="categoryName" />
+        <result column="articleTitle" property="title" />
+        <result column="articleDescription" property="description" />
+        <result column="articleViews" property="views" />
+        <result column="articlegmtCreate" property="gmtCreate" />
+        <result column="articleisExcellentArticle" property="isExcellentArticle" />
+        <result column="categoryCategoryName" property="categoryName" />
 
         <collection property="labelList" ofType="java.lang.String"
                     select="com.kuang.bbs.mapper.LabelMapper.findArticleLabel"
@@ -61,9 +61,9 @@
 
 
     <select id="findOtherUserArticle" resultMap="findOtherUserArticleList" >
-        select article.id as articleId , article.title , article.description ,
-               article.views , article.gmt_create , article.is_excellent_article ,
-               category.category_name
+        select article.id as articleId , article.title as articleTitle , article.description as articleDescription,
+               article.views as articleViews, article.gmt_create as articlegmtCreate, article.is_excellent_article as articleisExcellentArticle,
+               category.category_name as categoryCategoryName
         from bbs_article as article join bbs_category as category
         on article.category_id = category.id
         where article.user_id = #{userId} and article.is_violation_article = 0

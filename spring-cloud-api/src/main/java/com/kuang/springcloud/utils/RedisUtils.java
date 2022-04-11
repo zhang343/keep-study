@@ -134,6 +134,49 @@ public class RedisUtils implements InitializingBean {
         return redisTemplate.delete(COLUMNVIEWLOCK);
     }
 
+
+    /**
+     *分布式锁，用来保证定时任务不重复执行
+     * @param timeout 键值对缓存的时间，单位是秒
+     * @return 设置成功返回true，否则返回false
+     */
+    public static boolean tryVipLock(String userId , long timeout) {
+        //底层原理就是Redis的setnx方法
+        boolean isSuccess = redisTemplate.opsForValue().setIfAbsent(userId + "vip", userId);
+        if (isSuccess) {
+            //设置分布式锁的过期时间
+            redisTemplate.expire(userId + "vip", timeout, TimeUnit.SECONDS);
+        }
+        return isSuccess;
+    }
+
+    /**
+     * 分布式锁，用来保证定时任务不重复执行
+     * @return 释放成功返回true，否则返回false
+     */
+    public static boolean unVipLock(String userId) {
+        return redisTemplate.delete(userId + "vip");
+    }
+
+    /**
+     *分布式锁，用来保证定时任务不重复执行
+     * @param timeout 键值对缓存的时间，单位是秒
+     * @return 设置成功返回true，否则返回false
+     */
+    public static boolean tryOrderLock(String orderId , long timeout) {
+        //底层原理就是Redis的setnx方法
+        boolean isSuccess = redisTemplate.opsForValue().setIfAbsent(orderId , UUIDUtil.getUUID());
+        if (isSuccess) {
+            //设置分布式锁的过期时间
+            redisTemplate.expire(orderId , timeout, TimeUnit.SECONDS);
+        }
+        return isSuccess;
+    }
+
+    public static boolean unOrderLock(String orderId) {
+        return redisTemplate.delete(orderId);
+    }
+
     /**
      * 设置有效时间
      *

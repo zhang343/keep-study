@@ -21,6 +21,11 @@ public class VodClientFactory implements FallbackFactory<VodClient> {
             public R getPlayAuth(String videoSourceId) {
                 return R.error();
             }
+
+            @Override
+            public R deleteVideo(String videoSourceId, String token) {
+                return R.error();
+            }
         };
     }
 }

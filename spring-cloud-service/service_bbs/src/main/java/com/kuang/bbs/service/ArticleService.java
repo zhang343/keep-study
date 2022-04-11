@@ -70,4 +70,10 @@ public interface ArticleService extends IService<Article> {
 
     //查询专栏文章
     ColumnArticleDetailVo findColunmArticle(String articleId);
+
+    //设置置顶文章
+    void setTopArticle(String articleId);
+
+    //封禁该文章
+    void banArticle(String reportId, String articleId);
 }

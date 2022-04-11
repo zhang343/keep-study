@@ -18,9 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 )
 public interface UcenterClient {
 
-    @PostMapping("/KCoin/reduce")
-    R reduce(@RequestParam("kCoinNumber") Integer kCoinNumber);
-
     @PostMapping("/KCoin/add")
     R add(@RequestParam("kCoinNumber") Integer kCoinNumber);
 }

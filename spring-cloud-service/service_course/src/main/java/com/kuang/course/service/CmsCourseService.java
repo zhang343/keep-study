@@ -13,9 +13,6 @@ import java.util.List;
 
 public interface CmsCourseService extends IService<CmsCourse> {
 
-    //通过二级分类id查找课程
-    List<IndexCourseVo> findCourseByTcId(String tcId);
-
     //查找课程详细信息
     CourseVo findCourseVo(String courseId);
 

@@ -2,6 +2,9 @@ package com.kuang.bbs.service;
 
 import com.kuang.bbs.entity.Report;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.kuang.bbs.entity.admin.AdminReportArticleVo;
+
+import java.util.List;
 
 /**
  * @author Xiaozhang
@@ -14,4 +17,10 @@ public interface ReportService extends IService<Report> {
 
     //举报文章接口,异步执行
     void report(String articleId , String content);
+
+    //查看目前的被举报的文章数量
+    Integer findReportArticleNumber(String beginTime, String endTime);
+
+    //查看目前的被举报的文章
+    List<AdminReportArticleVo> findReportArticle(Long current, Long limit, String beginTime, String endTime);
 }

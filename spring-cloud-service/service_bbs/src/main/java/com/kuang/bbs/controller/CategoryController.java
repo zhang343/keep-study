@@ -24,7 +24,6 @@ public class CategoryController {
     //查询所有分类
     @GetMapping("findAllCategory")
     public R findAllCategory(){
-        log.info("查询所有分类");
         List<CategoryVo> categoryList = categoryService.findAllCategoryVo();
         return R.ok().data("categoryList" , categoryList);
     }

@@ -6,10 +6,7 @@ import com.kuang.course.service.CmsBillService;
 import com.kuang.course.service.CmsCourseService;
 import com.kuang.springcloud.entity.RightRedis;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
-import com.kuang.springcloud.utils.JwtUtils;
-import com.kuang.springcloud.utils.R;
-import com.kuang.springcloud.utils.ResultCode;
-import com.kuang.springcloud.utils.VipUtils;
+import com.kuang.springcloud.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,6 +51,9 @@ public class CmsCourseController {
                 }
             }
         }
+
+        long setSize = RedisUtils.getSetSize(courseVo.getId());
+        courseVo.setViews(courseVo.getViews() + setSize);
         return R.ok().data("course" , courseVo).data("isBuy" , isBuy);
     }
 

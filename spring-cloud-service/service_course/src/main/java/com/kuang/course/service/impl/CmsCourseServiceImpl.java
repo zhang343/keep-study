@@ -8,7 +8,6 @@ import com.kuang.course.client.VipClient;
 import com.kuang.course.entity.CmsBill;
 import com.kuang.course.entity.CmsCourse;
 import com.kuang.course.entity.vo.CourseVo;
-import com.kuang.course.entity.vo.IndexCourseVo;
 import com.kuang.course.mapper.CmsBillMapper;
 import com.kuang.course.mapper.CmsCourseMapper;
 import com.kuang.course.service.CmsBillService;
@@ -25,7 +24,6 @@ import com.kuang.springcloud.utils.RedisUtils;
 import com.kuang.springcloud.utils.ResultCode;
 import com.kuang.springcloud.utils.VipUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,13 +52,6 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
 
     @Resource
     private MsgProducer msgProducer;
-
-    //通过二级分类id查找课程
-    @Cacheable(value = "indexCourseVoList")
-    @Override
-    public List<IndexCourseVo> findCourseByTcId(String tcId) {
-        return baseMapper.findCourseByTcId(tcId);
-    }
 
     //查找课程详细信息
     @Override

@@ -137,29 +137,33 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         List<IndexArticleVo> indexArticleVoList = baseMapper.pageArticleCondition((current - 1) * limit , limit , categoryId , isExcellentArticle , articleNameOrLabelName);
 
         if(current == 1 && limit == 10 && StringUtils.isEmpty(categoryId) && StringUtils.isEmpty(articleNameOrLabelName) && (isExcellentArticle == null || !isExcellentArticle)){
-            //说明为首页查询,此时我们查看indexArticleVoList是否有首页文章,如果有,去除
-            IndexArticleVo topArticle = null;
-            for(IndexArticleVo indexArticleVo : indexArticleVoList){
-                if(indexArticleVo.getIsTop()){
-                    topArticle = indexArticleVo;
-                    break;
-                }
-            }
-
-            //如果有首页，去除，并加入第一个
+            //说明为首页查询
+            //查看是否有首页
+            IndexArticleVo topArticle = findTopArticle();
             if(topArticle != null){
-                indexArticleVoList.remove(topArticle);
-                indexArticleVoList.add(0 , topArticle);
-            }else {
-                //没有首页,去除第一个,并查询首页文章
-                topArticle = findTopArticle();
-                //如果首页文章存在，去除第一个,
-                if(topArticle != null){
+                //如果有，则进行相应排序，没有，直接结束
+                IndexArticleVo articleVo = null;
+                for(IndexArticleVo indexArticleVo : indexArticleVoList){
+                    if(indexArticleVo.getIsTop()){
+                        articleVo = indexArticleVo;
+                        break;
+                    }
+                }
+
+                if(articleVo != null){
+                    indexArticleVoList.remove(articleVo);
+                    indexArticleVoList.add(0 , topArticle);
+                }else {
                     indexArticleVoList.set(0 , topArticle);
                 }
             }
         }
         VipUtils.setVipLevel(indexArticleVoList , indexArticleVoList.get(0));
+        //总共应该是10个，速度问题很小
+        for(IndexArticleVo indexArticleVo : indexArticleVoList){
+            long setSize = RedisUtils.getSetSize(indexArticleVo.getId());
+            indexArticleVo.setViews(setSize + indexArticleVo.getViews());
+        }
         return new AsyncResult<>(indexArticleVoList);
     }
 
@@ -434,6 +438,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             }
             List<String> articleLabel = labelService.findArticleLabel(article.getId());
             userArticleVo.setLabelList(articleLabel);
+            long setSize = RedisUtils.getSetSize(userArticleVo.getArticleId());
+            userArticleVo.setViews(setSize + userArticleVo.getViews());
             userArticleVoList.add(userArticleVo);
         }
         return userArticleVoList;
@@ -443,7 +449,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public List<OtherUserArticleVo> findOtherUserArticle(String userId, Long current, Long limit) {
         current = (current - 1) * limit;
-        return baseMapper.findOtherUserArticle(userId , current , limit);
+        List<OtherUserArticleVo> otherUserArticle = baseMapper.findOtherUserArticle(userId, current, limit);
+        for(OtherUserArticleVo otherUserArticleVo : otherUserArticle){
+            long setSize = RedisUtils.getSetSize(otherUserArticleVo.getArticleId());
+            otherUserArticleVo.setViews(setSize + otherUserArticleVo.getViews());
+        }
+
+        return otherUserArticle;
     }
 
     //修改专栏文章的排序
@@ -472,6 +484,39 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         Category categoryByCategoryId = categoryService.findCategoryByCategoryId(article.getCategoryId());
         columnArticleDetailVo.setCategoryName(categoryByCategoryId.getCategoryName());
         return columnArticleDetailVo;
+    }
+
+    //设置置顶文章
+    @Transactional
+    @Override
+    public void setTopArticle(String articleId) {
+        //查询出之前的置顶文章
+        IndexArticleVo topArticle = findTopArticle();
+        if(topArticle != null){
+            //如果有置顶文章，则将之前的置顶文章取消
+            Article article = new Article();
+            article.setId(topArticle.getId());
+            article.setIsTop(false);
+            int i = baseMapper.updateById(article);
+            if(i != 1){
+                throw new XiaoXiaException(ResultCode.ERROR , "设置置顶文章失败");
+            }
+        }
+        //设置现在的置顶文章
+        Article article = new Article();
+        article.setId(articleId);
+        article.setIsTop(true);
+        int i = baseMapper.updateById(article);
+        if(i != 1){
+            throw new XiaoXiaException(ResultCode.ERROR , "设置置顶文章失败");
+        }
+    }
+
+    //封禁该文章
+    @Transactional
+    @Override
+    public void banArticle(String reportId, String articleId) {
+
     }
 
 }

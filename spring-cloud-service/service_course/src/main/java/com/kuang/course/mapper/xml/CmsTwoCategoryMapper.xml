@@ -7,7 +7,16 @@
     </select>
 
 
-    <select id="findIndexCategoryVoByOcId" resultType="com.kuang.course.entity.vo.IndexCategoryVo" >
+    <resultMap id="findIndexCourseVo" type="com.kuang.course.entity.vo.IndexCategoryVo" >
+        <id column="id" property="id" />
+        <result column="title" property="title" />
+        <collection property="courseList" ofType="com.kuang.course.entity.vo.IndexCourseVo"
+                    select="com.kuang.course.mapper.CmsCourseMapper.findCourseByTcId"
+                    column="id"/>
+    </resultMap>
+
+    <select id="findIndexCategoryVoByOcId" resultMap="findIndexCourseVo" >
         select id , title from cms_two_category where oc_id = #{ocId} order by sort asc
     </select>
+
 </mapper>

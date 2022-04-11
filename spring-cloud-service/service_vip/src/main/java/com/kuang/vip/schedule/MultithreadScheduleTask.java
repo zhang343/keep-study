@@ -1,5 +1,6 @@
 package com.kuang.vip.schedule;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.kuang.vip.entity.Members;
 import com.kuang.vip.mapper.MembersMapper;
 import com.kuang.vip.service.CacheService;
@@ -10,9 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Component
 @Slf4j
@@ -33,18 +32,9 @@ public class MultithreadScheduleTask {
     @Scheduled(cron = "0 0 0/1 * * ? ")
     public void deleteVipMember(){
         log.info("开始执行定时任务,删除vip会员表中过期会员,当前时间为:" + LocalDateTime.now());
-        List<Members> allVipMember = membersMapper.selectList(null);
-        List<String> userIdList = new ArrayList<>();
-        Date date = new Date();
-        for(Members members : allVipMember){
-            if(date.compareTo(members.getExpirationTime()) >= 0){
-                userIdList.add(members.getId());
-            }
-        }
-
-        if(userIdList.size() != 0){
-            membersMapper.deleteBatchIds(userIdList);
-        }
+        QueryWrapper<Members> wrapper = new QueryWrapper<>();
+        wrapper.lt("expiration_time" , new Date());
+        membersMapper.delete(wrapper);
     }
 
     //缓存权益数据和vip成员

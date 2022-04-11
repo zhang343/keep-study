@@ -16,4 +16,10 @@ public interface CmsVideoService extends IService<CmsVideo> {
 
     //缓存课程播放量
     void setCourseViews(String courseId, String ip);
+
+    //上传小节
+    void uploadChapterVideo(CmsVideo video);
+
+    //删除小节
+    void deleteVideo(String videoId , String token);
 }

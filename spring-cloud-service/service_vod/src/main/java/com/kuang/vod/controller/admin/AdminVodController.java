@@ -8,11 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Future;
 
 @RestController
@@ -24,7 +26,7 @@ public class AdminVodController {
     @Resource
     private VodService vodService;
 
-    //上传视频
+    //上传视频,并计算出视频的时长
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("uploadVideo")
     public R uploadOssFile(MultipartFile Video){
@@ -39,7 +41,7 @@ public class AdminVodController {
         return R.ok().data("videoSourceId" , videoSourceId).data("length" , aLong);
     }
 
-    //删除视频
+    //删除视频，单个
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("deleteVideo")
     public R deleteVideo(String videoSourceId){
@@ -47,11 +49,11 @@ public class AdminVodController {
         return R.ok();
     }
 
-    //删除多个视频
+    //删除视频，多个
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("deleteVideoByIdList")
-    public R deleteVideoByIdList(String[] videoIdList){
-        vodService.removeAlyVideo(Arrays.asList(videoIdList));
+    public R deleteVideoByIdList(@RequestParam("videoIdList") List<String> videoIdList){
+        vodService.removeAlyVideo(videoIdList);
         return R.ok();
     }
 

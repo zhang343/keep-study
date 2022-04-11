@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.List;
 
 
@@ -39,9 +41,6 @@ public class CmsIndexController {
         List<SlideTitleVo> slideTitleVoList = twoCategoryService.findSlideTitleByOcId(oneCategoryId);
         //查询相应的二级分类
         List<IndexCategoryVo> indexCategoryVoList = twoCategoryService.findIndexCategoryVoByOcId(oneCategoryId);
-        for(IndexCategoryVo indexCategoryVo : indexCategoryVoList){
-            indexCategoryVo.setCourseList(courseService.findCourseByTcId(indexCategoryVo.getId()));
-        }
         return R.ok().data("slideTitleList" , slideTitleVoList).data("categoryList" , indexCategoryVoList);
     }
 }

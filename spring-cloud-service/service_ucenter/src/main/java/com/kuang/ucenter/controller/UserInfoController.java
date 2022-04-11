@@ -5,6 +5,7 @@ import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.JwtUtils;
 import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
+import com.kuang.ucenter.entity.UserInfo;
 import com.kuang.ucenter.entity.vo.*;
 import com.kuang.ucenter.service.UserInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,33 @@ public class UserInfoController {
     @Resource
     private UserInfoService userInfoService;
 
+
+    //注册
+    @PostMapping("register")
+    public R register(String phoneNumber , String code , String nickName){
+        if(StringUtils.isEmpty(phoneNumber) || StringUtils.isEmpty(code) || StringUtils.isEmpty(nickName)){
+            throw new XiaoXiaException(ResultCode.ERROR , "信息不完善");
+        }
+
+        UserInfo phoneNumberMember = userInfoService.getPhoneNumberMember(phoneNumber);
+        if(phoneNumberMember != null){
+            throw new XiaoXiaException(ResultCode.ERROR , "该账号已经注册");
+        }
+
+        userInfoService.insertMember(phoneNumber , nickName , code);
+        return R.ok();
+    }
+
+    //验证码登录
+    @PostMapping("loginCode")
+    public R loginCode(String phoneNumber , String code){
+        if(StringUtils.isEmpty(phoneNumber) || StringUtils.isEmpty(code)){
+            throw new XiaoXiaException(ResultCode.ERROR , "信息不完善");
+        }
+        String userId = userInfoService.loginCode(phoneNumber , code);
+        String token = JwtUtils.getJwtToken(userId);
+        return R.ok().data("token" , token);
+    }
 
     //用户账号密码登录
     @PostMapping("login")

@@ -20,5 +20,5 @@ public interface OssService {
     void downloadFile(String fileSourceId , String name , HttpServletResponse response);
 
     //计算文件大小
-    Future<String> getFileLength(MultipartFile file);
+    String getFileLength(MultipartFile file);
 }

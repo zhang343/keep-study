@@ -12,6 +12,7 @@ import com.kuang.bbs.utils.ColumnUtils;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.JwtUtils;
 import com.kuang.springcloud.utils.R;
+import com.kuang.springcloud.utils.RedisUtils;
 import com.kuang.springcloud.utils.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
@@ -85,6 +86,8 @@ public class ColumnController {
         Future<Boolean> userAbility = columnService.checkUserAbility(userId , columnId);
         //查出专栏数据
         ColumnDetailVo columnDetailVo = columnService.findColumnDetail(columnId);
+        //设置专栏浏览量
+        columnService.setColunmViews(columnId , request.getRemoteAddr());
         //查出专栏文章
         List<ColumnArticleVo> columnArticleVoList = colunmArticleService.findColumnArticle(columnId);
 
@@ -98,9 +101,8 @@ public class ColumnController {
             throw new XiaoXiaException(ResultCode.ERROR , "没有权限访问该专栏");
         }
 
-        //设置专栏浏览量
-        columnService.setColunmViews(columnId , request.getRemoteAddr());
-
+        long setSize = RedisUtils.getSetSize(columnDetailVo.getColumnId());
+        columnDetailVo.setViews(setSize + columnDetailVo.getViews());
         return R.ok().data("columnDetail" , columnDetailVo).data("columnArticleList" , columnArticleVoList);
     }
 

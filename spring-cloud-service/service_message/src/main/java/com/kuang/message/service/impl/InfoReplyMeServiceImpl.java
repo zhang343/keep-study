@@ -2,7 +2,6 @@ package com.kuang.message.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.kuang.message.client.UcenterClient;
-import com.kuang.message.client.VipClient;
 import com.kuang.message.entity.InfoReplyMe;
 import com.kuang.message.entity.vo.ReplyMeVo;
 import com.kuang.message.mapper.InfoReplyMeMapper;
@@ -14,13 +13,10 @@ import com.kuang.springcloud.utils.ResultCode;
 import com.kuang.springcloud.utils.VipUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.time.LocalTime;
 import java.util.*;
-import java.util.concurrent.Future;
 
 /**
  * @author Xiaozhang
@@ -29,10 +25,6 @@ import java.util.concurrent.Future;
 @Service
 @Slf4j
 public class InfoReplyMeServiceImpl extends ServiceImpl<InfoReplyMeMapper, InfoReplyMe> implements InfoReplyMeService {
-
-
-    @Resource
-    private VipClient vipClient;
 
     @Resource
     private UcenterClient ucenterClient;

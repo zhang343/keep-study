@@ -11,37 +11,31 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-27
- */
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("vip_user_today_right")
-@ApiModel(value="UserTodayRight对象", description="")
-public class UserTodayRight implements Serializable {
+@TableName("vip_order")
+@ApiModel(value="Order对象", description="")
+public class Order implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "主键id")
+    @ApiModelProperty(value = "账单id")
     @TableId(value = "id", type = IdType.ID_WORKER_STR)
     private String id;
+
+    @ApiModelProperty(value = "权益id")
+    private String rightId;
 
     @ApiModelProperty(value = "用户id")
     private String userId;
 
-    @ApiModelProperty(value = "专栏数量")
-    private Integer columnNumber;
+    @ApiModelProperty(value = "支付金额")
+    private Integer paymentPrice;
 
-    @ApiModelProperty(value = "0未签到 1签到")
-    private Boolean isSign;
-
-    @ApiModelProperty(value = "每日k币")
-    private Integer money;
-
-    @ApiModelProperty(value = "每日发帖数量")
-    private Integer articleNumber;
+    @ApiModelProperty(value = "支付状态,1表示成功，0表示未支付")
+    private Boolean status;
 
     @ApiModelProperty(value = "乐观锁")
     @Version

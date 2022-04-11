@@ -10,7 +10,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class VipApplication implements CommandLineRunner {
 
-
     public static void main(String[] args) {
         SpringApplication springApplication = new SpringApplication(VipApplication.class);
         springApplication.setBannerMode(Banner.Mode.CONSOLE);

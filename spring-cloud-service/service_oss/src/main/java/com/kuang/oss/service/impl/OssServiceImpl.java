@@ -137,9 +137,8 @@ public class OssServiceImpl implements OssService {
     }
 
     //计算文件大小
-    @Async
     @Override
-    public Future<String> getFileLength(MultipartFile file) {
+    public String getFileLength(MultipartFile file) {
         //转储临时文件
         File dfile = null;
         try {
@@ -168,7 +167,7 @@ public class OssServiceImpl implements OssService {
             }
         }
         dfile.delete();
-        return new AsyncResult<>(size);
+        return size;
     }
 
 }

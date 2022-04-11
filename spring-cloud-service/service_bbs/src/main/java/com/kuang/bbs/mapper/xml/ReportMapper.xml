@@ -2,4 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kuang.bbs.mapper.ReportMapper">
 
+    <select id="findReportArticle" resultType="com.kuang.bbs.entity.admin.AdminReportArticleVo" >
+        select report.id , report.article_id , article.title , report.content , report.gmt_create
+        from bbs_report as report join bbs_article as article
+        on report.article_id = article.id
+        where report.gmt_create &gt; #{beginTime} and report.gmt_create &lt; #{endTime}
+        order by report.gmt_create desc
+        limit #{current} , #{limit}
+    </select>
 </mapper>

@@ -2,7 +2,6 @@ package com.kuang.message.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.kuang.message.client.BbsClient;
-import com.kuang.message.client.VipClient;
 import com.kuang.message.entity.InfoFriendFeed;
 import com.kuang.message.entity.vo.FriendFeedVo;
 import com.kuang.message.mapper.InfoFriendFeedMapper;
@@ -12,13 +11,10 @@ import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.VipUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.time.LocalTime;
 import java.util.*;
-import java.util.concurrent.Future;
 
 /**
  * @author Xiaozhang
