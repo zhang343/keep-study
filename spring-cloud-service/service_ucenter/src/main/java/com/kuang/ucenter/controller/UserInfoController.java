@@ -18,10 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-05
- */
+
 @RestController
 @RequestMapping("/user/account")
 @Slf4j
@@ -40,11 +37,12 @@ public class UserInfoController {
 
         UserInfo phoneNumberMember = userInfoService.getPhoneNumberMember(phoneNumber);
         if(phoneNumberMember != null){
-            throw new XiaoXiaException(ResultCode.ERROR , "该账号已经注册");
+            throw new XiaoXiaException(20005 , "该账号已经注册");
         }
 
-        userInfoService.insertMember(phoneNumber , nickName , code);
-        return R.ok();
+        UserInfo userInfo = userInfoService.insertMember(phoneNumber, nickName, code);
+        String token = JwtUtils.getJwtToken(userInfo.getId());
+        return R.ok().data("token" , token);
     }
 
     //验证码登录

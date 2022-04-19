@@ -7,10 +7,7 @@ import com.kuang.ucenter.entity.vo.*;
 import java.util.List;
 import java.util.concurrent.Future;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-05
- */
+
 public interface UserInfoService extends IService<UserInfo> {
 
     //根据电话号码查询用户

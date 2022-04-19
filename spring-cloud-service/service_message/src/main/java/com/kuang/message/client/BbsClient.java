@@ -7,11 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-/**
- * @author XiaoZhang
- * @date 2022/2/6 15:32
- * 远程调用service-bbs服务类
- */
+
 @FeignClient(
         name = "service-bbs" ,
         fallbackFactory = BbsClientFactory.class

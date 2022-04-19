@@ -19,9 +19,6 @@ public interface CmsCourseMapper extends BaseMapper<CmsCourse> {
     //查找课程详细信息
     CourseVo findCourseVo(String courseId);
 
-    //查找价格为前三的课程
-    List<BbsCourseVo> findCourseOrderByPrice();
-
     //更新课程浏览量
     void updateCourseViews(@Param("courseList") List<CmsCourse> courseList);
 

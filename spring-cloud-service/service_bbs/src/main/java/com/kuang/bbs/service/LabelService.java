@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 import java.util.concurrent.Future;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 public interface LabelService extends IService<Label> {
 
     //查找文章标签

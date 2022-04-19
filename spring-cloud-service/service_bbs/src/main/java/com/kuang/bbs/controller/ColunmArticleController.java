@@ -86,7 +86,7 @@ public class ColunmArticleController {
 
 
         //发布文章
-        Article article = colunmArticleService.publishArticle(pulishColumnArticleVo , conlumnId , userId , nickname , avatar);
+        Article article = colunmArticleService.publishArticle(pulishColumnArticleVo , conlumnId , userId , nickname , avatar , labelList);
 
         //插入标签
         labelService.addArticleLabel(article.getId() , Arrays.asList(labelList));
@@ -198,7 +198,7 @@ public class ColunmArticleController {
             throw new XiaoXiaException(ResultCode.ERROR , "请正确访问");
         }
 
-        colunmArticleService.updateCloumArticle(updateColumnArticleVo , userId , columnId , articleId);
+        colunmArticleService.updateCloumArticle(updateColumnArticleVo , userId , columnId , articleId , labelList);
         labelService.addArticleLabel(articleId , Arrays.asList(labelList));
 
         return R.ok();

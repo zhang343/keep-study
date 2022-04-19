@@ -6,10 +6,7 @@ import com.kuang.course.entity.vo.CourseStudyVo;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-03-23
- */
+
 public interface CmsStudyService extends IService<CmsStudy> {
 
     //增加学习记录

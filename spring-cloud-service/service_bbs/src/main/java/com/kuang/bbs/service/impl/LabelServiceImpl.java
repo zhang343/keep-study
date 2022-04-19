@@ -16,10 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 @Service
 @Slf4j
 public class LabelServiceImpl extends ServiceImpl<LabelMapper, Label> implements LabelService {

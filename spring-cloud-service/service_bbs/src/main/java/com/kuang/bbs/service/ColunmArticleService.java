@@ -20,7 +20,7 @@ public interface ColunmArticleService extends IService<ColunmArticle> {
     void deleteArticle(String userId, String articleId, String cloumnId);
 
     //发布专栏文章
-    Article publishArticle(PulishColumnArticleVo pulishColumnArticleVo, String conlumnId , String userId , String nickname , String avatar);
+    Article publishArticle(PulishColumnArticleVo pulishColumnArticleVo, String conlumnId , String userId , String nickname , String avatar , String[] labelList);
 
     //进行数据验证，看用户是否可以访问该专栏文章
     Future<Boolean> checkUserAbility(String userId, String columnId, String articleId);
@@ -29,5 +29,5 @@ public interface ColunmArticleService extends IService<ColunmArticle> {
     Future<Boolean> checkUserColumnArticle(String userId, String columnId, String articleId);
 
     //修改专栏文章
-    void updateCloumArticle(UpdateColumnArticleVo updateColumnArticleVo , String userId, String columnId, String articleId);
+    void updateCloumArticle(UpdateColumnArticleVo updateColumnArticleVo , String userId, String columnId, String articleId , String[] labelList);
 }

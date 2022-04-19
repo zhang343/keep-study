@@ -7,10 +7,7 @@ import com.kuang.course.entity.vo.SlideTitleVo;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-08
- */
+
 public interface CmsTwoCategoryService extends IService<CmsTwoCategory> {
 
     //查询侧边栏，通过一级分类id

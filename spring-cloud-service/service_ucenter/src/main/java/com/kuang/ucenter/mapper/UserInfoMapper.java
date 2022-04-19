@@ -7,10 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-05
- */
+
 public interface UserInfoMapper extends BaseMapper<UserInfo> {
 
     //更新用户每日签到

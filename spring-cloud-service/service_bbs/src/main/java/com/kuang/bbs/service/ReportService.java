@@ -6,17 +6,14 @@ import com.kuang.bbs.entity.admin.AdminReportArticleVo;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 public interface ReportService extends IService<Report> {
 
     //查询是否有这条举报，通过文章id，有true，没有false
     boolean findReportByArticleId(String articleId);
 
     //举报文章接口,异步执行
-    void report(String articleId , String content);
+    void report(String articleId , String[] content);
 
     //查看目前的被举报的文章数量
     Integer findReportArticleNumber(String beginTime, String endTime);

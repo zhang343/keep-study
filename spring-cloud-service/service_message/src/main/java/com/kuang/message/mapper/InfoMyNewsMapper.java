@@ -7,10 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 public interface InfoMyNewsMapper extends BaseMapper<InfoMyNews> {
 
     //查询用户我的消息

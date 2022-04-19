@@ -24,11 +24,7 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 
-/**
- * @author XiaoZhang
- * @date 2022/2/3 15:21
- * 图片处理实现接口
- */
+
 @Service
 @Slf4j
 public class OssServiceImpl implements OssService {

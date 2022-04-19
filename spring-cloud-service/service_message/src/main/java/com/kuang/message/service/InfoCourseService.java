@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 import java.util.concurrent.Future;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 public interface InfoCourseService extends IService<InfoCourse> {
 
     //查询未读消息

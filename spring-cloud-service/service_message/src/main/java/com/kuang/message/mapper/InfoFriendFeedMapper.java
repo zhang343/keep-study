@@ -7,10 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 public interface InfoFriendFeedMapper extends BaseMapper<InfoFriendFeed> {
 
     //查询好友动态消息

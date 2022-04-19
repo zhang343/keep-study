@@ -6,10 +6,7 @@ import com.kuang.download.entity.vo.DtmFileVo;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-05
- */
+
 public interface DtmFileService extends IService<DtmFile> {
 
     //通过分类id和文件名查找文件

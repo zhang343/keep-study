@@ -7,10 +7,7 @@ import com.kuang.message.entity.vo.ReplyMeVo;
 import java.util.List;
 import java.util.concurrent.Future;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 public interface InfoReplyMeService extends IService<InfoReplyMe> {
 
     //查找未读消息

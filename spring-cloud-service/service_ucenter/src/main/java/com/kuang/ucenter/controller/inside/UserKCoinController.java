@@ -6,6 +6,7 @@ import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
 import com.kuang.ucenter.service.UserInfoService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,11 +25,9 @@ public class UserKCoinController {
 
     //减少用户k币
     @PostMapping("reduce")
-    public R reduce(Integer kCoinNumber , HttpServletRequest request){
+    public R reduce(Integer kCoinNumber , String userId){
         log.info("开始减少用户k币,减少数量:" + kCoinNumber);
-        String userId = JwtUtils.getMemberIdByJwtToken(request);
-        if(userId == null || kCoinNumber == null || kCoinNumber == 0){
-            log.warn("有人非法操作,减去用户k币");
+        if(StringUtils.isEmpty(userId) || kCoinNumber == null || kCoinNumber == 0){
             throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
         }
         //如果传递过来的是正值,修改为负值
@@ -42,11 +41,9 @@ public class UserKCoinController {
 
     //给用户增加k币
     @PostMapping("add")
-    public R add(Integer kCoinNumber , HttpServletRequest request){
+    public R add(Integer kCoinNumber , String userId){
         log.info("开始增加用户k币,增加数量:" + kCoinNumber);
-        String userId = JwtUtils.getMemberIdByJwtToken(request);
-        if(userId == null || kCoinNumber == null || kCoinNumber <= 0){
-            log.warn("有人非法操作,增加用户k币");
+        if(StringUtils.isEmpty(userId) || kCoinNumber == null || kCoinNumber <= 0){
             throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
         }
         userInfoService.addKCoin(kCoinNumber , userId);

@@ -19,9 +19,6 @@ public interface CmsCourseService extends IService<CmsCourse> {
     //用户购买课程,并且返回课程标题
     String buyCourse(String courseId, String userId);
 
-    //查找价格为前三的课程
-    List<BbsCourseVo> findCourseOrderByPrice();
-
     //更新课程浏览量
     void updateCourseViews(List<CmsCourse> courseList);
 

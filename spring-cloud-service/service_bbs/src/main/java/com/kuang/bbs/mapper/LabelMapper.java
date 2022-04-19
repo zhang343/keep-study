@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 public interface LabelMapper extends BaseMapper<Label> {
 
     //查询用户标签,这里只是返回标签名

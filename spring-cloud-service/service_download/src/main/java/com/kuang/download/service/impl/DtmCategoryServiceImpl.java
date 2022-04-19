@@ -17,10 +17,7 @@ import springfox.documentation.annotations.Cacheable;
 import javax.annotation.Resource;
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-05
- */
+
 @Service
 @Slf4j
 public class DtmCategoryServiceImpl extends ServiceImpl<DtmCategoryMapper, DtmCategory> implements DtmCategoryService {

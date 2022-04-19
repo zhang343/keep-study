@@ -4,27 +4,17 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.kuang.bbs.entity.Article;
 import com.kuang.bbs.entity.vo.IndexArticleVo;
 import com.kuang.bbs.entity.vo.OtherUserArticleVo;
+import com.kuang.bbs.es.entity.EsArticle;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
-public interface ArticleMapper extends BaseMapper<Article> {
 
-    //根据条件查询系统文章总数
-    Long findArticleNumber(@Param("categoryId") String categoryId ,
-                           @Param("isExcellentArticle") Boolean isExcellentArticle ,
-                           @Param("articleNameOrLabelName") String articleNameOrLabelName);
+public interface ArticleMapper extends BaseMapper<Article> {
 
     //条件分页查询文章
     List<IndexArticleVo> pageArticleCondition(@Param("current") Long current,
-                                              @Param("limit") Long limit,
-                                              @Param("categoryId") String categoryId,
-                                              @Param("isExcellentArticle") Boolean isExcellentArticle,
-                                              @Param("articleNameOrLabelName") String articleNameOrLabelName);
+                                              @Param("limit") Long limit);
 
     //更新文章浏览量
     void updateArticleViews(@Param("articleUpdateList") List<Article> articleUpdateList);
@@ -33,4 +23,7 @@ public interface ArticleMapper extends BaseMapper<Article> {
     List<OtherUserArticleVo> findOtherUserArticle(@Param("userId") String userId,
                                                   @Param("current") Long current,
                                                   @Param("limit") Long limit);
+
+
+    List<IndexArticleVo> getIndexArticleList(@Param("esArticleList") List<EsArticle> esArticleList);
 }

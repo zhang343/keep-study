@@ -20,6 +20,6 @@ public interface UcenterClient {
     R findUserFansId(@RequestParam("userId") String userId);
 
     @PostMapping("/KCoin/add")
-    R add(@RequestParam("kCoinNumber") Integer kCoinNumber);
+    R add(@RequestParam("kCoinNumber") Integer kCoinNumber , @RequestParam("userId") String userId);
 
 }

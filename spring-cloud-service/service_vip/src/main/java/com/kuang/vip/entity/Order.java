@@ -25,16 +25,16 @@ public class Order implements Serializable {
     @TableId(value = "id", type = IdType.ID_WORKER_STR)
     private String id;
 
-    @ApiModelProperty(value = "权益id")
-    private String rightId;
-
     @ApiModelProperty(value = "用户id")
     private String userId;
 
     @ApiModelProperty(value = "支付金额")
     private Integer paymentPrice;
 
-    @ApiModelProperty(value = "支付状态,1表示成功，0表示未支付")
+    @ApiModelProperty(value = "k币")
+    private Integer price;
+
+    @ApiModelProperty(value = "支付状态，0表示未支付，1表示支付")
     private Boolean status;
 
     @ApiModelProperty(value = "乐观锁")

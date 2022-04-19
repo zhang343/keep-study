@@ -9,10 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-03-25
- */
+
 @Service
 public class ColumnAuthorServiceImpl extends ServiceImpl<ColumnAuthorMapper, ColumnAuthor> implements ColumnAuthorService {
 

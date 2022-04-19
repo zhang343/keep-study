@@ -6,11 +6,7 @@ import lombok.Data;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author XiaoZhang
- * @date 2022/1/22 15:20
- * 统一结果封装类
- */
+
 @Data
 public class R {
 

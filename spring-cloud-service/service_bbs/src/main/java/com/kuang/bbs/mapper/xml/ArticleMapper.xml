@@ -1,40 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kuang.bbs.mapper.ArticleMapper">
-    
-    <select id="findArticleNumber" resultType="java.lang.Long">
-        select count(distinct article.id) from bbs_article as article left outer join bbs_label as label
-        on article.id = label.article_id
-        where article.is_violation_article = 0 and (article.is_release = 1 or article.is_bbs = 1)
-        <if test="categoryId!=null and categoryId!=''">
-            and article.category_id = #{categoryId}
-        </if>
-        <if test="isExcellentArticle!=null and isExcellentArticle!=false">
-            and article.is_excellent_article = 1
-        </if>
-        <if test="articleNameOrLabelName!=null and articleNameOrLabelName!=''">
-            and (article.title like '%' #{articleNameOrLabelName} '%' or label.label_name like '%' #{articleNameOrLabelName} '%')
-        </if>
-    </select>
 
 
     <select id="pageArticleCondition" resultType="com.kuang.bbs.entity.vo.IndexArticleVo" >
-        select distinct (article.id) , article.id , article.is_top , article.title , article.description , article.user_id ,
+        select article.id , article.is_top , article.title , article.description , article.user_id ,
                article.avatar , article.nickname , article.views , article.is_excellent_article , article.gmt_create ,
                category.category_name
         from bbs_article as article join bbs_category as category on article.category_id = category.id
-             left outer join bbs_label as label on article.id = label.article_id
         where article.is_violation_article = 0 and (article.is_release = 1 or article.is_bbs = 1)
-        <if test="categoryId!=null and categoryId!=''">
-            and article.category_id = #{categoryId}
-        </if>
-        <if test="isExcellentArticle!=null and isExcellentArticle!=false">
-            and article.is_excellent_article = 1
-        </if>
-        <if test="articleNameOrLabelName!=null and articleNameOrLabelName!=''">
-            and (article.title like '%' #{articleNameOrLabelName} '%' or label.label_name like '%' #{articleNameOrLabelName} '%')
-        </if>
-        order by article.views desc , article.gmt_create desc
+        order by article.gmt_create desc
         limit #{current} , #{limit}
     </select>
 
@@ -70,6 +45,17 @@
                                           and (is_release = 1 or is_bbs = 1)
         order by article.gmt_create desc
         limit #{current} , #{limit}
+    </select>
+
+    <select id="getIndexArticleList" resultType="com.kuang.bbs.entity.vo.IndexArticleVo" >
+        select  article.id , article.is_top , article.title , article.description , article.user_id ,
+                        article.avatar , article.nickname , article.views , article.is_excellent_article , article.gmt_create ,
+                        category.category_name
+        from bbs_article as article join bbs_category as category on article.category_id = category.id
+        where article.id in
+        <foreach collection="esArticleList" item="esArticle" open="(" close=")" separator="," >
+            #{esArticle.id}
+        </foreach>
     </select>
 
 

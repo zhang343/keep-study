@@ -10,11 +10,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * @author XiaoZhang
- * @date 2022/2/6 11:32
- * feign远程调用拦截
- */
+
 @Component
 @Slf4j
 public class FeignBeforeExecInterceptor implements RequestInterceptor {

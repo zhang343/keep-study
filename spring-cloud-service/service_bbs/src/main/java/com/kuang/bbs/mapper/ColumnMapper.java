@@ -8,10 +8,6 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-03-24
- */
 public interface ColumnMapper extends BaseMapper<Column> {
 
     //查询用户专栏

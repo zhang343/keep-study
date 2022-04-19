@@ -8,6 +8,8 @@ import com.kuang.bbs.entity.vo.ColumnAuthorVo;
 import com.kuang.bbs.entity.vo.ColumnDetailVo;
 import com.kuang.bbs.entity.vo.ColumnVo;
 import com.kuang.bbs.entity.vo.UpdateColumnVo;
+import com.kuang.bbs.es.entity.EsArticle;
+import com.kuang.bbs.es.mapper.EsArticleMapper;
 import com.kuang.bbs.mapper.*;
 import com.kuang.bbs.service.ColumnService;
 import com.kuang.bbs.utils.ColumnUtils;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -49,6 +52,9 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
 
     @Resource
     private LabelMapper labelMapper;
+
+    @Resource
+    private EsArticleMapper esArticleMapper;
 
     //创建专栏
     @Transactional
@@ -232,11 +238,24 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
             return;
         }
 
+
         //下面对具体文章数据的删除
         int i = articleMapper.deleteBatchIds(articleIdList);
         if(i != articleIdList.size()){
             throw new XiaoXiaException(ResultCode.ERROR , "删除失败");
         }
+
+        //清除在es里面的文章
+        List<EsArticle> esArticleList = new ArrayList<>();
+        for(String articleId : articleIdList){
+            EsArticle esArticle = new EsArticle();
+            esArticle.setId(articleId);
+            esArticleList.add(esArticle);
+        }
+        esArticleMapper.deleteAll(esArticleList);
+
+
+
 
         //删除标签,不考虑事务
         QueryWrapper<Label> labelQueryWrapper = new QueryWrapper<>();
@@ -246,7 +265,6 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
         QueryWrapper<Comment> commentQueryWrapper = new QueryWrapper<>();
         commentQueryWrapper.in("article_id" , articleIdList);
         commentMapper.delete(commentQueryWrapper);
-
 
         //删除专栏文章
         QueryWrapper<ColunmArticle> colunmArticleQueryWrapper = new QueryWrapper<>();

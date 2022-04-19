@@ -79,8 +79,12 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     public UserInfo insertMember(String phoneNumber , String nickname , String code) {
 
         Object value = RedisUtils.getValue(phoneNumber);
+        if(value == null){
+            throw new XiaoXiaException(20006 , "电话号码不正确");
+        }
+
         if(!code.equals(value)){
-            throw new XiaoXiaException(ResultCode.ERROR , "验证码错误");
+            throw new XiaoXiaException(20007 , "验证码错误");
         }
 
 
@@ -273,7 +277,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     }
 
     //用户签到
-    @Transactional
     @Override
     public int userSignIn(String userId) {
         RightRedis userRightRedis = VipUtils.getUserRightRedis(userId);
@@ -481,12 +484,17 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Override
     public String loginCode(String phoneNumber, String code) {
         Object value = RedisUtils.getValue(phoneNumber);
-        if(!code.equals(value)){
-            throw new XiaoXiaException(ResultCode.ERROR , "验证码错误");
+        if(value == null){
+            throw new XiaoXiaException(20006 , "电话号码不正确");
         }
+
+        if(!code.equals(value)){
+            throw new XiaoXiaException(20007 , "验证码错误");
+        }
+
         UserInfo phoneNumberMember = getPhoneNumberMember(phoneNumber);
         if(phoneNumberMember == null){
-            throw new XiaoXiaException(ResultCode.ERROR , "该手机号尚未注册，请注册");
+            throw new XiaoXiaException(20008 , "该手机号尚未注册，请注册");
         }
         RedisUtils.delKey(phoneNumber);
         return phoneNumberMember.getId();

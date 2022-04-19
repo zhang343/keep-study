@@ -7,10 +7,7 @@ import com.kuang.course.entity.vo.SlideTitleVo;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-08
- */
+
 public interface CmsTwoCategoryMapper extends BaseMapper<CmsTwoCategory> {
 
     //通过一级分类查找侧边栏,通过sort升序

@@ -15,10 +15,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-07
- */
 @Service
 @Slf4j
 public class RightsServiceImpl extends ServiceImpl<RightsMapper, Rights> implements RightsService {

@@ -62,8 +62,6 @@ public class RedisUtils implements InitializingBean {
 
     public static final String AllUSERNUMBER = "allUserNumber";
 
-    public static final String COURSEORDERBYPRICE = "courseOrderByPrice";
-
     /**
      *分布式锁，用来保证定时任务不重复执行
      * @param timeout 键值对缓存的时间，单位是秒

@@ -5,11 +5,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-/**
- * @author XiaoZhang
- * @date 2022/2/3 15:08
- * 阿里云Oss相关数据存储
- */
+
 @Component
 @Slf4j
 public class ConstantPropertiesUtils implements InitializingBean {

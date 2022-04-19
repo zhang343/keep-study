@@ -11,11 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 
-/**
- * @author XiaoZhang
- * @date 2022/2/3 14:32
- * 图片处理类
- */
+
 @RestController
 @RequestMapping("/oss/picture")
 @Slf4j

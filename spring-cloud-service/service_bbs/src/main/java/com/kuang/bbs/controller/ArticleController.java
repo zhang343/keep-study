@@ -45,10 +45,10 @@ public class ArticleController {
 
     //举报文章接口
     @PostMapping("report")
-    public R report(String articleId , String content){
+    public R report(String articleId , String[] content){
         //进行数据校验，保证articleId和content不为空
         //校验成功，开启异步执行举报
-        if(!StringUtils.isEmpty(articleId) && !StringUtils.isEmpty(content)){
+        if(!StringUtils.isEmpty(articleId) && content != null && content.length != 0){
             reportService.report(articleId , content);
         }
         return R.ok();
@@ -98,7 +98,7 @@ public class ArticleController {
         if(userId == null){
             throw new XiaoXiaException(ResultCode.ERROR , "请先登录");
         }
-        Article article = articleService.addArticle(articleUpdateAndCreateVo, avatar , nickname , userId);
+        Article article = articleService.addArticle(articleUpdateAndCreateVo, avatar , nickname , userId , labelList);
         //删除用户缓存
         RedisUtils.delKey(userId + "article");
         String articleId = article.getId();
@@ -139,7 +139,7 @@ public class ArticleController {
         if(userId == null || StringUtils.isEmpty(articleId)){
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
         }
-        articleService.updateArticle(articleUpdateAndCreateVo, userId);
+        articleService.updateArticle(articleUpdateAndCreateVo, userId , labelList);
         //插入文章标签
         labelService.addArticleLabel(articleId , Arrays.asList(labelList));
         return R.ok();

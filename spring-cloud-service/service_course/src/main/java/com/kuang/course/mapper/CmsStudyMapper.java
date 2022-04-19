@@ -7,10 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-03-23
- */
+
 public interface CmsStudyMapper extends BaseMapper<CmsStudy> {
 
     //查询用户学习记录

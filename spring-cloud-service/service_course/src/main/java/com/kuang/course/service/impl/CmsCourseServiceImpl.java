@@ -104,24 +104,12 @@ public class CmsCourseServiceImpl extends ServiceImpl<CmsCourseMapper, CmsCourse
         if(price != 0){
             //减去用户k币
             log.info("开始远程调用service-ucenter下面的接口/KCoin/reduce,减去用户k币:" + price);
-            R ucenterR = ucenterClient.reduce(price);
+            R ucenterR = ucenterClient.reduce(price , userId);
             if(!ucenterR.getSuccess()){
                 throw new XiaoXiaException(ResultCode.ERROR , "你的k币不足");
             }
         }
         return course.getTitle();
-    }
-
-    //查找价格为前三的课程
-    @Override
-    public List<BbsCourseVo> findCourseOrderByPrice() {
-        Object value = RedisUtils.getValue(RedisUtils.COURSEORDERBYPRICE);
-        if(value != null){
-            return (List<BbsCourseVo>) value;
-        }
-        List<BbsCourseVo> courseOrderByPrice = baseMapper.findCourseOrderByPrice();
-        RedisUtils.setValueTimeout(RedisUtils.COURSEORDERBYPRICE , courseOrderByPrice , 120);
-        return courseOrderByPrice;
     }
 
     //为消息模块服务，查询课程

@@ -6,10 +6,7 @@ import com.kuang.message.entity.vo.MyNewsVo;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 public interface InfoMyNewsService extends IService<InfoMyNews> {
 
 

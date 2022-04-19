@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 @Service
 @Slf4j
 public class InfoSystemServiceImpl extends ServiceImpl<InfoSystemMapper, InfoSystem> implements InfoSystemService {

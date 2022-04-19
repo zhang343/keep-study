@@ -7,11 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 
-/**
- * @author XiaoZhang
- * @date 2022/2/6 11:35
- * 远程调用service-ucenter服务熔断降级类
- */
+
 @Component
 @Slf4j
 public class UcenterClientFactory implements FallbackFactory<UcenterClient> {
@@ -21,8 +17,12 @@ public class UcenterClientFactory implements FallbackFactory<UcenterClient> {
         return new UcenterClient() {
 
             @Override
-            public R add(Integer kCoinNumber) {
-                log.error("远程调用service-ucenter下面的/KCoin/add方法失败");
+            public R add(Integer kCoinNumber , String userId) {
+                return R.error();
+            }
+
+            @Override
+            public R reduce(Integer kCoinNumber , String userId) {
                 return R.error();
             }
         };

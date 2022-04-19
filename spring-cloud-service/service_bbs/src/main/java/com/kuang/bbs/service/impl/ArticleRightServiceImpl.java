@@ -66,7 +66,7 @@ public class ArticleRightServiceImpl extends ServiceImpl<ArticleRightMapper, Art
                 throw new XiaoXiaException(ResultCode.ERROR , "发布文章失败");
             }
             //不强制一样
-            ucenterClient.add(10);
+            ucenterClient.add(10 , userId);
         }
     }
 

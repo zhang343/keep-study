@@ -7,10 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-08
- */
+
 public interface CmsBillMapper extends BaseMapper<CmsBill> {
 
     //查询用户购买课程

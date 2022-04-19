@@ -7,10 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-03-23
- */
+
 public interface CollectMapper extends BaseMapper<Collect> {
 
     //查询用户收藏文章

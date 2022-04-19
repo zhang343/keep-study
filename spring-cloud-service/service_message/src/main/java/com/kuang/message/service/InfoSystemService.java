@@ -7,10 +7,7 @@ import com.kuang.message.entity.vo.SystemVo;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 public interface InfoSystemService extends IService<InfoSystem> {
 
     //查询未读消息

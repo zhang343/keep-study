@@ -7,10 +7,7 @@ import com.kuang.ucenter.entity.vo.UserTalkVo;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-05
- */
+
 public interface UserTalkService extends IService<UserTalk> {
 
     //查询用户说说数量

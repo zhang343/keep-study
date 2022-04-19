@@ -10,7 +10,7 @@ import java.util.Map;
 public interface MembersService extends IService<Members> {
 
     //用户充值vip
-    String addMember(String vipId , String userId);
+    void addMember(String vipId , String userId);
 
     //查询用户的viplogo
     Object findUserVipLevel(List<String> userIdList);

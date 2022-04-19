@@ -9,11 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 
-/**
- * @author XiaoZhang
- * @date 2022/2/6 11:35
- * 远程调用service-course服务熔断降级类
- */
+
 @Component
 @Slf4j
 public class CourseClientFactory implements FallbackFactory<CourseClient> {

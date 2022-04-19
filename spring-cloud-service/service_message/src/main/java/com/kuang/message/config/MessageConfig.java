@@ -7,11 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-/**
- * @author XiaoZhang
- * @date 2022/2/11 10:53
- * 消息模块配置类
- */
+
 @Configuration
 @EnableDiscoveryClient
 @ComponentScan(basePackages = {"com.kuang.springcloud"})

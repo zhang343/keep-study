@@ -56,7 +56,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         }
         //删除子评论，不考虑事务
         QueryWrapper<Comment> child = new QueryWrapper<>();
-        wrapper.eq("father_id" , commentId);
+        child.eq("father_id" , commentId);
         baseMapper.delete(child);
     }
 

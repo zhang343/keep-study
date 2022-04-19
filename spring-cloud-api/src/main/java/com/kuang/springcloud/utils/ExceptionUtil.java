@@ -5,11 +5,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 
-/**
- * @author XiaoZhang
- * @date 2022/1/22 14:14
- * 异常信息提取器
- */
+
 public class ExceptionUtil {
 
     //提取异常类内含的异常信息,即栈堆信息

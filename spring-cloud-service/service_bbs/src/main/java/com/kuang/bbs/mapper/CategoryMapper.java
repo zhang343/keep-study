@@ -6,10 +6,7 @@ import com.kuang.bbs.entity.vo.CategoryVo;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 public interface CategoryMapper extends BaseMapper<Category> {
 
     //查询所有分类

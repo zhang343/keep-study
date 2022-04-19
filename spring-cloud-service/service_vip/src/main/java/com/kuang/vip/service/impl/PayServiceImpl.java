@@ -7,25 +7,24 @@ import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
+import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.RedisUtils;
 import com.kuang.springcloud.utils.ResultCode;
+import com.kuang.vip.client.UcenterClient;
 import com.kuang.vip.config.AliPayConfig;
 import com.kuang.vip.entity.AlipayBean;
-import com.kuang.vip.entity.Members;
+import com.kuang.vip.entity.MoneyK;
 import com.kuang.vip.entity.Order;
-import com.kuang.vip.entity.Rights;
-import com.kuang.vip.mapper.MembersMapper;
+import com.kuang.vip.mapper.MoneyKMapper;
 import com.kuang.vip.mapper.OrderMapper;
-import com.kuang.vip.mapper.RightsMapper;
 import com.kuang.vip.service.PayService;
 import com.kuang.vip.utils.AlipayUtil;
-import com.kuang.vip.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -33,21 +32,21 @@ import java.util.Map;
 public class PayServiceImpl implements PayService {
 
     @Resource
+    private MoneyKMapper moneyKMapper;
+
+    @Resource
     private OrderMapper orderMapper;
 
     @Resource
-    private MembersMapper membersMapper;
-
-    @Resource
-    private RightsMapper rightsMapper;
+    private UcenterClient ucenterClient;
 
     @Override
     public String aliPay(AlipayBean alipayBean) {
         String url = null;
         try {
-            url =  AlipayUtil.connect(alipayBean);
+            url = AlipayUtil.connect(alipayBean);
         } catch(AlipayApiException e) {
-            throw new XiaoXiaException(ResultCode.ERROR , "请求失败");
+            throw new XiaoXiaException(ResultCode.ERROR, "请求失败");
         }
         return url;
     }
@@ -55,13 +54,13 @@ public class PayServiceImpl implements PayService {
 
     //三种情况
     /*
-    支付宝调用：支付成功，数据库中存在一条未修改支付状态成功的的数据，要给用户充值成vip，加k币
+    支付宝调用：支付成功，数据库中存在一条未修改支付状态成功的的数据，加k币
     用户查询：
     1：支付成功，但是账单是以前支付成功的，已经处理完了，账单是处于支付成功的状态
-    2：支付成功，账单是刚才支付成功，数据库中存在一条未修改支付状态成功的的数据，要给用户充值成vip，加k币
+    2：支付成功，账单是刚才支付成功，数据库中存在一条未修改支付状态成功的的数据，加k币
      */
     @Transactional
-    public void updateOrderAndMembers(String orderId , Boolean isUserFind){
+    public void updateOrderAndMembers(String orderId, Boolean isUserFind) {
         log.info("开始查询数据库订单的支付状态,订单号:" + orderId);
         Order order = orderMapper.selectById(orderId);
         if(order.getStatus()){
@@ -83,26 +82,18 @@ public class PayServiceImpl implements PayService {
                 throw new RuntimeException();
             }
 
-            //插入vip会员
-            Members members = new Members();
-            members.setUserId(order.getUserId());
-            members.setRightsId(order.getRightId());
-            Rights byId = rightsMapper.selectById(order.getRightId());
-            Date date = new Date(System.currentTimeMillis() + DateUtils.ONEDAY * byId.getTimeLength());
-            members.setExpirationTime(date);
-            int insert = membersMapper.insert(members);
-            if(insert != 1){
+            //加k币
+            R add = ucenterClient.add(order.getPrice() , order.getUserId());
+            if(!add.getSuccess()){
                 RedisUtils.unOrderLock(orderId);
                 throw new RuntimeException();
             }
 
             RedisUtils.unOrderLock(orderId);
-            RedisUtils.delKey(RedisUtils.ALLVIPMEMBERTREEMAP);
         }else {
             log.info("获取分布式锁失败,订单号:" + orderId);
             throw new RuntimeException();
         }
-
     }
 
     //支付宝支付异步通知执行方法
@@ -177,6 +168,7 @@ public class PayServiceImpl implements PayService {
     //用户主动查询支付状态
     @Override
     public void checkAlipay(String outTradeNo) {
+
         log.info("向支付宝发起查询，查询商户订单号为:" + outTradeNo);
         //获得初始化的AlipayClient
         AlipayClient alipayClient = new DefaultAlipayClient(
@@ -217,11 +209,11 @@ public class PayServiceImpl implements PayService {
                 //支付成功
                 log.info("用户支付成功，查询商户订单号为:" + outTradeNo);
                 try {
-                    updateOrderAndMembers(outTradeNo , true);
+                    updateOrderAndMembers(outTradeNo, true);
                     log.info("修改订单支付状态成功,账单号为:" + outTradeNo);
-                }catch(Exception e){
+                } catch(Exception e) {
                     log.info("修改订单支付状态失败,账单号为:" + outTradeNo);
-                    throw new XiaoXiaException(ResultCode.ERROR , "查询失败");
+                    throw new XiaoXiaException(ResultCode.ERROR, "查询失败");
                 }
             } else {
                 //支付失败
@@ -229,5 +221,29 @@ public class PayServiceImpl implements PayService {
                 throw new XiaoXiaException(ResultCode.ERROR, "支付失败");
             }
         }
+    }
+
+    //充值k币，生成支付账单
+    @Transactional
+    @Override
+    public String addOrder(String id, String userId) {
+        MoneyK moneyK = moneyKMapper.selectById(id);
+        if(moneyK == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "请正确操作");
+        }
+        Order order = new Order();
+        order.setUserId(userId);
+        order.setPaymentPrice(moneyK.getMoney());
+        order.setPrice(moneyK.getPrice());
+        int insert = orderMapper.insert(order);
+        if(insert != 1){
+            throw new XiaoXiaException(ResultCode.ERROR , "与支付宝交互失败");
+        }
+        String s = aliPay(new AlipayBean()
+                .setBody("充值k币")
+                .setOut_trade_no(order.getId())
+                .setTotal_amount(new StringBuffer().append(order.getPaymentPrice()))
+                .setSubject("网站k币充值,充值k币数量为" + moneyK.getPrice()));
+        return s;
     }
 }

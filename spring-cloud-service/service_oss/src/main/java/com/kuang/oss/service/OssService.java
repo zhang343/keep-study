@@ -5,11 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.util.concurrent.Future;
 
-/**
- * @author XiaoZhang
- * @date 2022/2/3 15:12
- * 图片处理接口
- */
+
 public interface OssService {
 
     //上传图片接口

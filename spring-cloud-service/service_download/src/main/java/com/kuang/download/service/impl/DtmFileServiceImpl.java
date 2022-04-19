@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-05
- */
+
 @Service
 @Slf4j
 public class DtmFileServiceImpl extends ServiceImpl<DtmFileMapper, DtmFile> implements DtmFileService {

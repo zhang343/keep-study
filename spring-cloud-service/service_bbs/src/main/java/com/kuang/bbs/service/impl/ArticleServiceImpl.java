@@ -8,8 +8,11 @@ import com.kuang.bbs.client.VipClient;
 import com.kuang.bbs.entity.Article;
 import com.kuang.bbs.entity.Category;
 import com.kuang.bbs.entity.vo.*;
+import com.kuang.bbs.es.entity.EsArticle;
+import com.kuang.bbs.es.mapper.EsArticleMapper;
 import com.kuang.bbs.mapper.ArticleMapper;
 import com.kuang.bbs.service.*;
+import com.kuang.bbs.utils.ArrayUtils;
 import com.kuang.springcloud.entity.InfoFriendFeedVo;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.rabbitmq.MsgProducer;
@@ -56,6 +59,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Resource
     private LabelService labelService;
+
+    @Resource
+    private EsArticleMapper esArticleMapper;
 
 
     //查询系统文章数量
@@ -124,19 +130,22 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     //根据条件查询系统文章总数
     @Override
-    public Long findArticleNumber(String categoryId, Boolean isExcellentArticle, String articleNameOrLabelName) {
-        return baseMapper.findArticleNumber(categoryId , isExcellentArticle , articleNameOrLabelName);
+    public Integer findNormalArticleNumber() {
+        QueryWrapper<Article> wrapper = new QueryWrapper<>();
+        wrapper.eq("is_violation_article" , 0);
+        wrapper.last("and (is_release = 1 or is_bbs = 1)");
+        return baseMapper.selectCount(wrapper);
     }
 
     //条件分页查询文章
     @Async
     @Override
-    public Future<List<IndexArticleVo>> pageArticleCondition(Long current, Long limit, String categoryId, Boolean isExcellentArticle, String articleNameOrLabelName) {
+    public Future<List<IndexArticleVo>> pageArticleCondition(Long current, Long limit) {
 
         //条件查询文章
-        List<IndexArticleVo> indexArticleVoList = baseMapper.pageArticleCondition((current - 1) * limit , limit , categoryId , isExcellentArticle , articleNameOrLabelName);
+        List<IndexArticleVo> indexArticleVoList = baseMapper.pageArticleCondition((current - 1) * limit , limit);
 
-        if(current == 1 && limit == 10 && StringUtils.isEmpty(categoryId) && StringUtils.isEmpty(articleNameOrLabelName) && (isExcellentArticle == null || !isExcellentArticle)){
+        if(current == 1){
             //说明为首页查询
             //查看是否有首页
             IndexArticleVo topArticle = findTopArticle();
@@ -158,6 +167,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 }
             }
         }
+
         VipUtils.setVipLevel(indexArticleVoList , indexArticleVoList.get(0));
         //总共应该是10个，速度问题很小
         for(IndexArticleVo indexArticleVo : indexArticleVoList){
@@ -167,10 +177,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return new AsyncResult<>(indexArticleVoList);
     }
 
+
     //用户发布文章
     @Transactional
     @Override
-    public Article addArticle(ArticleUpdateAndCreateVo articleUpdateAndCreateVo , String avatar , String nickname  , String userId) {
+    public Article addArticle(ArticleUpdateAndCreateVo articleUpdateAndCreateVo , String avatar , String nickname  , String userId , String[] labelList) {
         //进行相关数据封装
         Article article = new Article();
         BeanUtils.copyProperties(articleUpdateAndCreateVo , article);
@@ -180,6 +191,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         article.setNickname(nickname);
         //设置保证为非专栏文章
         article.setIsColumnArticle(false);
+
         int insert = baseMapper.insert(article);
         if(insert != 1){
             throw new XiaoXiaException(ResultCode.ERROR , "发布文章失败");
@@ -187,6 +199,17 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
         //调整用户每日文章权益
         articleRightService.updateArticleRight(userId);
+
+
+        //保存
+        QueryWrapper<Article> wrapper = new QueryWrapper<>();
+        wrapper.select("id" , "category_id" , "title" , "description" , "is_column_article" , "is_release" , "is_bbs" , "is_violation_article" , "is_excellent_article");
+        wrapper.eq("id" , article.getId());
+        Article article1 = baseMapper.selectOne(wrapper);
+        EsArticle esArticle = new EsArticle();
+        BeanUtils.copyProperties(article1 , esArticle);
+        esArticle.setLabelList(ArrayUtils.toString(labelList));
+        esArticleMapper.save(esArticle);
         return article;
     }
 
@@ -223,7 +246,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     //用户修改江湖文章
     @Transactional
     @Override
-    public void updateArticle(ArticleUpdateAndCreateVo articleUpdateAndCreateVo , String userId) {
+    public void updateArticle(ArticleUpdateAndCreateVo articleUpdateAndCreateVo , String userId , String[] labelList) {
         String articleId = articleUpdateAndCreateVo.getId();
         //查询文章
         Article article = baseMapper.selectById(articleId);
@@ -264,6 +287,16 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             articleRightService.updateArticleRight(userId);
             sendFrientFeed(updateArticle , userId);
         }
+
+        //保存
+        QueryWrapper<Article> wrapper = new QueryWrapper<>();
+        wrapper.select("id" , "category_id" , "title" , "description" , "is_column_article" , "is_release" , "is_bbs" , "is_violation_article" , "is_excellent_article");
+        wrapper.eq("id" , article.getId());
+        Article article1 = baseMapper.selectOne(wrapper);
+        EsArticle esArticle = new EsArticle();
+        BeanUtils.copyProperties(article1 , esArticle);
+        esArticle.setLabelList(ArrayUtils.toString(labelList));
+        esArticleMapper.save(esArticle);
     }
 
     //用户删除文章,如果是江湖文章是真删除，如果是专栏文章同步到江湖的，将会改为专栏文章，不同步到江湖
@@ -271,6 +304,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     1：如果是在江湖发布的文章，那么直接删除
     2：如果是在专栏发布的文章同步到了江湖，则将其改为专栏内的文章，未同步到江湖
      */
+    @Transactional
     @Override
     public void deleteArticle(String articleId, String userId) {
         //查询文章
@@ -299,12 +333,17 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             if(i != 1){
                 throw new XiaoXiaException(ResultCode.ERROR , "删除失败");
             }
+            EsArticle esArticle = new EsArticle();
+            BeanUtils.copyProperties(article , esArticle);
+            esArticle.setIsBbs(false);
+            esArticleMapper.save(esArticle);
         }else {
             //江湖文章
             int i = baseMapper.deleteById(articleId);
             if(i != 1){
                 throw new XiaoXiaException(ResultCode.ERROR , "删除失败");
             }
+            esArticleMapper.deleteById(articleId);
             labelService.deleteArticleLabel(articleId);
         }
         commentService.deleteCommentByArticleId(articleId);

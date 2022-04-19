@@ -18,11 +18,6 @@ import java.util.Set;
 
 @Component
 @Slf4j
-/*
- * @author XiaoZhang
- * @date 2022/2/7 10:37
- * 定时任务类
- */
 public class MultithreadScheduleTask {
 
     @Resource
@@ -69,14 +64,5 @@ public class MultithreadScheduleTask {
         }else {
             log.warn(treadName + "获取课程全局锁失败");
         }
-    }
-
-
-    //缓存前三名课程
-    @Async
-    @Scheduled(fixedDelay = 10000)  //间隔10秒
-    public void first(){
-        log.info("定时任务开始, 缓存前三名课程,当前时间:" + LocalDateTime.now().toLocalTime());
-        courseService.findCourseOrderByPrice();
     }
 }

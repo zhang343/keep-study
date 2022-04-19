@@ -9,11 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-/**
- * @author XiaoZhang
- * @date 2022/1/22 14:32
- * 异常处理器
- */
+
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {

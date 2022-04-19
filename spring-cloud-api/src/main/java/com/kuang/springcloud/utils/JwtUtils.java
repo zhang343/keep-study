@@ -8,11 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
-/**
- * @author XiaoXia
- * @date 2021/12/28 20:16
- * token生成器
- */
+
 public class JwtUtils {
     //token过期时间,这里过期时间是一天天
     public static final long EXPIRE = 1000 * 60 * 60 * 24;

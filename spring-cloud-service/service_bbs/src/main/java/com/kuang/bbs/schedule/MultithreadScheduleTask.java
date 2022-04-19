@@ -21,11 +21,6 @@ import java.util.Set;
 
 @Component
 @Slf4j
-/*
- * @author XiaoZhang
- * @date 2022/2/7 10:37
- * 定时任务类
- */
 public class MultithreadScheduleTask {
 
     @Resource

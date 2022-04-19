@@ -1,11 +1,7 @@
 package com.kuang.springcloud.utils;
 
 
-/**
- * @author XiaoZhang
- * @date 2022/1/22 15:20
- * 返回结果状态码
- */
+
 public interface ResultCode {
     //响应成功状态码
     Integer SUCCESS = 20000;

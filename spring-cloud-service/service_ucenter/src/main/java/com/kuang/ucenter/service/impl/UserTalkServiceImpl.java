@@ -16,10 +16,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-05
- */
+
 @Service
 @Slf4j
 public class UserTalkServiceImpl extends ServiceImpl<UserTalkMapper, UserTalk> implements UserTalkService {

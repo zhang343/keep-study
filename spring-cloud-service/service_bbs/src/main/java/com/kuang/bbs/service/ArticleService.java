@@ -18,19 +18,19 @@ public interface ArticleService extends IService<Article> {
     ArticleVo findArticleDetail(String articleId , String userId);
 
     //根据条件查询系统文章总数
-    Long findArticleNumber(String categoryId, Boolean isExcellentArticle, String articleNameOrLabelName);
+    Integer findNormalArticleNumber();
 
     //条件分页查询文章
-    Future<List<IndexArticleVo>> pageArticleCondition(Long current, Long limit, String categoryId, Boolean isExcellentArticle, String articleNameOrLabelName);
+    Future<List<IndexArticleVo>> pageArticleCondition(Long current, Long limit);
 
     //用户发布文章
-    Article addArticle(ArticleUpdateAndCreateVo articleUpdateAndCreateVo, String avatar , String nickname , String userId);
+    Article addArticle(ArticleUpdateAndCreateVo articleUpdateAndCreateVo, String avatar , String nickname , String userId , String[] labelList);
 
     //查询江湖文章以便修改
     ArticleUpdateAndCreateVo findArticleByArticleIdAndUserId(String articleId, String userId);
 
     //用户修改江湖文章
-    void updateArticle(ArticleUpdateAndCreateVo articleUpdateAndCreateVo, String userId);
+    void updateArticle(ArticleUpdateAndCreateVo articleUpdateAndCreateVo, String userId , String[] labelList);
 
     //用户删除文章
     void deleteArticle(String articleId, String userId);

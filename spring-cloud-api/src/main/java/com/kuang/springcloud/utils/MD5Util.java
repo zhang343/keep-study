@@ -5,11 +5,7 @@ import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-/**
- * @author XiaoZhang
- * @date 2022/1/22 15:20
- * md5加密器
- */
+
 public class MD5Util {
 
     //进行md5加密

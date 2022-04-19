@@ -9,11 +9,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-/**
- * @author XiaoZhang
- * @date 2022/2/8 10:53
- * 江湖模块配置类
- */
+
 @Configuration
 @EnableDiscoveryClient
 @ComponentScan(basePackages = {"com.kuang.springcloud"})

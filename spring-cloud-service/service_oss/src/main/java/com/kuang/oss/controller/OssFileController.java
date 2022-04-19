@@ -20,11 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-/**
- * @author XiaoZhang
- * @date 2022/2/3 14:32
- * 文件处理类
- */
+
 @Controller
 @RequestMapping("/oss/file")
 @Slf4j
@@ -54,7 +50,7 @@ public class OssFileController {
 
         Integer price = (Integer) downloadR.getData().get("price");
         if(price != 0){
-            R ucenterR = ucenterClient.reduce(price);
+            R ucenterR = ucenterClient.reduce(price , userId);
             if(!ucenterR.getSuccess()){
                 throw new XiaoXiaException(ResultCode.ERROR , "k币不足");
             }

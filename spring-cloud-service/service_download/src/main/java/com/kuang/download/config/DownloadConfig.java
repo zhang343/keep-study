@@ -6,11 +6,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-/**
- * @author XiaoZhang
- * @date 2022/2/5 16:40
- * 下载模块配置类
- */
 @Configuration
 @EnableDiscoveryClient
 @ComponentScan(basePackages = {"com.kuang.springcloud"})

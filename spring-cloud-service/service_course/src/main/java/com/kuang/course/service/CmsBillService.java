@@ -6,10 +6,7 @@ import com.kuang.course.entity.vo.CourseStudyVo;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-08
- */
+
 public interface CmsBillService extends IService<CmsBill> {
 
     //查找出用户是否购买了这个课程,true表示购买,false表示未购买

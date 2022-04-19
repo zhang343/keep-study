@@ -8,11 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
-/**
- * @author XiaoZhang
- * @date 2022/2/6 11:35
- * 远程调用service-ucenter服务熔断降级类
- */
+
 @Component
 @Slf4j
 public class UcenterClientFactory implements FallbackFactory<UcenterClient> {
@@ -32,7 +28,7 @@ public class UcenterClientFactory implements FallbackFactory<UcenterClient> {
             }
 
             @Override
-            public R add(Integer kCoinNumber) {
+            public R add(Integer kCoinNumber , String userId) {
                 return R.error();
             }
 

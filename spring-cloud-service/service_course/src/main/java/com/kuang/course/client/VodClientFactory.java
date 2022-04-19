@@ -5,11 +5,7 @@ import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-/**
- * @author XiaoZhang
- * @date 2022/2/10 15:33
- * 远程调用service-vod服务熔断降级类
- */
+
 @Component
 @Slf4j
 public class VodClientFactory implements FallbackFactory<VodClient> {

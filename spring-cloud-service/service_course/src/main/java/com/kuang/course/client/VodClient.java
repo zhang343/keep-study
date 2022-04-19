@@ -7,9 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-/**
- * 远程调用service-vod服务类
- */
+
 @FeignClient(
         name = "service-vod" ,
         fallbackFactory = VodClientFactory.class

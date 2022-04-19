@@ -15,4 +15,7 @@ public interface PayService {
 
     //用户主动查询支付状态
     void checkAlipay(String outTradeNo);
+
+    //充值k币，生成支付账单
+    String addOrder(String id, String userId);
 }

@@ -6,10 +6,7 @@ import com.kuang.course.entity.vo.OneCategoryVo;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-08
- */
+
 public interface CmsOneCategoryMapper extends BaseMapper<CmsOneCategory> {
 
     //查询所有一级分类

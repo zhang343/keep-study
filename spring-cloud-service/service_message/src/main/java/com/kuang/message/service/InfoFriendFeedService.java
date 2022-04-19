@@ -7,10 +7,7 @@ import com.kuang.message.entity.vo.FriendFeedVo;
 import java.util.List;
 import java.util.concurrent.Future;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 public interface InfoFriendFeedService extends IService<InfoFriendFeed> {
 
 

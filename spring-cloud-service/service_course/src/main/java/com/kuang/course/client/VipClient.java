@@ -5,11 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-/**
- * @author XiaoZhang
- * @date 2022/2/10 15:32
- * 远程调用service-vip服务类
- */
+
 @FeignClient(
         name = "service-vip" ,
         fallbackFactory = VipClientFactory.class

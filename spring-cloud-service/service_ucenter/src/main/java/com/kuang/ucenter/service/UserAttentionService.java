@@ -6,10 +6,7 @@ import com.kuang.ucenter.entity.vo.UserFollowOrFans;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-05
- */
+
 public interface UserAttentionService extends IService<UserAttention> {
 
     //查询出指定用户的所有粉丝id

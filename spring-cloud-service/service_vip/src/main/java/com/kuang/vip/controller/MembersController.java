@@ -3,6 +3,7 @@ package com.kuang.vip.controller;
 
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.JwtUtils;
+import com.kuang.springcloud.utils.R;
 import com.kuang.springcloud.utils.ResultCode;
 import com.kuang.vip.service.MembersService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +27,13 @@ public class MembersController {
 
     //用户充值vip
     @PostMapping("addMember")
-    public String addMember(String id , HttpServletRequest request){
+    public R addMember(String id , HttpServletRequest request){
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         if(StringUtils.isEmpty(id) || userId == null){
             throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
         }
-        return membersService.addMember(id, userId);
+        membersService.addMember(id, userId);
+        return R.ok();
     }
 
 }

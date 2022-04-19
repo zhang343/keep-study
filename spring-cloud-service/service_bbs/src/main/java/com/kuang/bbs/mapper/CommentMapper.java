@@ -8,10 +8,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-/**
- * @author Xiaozhang
- * @since 2022-02-11
- */
+
 public interface CommentMapper extends BaseMapper<Comment> {
 
     //查找一级评论,分页查询

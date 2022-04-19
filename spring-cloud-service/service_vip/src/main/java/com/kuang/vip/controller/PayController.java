@@ -1,8 +1,12 @@
 package com.kuang.vip.controller;
 
+import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
+import com.kuang.springcloud.utils.JwtUtils;
 import com.kuang.springcloud.utils.R;
+import com.kuang.springcloud.utils.ResultCode;
 import com.kuang.vip.service.PayService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +24,17 @@ public class PayController {
 
     @Resource
     private PayService payService;
+
+
+    //充值k币，生成支付账单
+    @PostMapping("addOrder")
+    public String addOrder(String id , HttpServletRequest request){
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        if(StringUtils.isEmpty(id) || userId == null){
+            throw new XiaoXiaException(ResultCode.ERROR , "请不要非法操作");
+        }
+        return payService.addOrder(id, userId);
+    }
 
 
     //支付宝同步通知方法

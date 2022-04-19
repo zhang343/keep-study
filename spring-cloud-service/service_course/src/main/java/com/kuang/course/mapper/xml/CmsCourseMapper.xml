@@ -14,10 +14,6 @@
         where course.id = #{courseId}
     </select>
 
-    <select id="findCourseOrderByPrice" resultType="com.kuang.springcloud.entity.BbsCourseVo" >
-        select id , cover from cms_course order by price asc limit 0 , 3
-    </select>
-
 
     <update id="updateCourseViews" parameterType="java.util.List" >
         <foreach collection="courseList" item="course" index="index" open="" close="" separator=";">

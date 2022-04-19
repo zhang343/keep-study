@@ -11,12 +11,15 @@ import com.kuang.bbs.entity.ColunmArticle;
 import com.kuang.bbs.entity.vo.ColumnArticleVo;
 import com.kuang.bbs.entity.vo.PulishColumnArticleVo;
 import com.kuang.bbs.entity.vo.UpdateColumnArticleVo;
+import com.kuang.bbs.es.entity.EsArticle;
+import com.kuang.bbs.es.mapper.EsArticleMapper;
 import com.kuang.bbs.mapper.ArticleMapper;
 import com.kuang.bbs.mapper.ArticleRightMapper;
 import com.kuang.bbs.mapper.ColunmArticleMapper;
 import com.kuang.bbs.service.ArticleRightService;
 import com.kuang.bbs.service.ColumnService;
 import com.kuang.bbs.service.ColunmArticleService;
+import com.kuang.bbs.utils.ArrayUtils;
 import com.kuang.springcloud.entity.RightRedis;
 import com.kuang.springcloud.exceptionhandler.XiaoXiaException;
 import com.kuang.springcloud.utils.R;
@@ -44,6 +47,9 @@ public class ColunmArticleServiceImpl extends ServiceImpl<ColunmArticleMapper, C
 
     @Resource
     private ColumnService columnService;
+
+    @Resource
+    private EsArticleMapper esArticleMapper;
 
     //查询专栏文章
     @Override
@@ -74,6 +80,8 @@ public class ColunmArticleServiceImpl extends ServiceImpl<ColunmArticleMapper, C
             throw new XiaoXiaException(ResultCode.ERROR , "删除失败");
         }
 
+        esArticleMapper.deleteById(articleId);
+
     }
 
     //发布专栏文章
@@ -83,7 +91,8 @@ public class ColunmArticleServiceImpl extends ServiceImpl<ColunmArticleMapper, C
                                   String conlumnId ,
                                   String userId ,
                                   String nickname ,
-                                  String avatar) {
+                                  String avatar ,
+                                  String[] labelList) {
 
         //校验专栏是否为用户所有
         Column byId = columnService.getById(conlumnId);
@@ -99,6 +108,7 @@ public class ColunmArticleServiceImpl extends ServiceImpl<ColunmArticleMapper, C
         article.setAvatar(avatar);
         //设置为专栏文章
         article.setIsColumnArticle(true);
+
         int insert = articleMapper.insert(article);
         if(insert != 1){
             throw new XiaoXiaException(ResultCode.ERROR , "发布失败");
@@ -113,13 +123,15 @@ public class ColunmArticleServiceImpl extends ServiceImpl<ColunmArticleMapper, C
             throw new XiaoXiaException(ResultCode.ERROR , "发布失败");
         }
 
-
-        //如果文章同步到江湖，就需要进行相应的处理
-        Boolean isBbs = pulishColumnArticleVo.getIsBbs();
-        if(isBbs != null && isBbs){
-            //修改用户当日文章权益
-            articleRightService.updateArticleRight(userId);
-        }
+        //保存
+        QueryWrapper<Article> wrapper = new QueryWrapper<>();
+        wrapper.select("id" , "category_id" , "title" , "description" , "is_column_article" , "is_release" , "is_bbs" , "is_violation_article" , "is_excellent_article");
+        wrapper.eq("id" , article.getId());
+        Article article1 = articleMapper.selectOne(wrapper);
+        EsArticle esArticle = new EsArticle();
+        BeanUtils.copyProperties(article1 , esArticle);
+        esArticle.setLabelList(ArrayUtils.toString(labelList));
+        esArticleMapper.save(esArticle);
         return article;
     }
 
@@ -176,7 +188,7 @@ public class ColunmArticleServiceImpl extends ServiceImpl<ColunmArticleMapper, C
     //修改专栏文章
     @Transactional
     @Override
-    public void updateCloumArticle(UpdateColumnArticleVo updateColumnArticleVo , String userId, String columnId, String articleId) {
+    public void updateCloumArticle(UpdateColumnArticleVo updateColumnArticleVo , String userId, String columnId, String articleId , String[] labelList) {
         Future<Boolean> booleanFuture = checkUserColumnArticle(userId, columnId, articleId);
 
         Article article = articleMapper.selectById(articleId);
@@ -190,6 +202,7 @@ public class ColunmArticleServiceImpl extends ServiceImpl<ColunmArticleMapper, C
         Article updateArticle = new Article();
         BeanUtils.copyProperties(updateColumnArticleVo , updateArticle);
         updateArticle.setId(updateColumnArticleVo.getArticleId());
+
         int i = articleMapper.updateById(updateArticle);
         if(i != 1){
             throw new XiaoXiaException(ResultCode.ERROR , "修改失败");
@@ -204,5 +217,15 @@ public class ColunmArticleServiceImpl extends ServiceImpl<ColunmArticleMapper, C
         if(!flag){
             throw new XiaoXiaException(ResultCode.ERROR , "修改失败");
         }
+
+        //保存
+        QueryWrapper<Article> wrapper = new QueryWrapper<>();
+        wrapper.select("id" , "category_id" , "title" , "description" , "is_column_article" , "is_release" , "is_bbs" , "is_violation_article" , "is_excellent_article");
+        wrapper.eq("id" , article.getId());
+        Article article1 = articleMapper.selectOne(wrapper);
+        EsArticle esArticle = new EsArticle();
+        BeanUtils.copyProperties(article1 , esArticle);
+        esArticle.setLabelList(ArrayUtils.toString(labelList));
+        esArticleMapper.save(esArticle);
     }
 }
